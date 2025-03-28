@@ -1,10 +1,8 @@
 """
-Basic usage example for mcp_use.
+Basic usage example for the Model-Agnostic MCP Library for LLMs.
 
-This example demonstrates how to use the mcp_use library with MCPClient
-to connect any LLM to MCP tools through a unified interface.
-
-Special thanks to https://github.com/microsoft/playwright-mcp for the server.
+This example demonstrates how to use the pymcp library to connect
+any LLM to MCP tools through a unified interface.
 """
 
 import asyncio
@@ -12,37 +10,62 @@ import asyncio
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 
-from mcp_use import MCPAgent, MCPClient
+from pymcp import MCPAgent
+from pymcp.connectors.stdio import StdioConnector
+
+# import os
+
+# os.environ["DISPLAY"] = ":0"  # Or whatever your display number is
 
 
-async def main():
-    """Run the example using a configuration file."""
+async def run():
+    """Run the example."""
     # Load environment variables
     load_dotenv()
 
-    config = {
-        "mcpServers": {"playwright": {"command": "npx", "args": ["@playwright/mcp@latest"], "env": {"DISPLAY": ":1"}}}
-    }
-    # Create MCPClient from config file
-    client = MCPClient(config=config)
+    # Create the stdio connector
+    print("Creating stdio connector...")
 
-    # Create LLM
-    llm = ChatOpenAI(model="gpt-4o")
-
-    # Create agent with the client
-    agent = MCPAgent(llm=llm, client=client, max_steps=30)
-
-    # Run the query
-    result = await agent.run(
-        """
-        Navigate to https://github.com/mcp-use/mcp-use, give a star to the project and write
-        a summary of the project.
-        """,
-        max_steps=30,
+    connector = StdioConnector(
+        command="npx",
+        args=["@playwright/mcp@latest"],
+        env={"DISPLAY": ":1"},
     )
-    print(f"\nResult: {result}")
+
+    # connector = StdioConnector(
+    #     command="npx",
+    #     args=["-y", "@modelcontextprotocol/server-puppeteer",],
+    #     env={"DISPLAY": ":1"},
+    # )
+
+    # Create the LangChain LLM
+    print("Creating LangChain LLM...")
+    llm = ChatOpenAI(
+        model="gpt-4o-mini",
+    )
+
+    # llm = ChatAnthropic(
+    #     model="claude-3-7-sonnet-20240229",
+    # )
+
+    # Create MCP client
+    print("Creating MCP client...")
+    mcp_client = MCPAgent(connector=connector, llm=llm, max_steps=30)
+
+    try:
+        # Run a query
+        print("\nRunning query...")
+        result = await mcp_client.run(
+            "Go on google flight and tell me how much it costs to go from Zurich to Munich "
+            "next weekm I want the cheapest option?",
+            max_steps=30,
+        )
+        print(f"\nResult: {result}")
+
+    except Exception as e:
+        print(f"Error: {e}")
+        raise
 
 
 if __name__ == "__main__":
-    # Run the appropriate example
-    asyncio.run(main())
+    asyncio.run(run())
