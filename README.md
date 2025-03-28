@@ -137,7 +137,8 @@ import asyncio
 import os
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
-from mcp_use import MCPAgent, MCPClient
+from pymcp import MCPAgent
+from pymcp.connectors.stdio import StdioConnector
 
 async def main():
     # Load environment variables
