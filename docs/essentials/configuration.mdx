@@ -1,162 +1,115 @@
 ---
-title: "Configuration Overview"
-description: "Complete guide to configuring mcp_use"
-icon: "cog"
+title: Configuration
+description: "Configure your mcp_use environment"
 ---
 
-# Configuration Overview
+# Configuration Guide
 
-<Info>
-mcp_use configuration is organized into two main areas: **Client Configuration** for connecting to MCP servers, and **Agent Configuration** for customizing agent behavior and LLM integration.
-</Info>
+This guide covers all the configuration options available in mcp_use.
 
-## Configuration Architecture
+## Environment Variables
 
-mcp_use follows a clear separation between client-side and agent-side concerns:
+mcp_use requires certain environment variables to be set for different LLM providers:
 
-<CardGroup cols={2}>
-  <Card title="Client Configuration" icon="server" href="/essentials/client-configuration">
-    **MCPClient Setup**
-    - MCP server connections
-    - Multi-server configurations
-    - Sandboxed execution
-    - Connection types
-  </Card>
-  <Card title="Agent Configuration" icon="brain" href="/essentials/agent-configuration">
-    **MCPAgent Setup**
-    - API key management
-    - LLM integration
-    - Server manager
-    - Tool access control
-    - Memory and prompts
-    - Adapter usage
-  </Card>
-</CardGroup>
+```bash
+# OpenAI
+OPENAI_API_KEY=your_api_key_here
 
-## Quick Start Configuration
+# Anthropic
+ANTHROPIC_API_KEY=your_api_key_here
 
-For a basic setup, you need both client and agent configuration:
-
-### 1. Client Setup
-
-```python
-from mcp_use import MCPClient
-
-# Configure your MCP servers
-config = {
-    "mcpServers": {
-        "playwright": {
-            "command": "npx",
-            "args": ["@playwright/mcp@latest"],
-            "env": {"DISPLAY": ":1"}
-        }
-    }
-}
-
-client = MCPClient.from_dict(config)
+# Groq
+GROQ_API_KEY=your_api_key_here
 ```
 
-### 2. Agent Setup
+## MCP Server Configuration
+
+mcp_use supports any MCP server through a flexible configuration system. The configuration is defined in a JSON file with the following structure:
+
+```json
+{
+  "mcpServers": {
+    "server_name": {
+      "command": "command_to_run",
+      "args": ["arg1", "arg2"],
+      "env": {
+        "ENV_VAR": "value"
+      }
+    }
+  }
+}
+```
+
+### Configuration Options
+
+- `server_name`: A unique identifier for your MCP server
+- `command`: The command to start the MCP server
+- `args`: Array of arguments to pass to the command
+- `env`: Environment variables to set for the server
+
+### Example Configuration
+
+Here's a basic example of how to configure an MCP server:
+
+```json
+{
+  "mcpServers": {
+    "my_server": {
+      "command": "npx",
+      "args": ["@my-mcp/server"],
+      "env": {
+        "PORT": "3000"
+      }
+    }
+  }
+}
+```
+
+## Agent Configuration
+
+When creating an MCPAgent, you can configure several parameters:
 
 ```python
-from mcp_use import MCPAgent
+from mcp_use import MCPAgent, MCPClient
 from langchain_openai import ChatOpenAI
 
-# Configure your agent with an LLM
-llm = ChatOpenAI(model="gpt-4o")
-agent = MCPAgent(llm=llm, client=client)
-```
-
-### 3. Basic Usage
-
-```python
-import asyncio
-
-async def main():
-    result = await agent.run("Search for information about climate change")
-    print(result)
-
-asyncio.run(main())
-```
-
-## Configuration Paths
-
-<Steps>
-  <Step title="Client Configuration">
-    Set up your MCPClient to connect to MCP servers. This includes configuring server connections, managing API keys, and setting up multi-server environments.
-
-    **Start here:** [Client Configuration Guide →](/essentials/client-configuration)
-  </Step>
-
-  <Step title="Agent Configuration">
-    Configure your MCPAgent's behavior, including LLM integration, tool restrictions, memory settings, and custom prompts.
-
-    **Continue with:** [Agent Configuration Guide →](/essentials/agent-configuration)
-  </Step>
-
-  <Step title="Advanced Topics">
-    Explore connection types, server management, and LLM integration patterns for complex use cases.
-
-    **Learn more:** [Connection Types](/essentials/connection-types) | [Server Manager](/essentials/server-manager) | [LLM Integration](/essentials/llm-integration)
-  </Step>
-</Steps>
-
-## Common Configuration Patterns
-
-### Development Setup
-```python
-# Simple development configuration
-from dotenv import load_dotenv
-load_dotenv()
-
-client = MCPClient.from_config_file("dev-config.json")
+# Basic configuration
 agent = MCPAgent(
-    llm=ChatOpenAI(model="gpt-4o"),
-    client=client,
-    max_steps=10,
+    llm=ChatOpenAI(model="gpt-4"),
+    client=MCPClient.from_config_file("config.json"),
+    max_steps=30
+)
+
+# Advanced configuration
+agent = MCPAgent(
+    llm=ChatOpenAI(model="gpt-4"),
+    client=MCPClient.from_config_file("config.json"),
+    max_steps=30,
+    temperature=0.7,
     verbose=True
 )
 ```
 
-### Production Setup
-```python
-# Production configuration with restrictions
-agent = MCPAgent(
-    llm=ChatOpenAI(model="gpt-4o", temperature=0.1),
-    client=client,
-    max_steps=30,
-    disallowed_tools=["file_system", "shell"],
-    use_server_manager=True,
-    memory_enabled=True
-)
-```
+### Available Parameters
 
-### Multi-Server Setup
-```python
-# Complex multi-server configuration
-client = MCPClient.from_config_file("multi-server.json")
-agent = MCPAgent(
-    llm=llm,
-    client=client,
-    use_server_manager=True,  # Auto-select servers
-    system_prompt="You have access to web browsing, file operations, and API tools."
-)
-```
+- `llm`: The language model to use (required)
+- `client`: The MCPClient instance (required)
+- `max_steps`: Maximum number of steps the agent can take (default: 30)
+- `temperature`: Controls randomness in the model's output (default: 0.7)
+- `verbose`: Whether to print detailed logs (default: False)
 
-## What's Next?
+## Error Handling
 
-<CardGroup cols={3}>
-  <Card title="Client Configuration" icon="server" href="/essentials/client-configuration">
-    Learn how to configure MCPClient and connect to MCP servers
-  </Card>
-  <Card title="Agent Configuration" icon="brain" href="/essentials/agent-configuration">
-    Discover how to customize MCPAgent behavior and LLM integration
-  </Card>
-  <Card title="Examples" icon="code" href="https://github.com/mcp-use/mcp-use/tree/main/examples">
-    Explore real-world configuration examples
-  </Card>
-</CardGroup>
+mcp_use provides several ways to handle errors:
 
-<Tip>
-**New to mcp_use?** Start with the [Quickstart Guide](/quickstart) for a basic introduction, then return here for detailed configuration options.
-</Tip>
+1. **Connection Errors**: Check your MCP server configuration and ensure the server is running
+2. **Authentication Errors**: Verify your API keys are correctly set in the environment
+3. **Timeout Errors**: Adjust the `max_steps` parameter if operations are timing out
+
+## Best Practices
+
+1. Always use environment variables for sensitive information
+2. Keep configuration files in version control (without sensitive data)
+3. Use appropriate timeouts for different types of operations
+4. Enable verbose logging during development
+5. Test configurations in a development environment before production
