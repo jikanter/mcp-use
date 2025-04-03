@@ -1,32 +1,27 @@
 ---
-title: "Quickstart"
+title: Quickstart
 description: "Get started with mcp_use in minutes"
-icon: "rocket"
 ---
 
 # Quickstart Guide
 
-<Info>
-This guide will get you started with mcp_use in **under 5 minutes**. We'll cover installation, basic configuration, and running your first agent.
-</Info>
+This guide will help you get started with mcp_use quickly. We'll cover installation, basic configuration, and running your first agent.
 
 ## Installation
 
-<CodeGroup>
-  ```bash pip
-  pip install mcp-use
-  ```
+You can install mcp_use using pip:
 
-  ```bash from source
-  git clone https://github.com/mcp-use/mcp-use.git
-  cd mcp-use
-  pip install -e .
-  ```
-</CodeGroup>
+```bash
+pip install mcp-use
+```
 
-<Tip>
-Installing from source gives you access to the latest features and examples!
-</Tip>
+Or install from source:
+
+```bash
+git clone https://github.com/pietrozullo/mcp-use.git
+cd mcp-use
+pip install -e .
+```
 
 ## Basic Setup
 
@@ -48,11 +43,9 @@ Installing from source gives you access to the latest features and examples!
 
 2. Set up your environment variables in a `.env` file:
 
-```bash .env
+```bash
 OPENAI_API_KEY=your_api_key_here
 ANTHROPIC_API_KEY=your_api_key_here
-GROQ_API_KEY=your_api_key_here
-GOOGLE_API_KEY=your_api_key_here
 ```
 
 ## Your First Agent
@@ -101,18 +94,6 @@ Each server requires its own configuration. Check the [Configuration Guide](/ess
 
 ## Next Steps
 
-<CardGroup cols={3}>
-  <Card title="Configuration" icon="gear" href="/essentials/configuration">
-    Complete configuration guide covering client setup and agent customization
-  </Card>
-  <Card title="LLM Integration" icon="brain" href="/essentials/llm-integration">
-    Discover all supported LLM providers and optimization tips
-  </Card>
-  <Card title="Examples" icon="code" href="https://github.com/mcp-use/mcp-use/tree/main/examples">
-    Explore real-world examples and use cases
-  </Card>
-</CardGroup>
-
-<Tip>
-**Need Help?** Join our community discussions on GitHub or check out the comprehensive examples in our repository!
-</Tip>
+- Learn about [Configuration Options](/essentials/configuration)
+- Explore [Example Use Cases](/examples)
+- Check out [Advanced Features](/essentials/advanced)
