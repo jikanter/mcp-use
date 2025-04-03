@@ -1,5 +1,6 @@
 {
   "$schema": "https://mintlify.com/docs.json",
+<<<<<<< HEAD
   "theme": "almond",
   "name": "mcp_use",
   "colors": {
@@ -179,6 +180,38 @@
             ]
           }
         ]
+=======
+  "theme": "mint",
+  "name": "mcp_use",
+  "colors": {
+    "primary": "#0070F3",
+    "light": "#0070F3",
+    "dark": "#0070F3"
+  },
+  "favicon": "/favicon.svg",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": ["introduction", "quickstart"]
+          },
+          {
+            "group": "Essentials",
+            "pages": ["essentials/configuration", "essentials/llm-integration"]
+          },
+          {
+            "group": "API Reference",
+            "pages": ["api-reference/introduction"]
+          },
+          {
+            "group": "Development",
+            "pages": ["development"]
+          }
+        ]
+>>>>>>> 4ed800c (doooocs, mintlify is mint)
       }
     ]
   },
@@ -189,6 +222,7 @@
   "navbar": {
     "links": [
       {
+<<<<<<< HEAD
         "label": "Examples",
         "href": "https://github.com/mcp-use/mcp-use/tree/main/examples"
       },
@@ -326,5 +360,37 @@
       "article:section": "Technology",
       "article:tag": "MCP, LLM, AI, open source, developers, API"
     }
+=======
+        "label": "GitHub",
+        "href": "https://github.com/pietrozullo/mcp-use"
+      }
+    ]
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/pietrozullo/mcp-use"
+    }
+  },
+  "anchors": [
+    {
+      "name": "Documentation",
+      "icon": "book-open",
+      "url": "/"
+    },
+    {
+      "name": "API Reference",
+      "icon": "code",
+      "url": "/api-reference"
+    },
+    {
+      "name": "Development",
+      "icon": "code-branch",
+      "url": "/development"
+    }
+  ],
+  "feedback": {
+    "suggestEdit": true,
+    "raiseIssue": true
+>>>>>>> 4ed800c (doooocs, mintlify is mint)
   }
 }
