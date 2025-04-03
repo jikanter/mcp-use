@@ -20,23 +20,13 @@
     "library": "lucide"
   },
   "navigation": {
-    "anchors": [
+    "tabs": [
       {
-        "anchor": "python/getting-started/quickstart",
-        "icon": "rocket"
-      }
-    ],
-    "products": [
-      {
-        "product": "Home",
-        "description": "Home",
-        "icon": "/images/mcp_use.svg",
+        "tab": "Documentation",
         "groups": [
           {
-            "group": "Welcome",
-            "pages": [
-              "home/index"
-            ]
+            "group": "Getting Started",
+            "pages": ["introduction", "quickstart"]
           },
           {
             "group": "Libraries",
@@ -112,11 +102,12 @@
             ]
           },
           {
-            "group": "Guides",
-            "icon": "",
-            "pages": [
-              "home/mcp101"
-            ]
+            "group": "API Reference",
+            "pages": ["api-reference/introduction"]
+          },
+          {
+            "group": "Development",
+            "pages": ["development"]
           }
         ]
       },
@@ -496,5 +487,26 @@
       "article:section": "Technology",
       "article:tag": "MCP, LLM, AI, open source, developers, API"
     }
+  },
+  "anchors": [
+    {
+      "name": "Documentation",
+      "icon": "book-open",
+      "url": "/"
+    },
+    {
+      "name": "API Reference",
+      "icon": "code",
+      "url": "/api-reference"
+    },
+    {
+      "name": "Development",
+      "icon": "code-branch",
+      "url": "/development"
+    }
+  ],
+  "feedback": {
+    "suggestEdit": true,
+    "raiseIssue": true
   }
 }
