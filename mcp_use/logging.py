@@ -12,7 +12,7 @@ import sys
 from langchain.globals import set_debug as langchain_set_debug
 
 # Global debug flag - can be set programmatically or from environment
-MCP_USE_DEBUG = 1
+MCP_USE_DEBUG = False
 
 
 class Logger:
@@ -80,9 +80,6 @@ class Logger:
 
         root_logger.setLevel(level)
 
-        # Set propagate to True to ensure child loggers inherit settings
-        root_logger.propagate = True
-
         # Clear existing handlers
         for handler in root_logger.handlers[:]:
             root_logger.removeHandler(handler)
@@ -94,7 +91,6 @@ class Logger:
         if log_to_console:
             console_handler = logging.StreamHandler(sys.stdout)
             console_handler.setFormatter(formatter)
-            console_handler.setLevel(level)  # Ensure handler respects the level
             root_logger.addHandler(console_handler)
 
         # Add file handler if requested
@@ -106,7 +102,6 @@ class Logger:
 
             file_handler = logging.FileHandler(log_to_file)
             file_handler.setFormatter(formatter)
-            file_handler.setLevel(level)  # Ensure handler respects the level
             root_logger.addHandler(file_handler)
 
     @classmethod
@@ -119,34 +114,24 @@ class Logger:
         global MCP_USE_DEBUG
         MCP_USE_DEBUG = debug_level
 
-        # Determine the target level
+        # Update log level for existing loggers
         if debug_level == 2:
-            target_level = logging.DEBUG
-            langchain_set_debug(True)
+            for logger in cls._loggers.values():
+                logger.setLevel(logging.DEBUG)
+                langchain_set_debug(True)
         elif debug_level == 1:
-            target_level = logging.INFO
-            langchain_set_debug(False)
+            for logger in cls._loggers.values():
+                logger.setLevel(logging.INFO)
+                langchain_set_debug(False)
         else:
-            target_level = logging.WARNING
-            langchain_set_debug(False)
-
-        # Update log level for existing loggers in our registry
-        for logger in cls._loggers.values():
-            logger.setLevel(target_level)
-            # Also update handler levels
-            for handler in logger.handlers:
-                handler.setLevel(target_level)
-
-        # Also update all mcp_use child loggers that might exist
-        # This ensures loggers created with logging.getLogger() are also updated
-        base_logger = logging.getLogger("mcp_use")
-        base_logger.setLevel(target_level)
-        for handler in base_logger.handlers:
-            handler.setLevel(target_level)
+            # Reset to default (WARNING)
+            for logger in cls._loggers.values():
+                logger.setLevel(logging.WARNING)
+                langchain_set_debug(False)
 
 
 # Check environment variable for debug flag
-debug_env = os.environ.get("MCP_USE_DEBUG", "").lower() or os.environ.get("DEBUG", "").lower()
+debug_env = os.environ.get("DEBUG", "").lower()
 if debug_env == "2":
     MCP_USE_DEBUG = 2
 elif debug_env == "1":
