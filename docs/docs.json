@@ -196,7 +196,10 @@
         "groups": [
           {
             "group": "Getting Started",
-            "pages": ["introduction", "quickstart"]
+            "pages": [
+              "introduction",
+              "quickstart"
+            ]
           },
           {
             "group": "Essentials",
@@ -204,11 +207,15 @@
           },
           {
             "group": "API Reference",
-            "pages": ["api-reference/introduction"]
+            "pages": [
+              "api-reference/introduction"
+            ]
           },
           {
             "group": "Development",
-            "pages": ["development"]
+            "pages": [
+              "development"
+            ]
           }
         ]
 >>>>>>> 4ed800c (doooocs, mintlify is mint)
