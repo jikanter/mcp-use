@@ -4,14 +4,13 @@ Unit tests for the SandboxConnector class.
 
 import os
 import sys
-from unittest.mock import ANY, AsyncMock, MagicMock, Mock, patch
+from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
 import pytest
 
 # Use MagicMock instead of importing from mcp.types
 # from mcp.types import CallToolResult, Tool
 from mcp_use.connectors.sandbox import SandboxConnector
-from mcp_use.middleware.middleware import CallbackClientSession
 from mcp_use.task_managers import SseConnectionManager
 from mcp_use.types.sandbox import SandboxOptions
 
@@ -119,7 +118,9 @@ class TestSandboxConnectorConnection:
     @pytest.mark.asyncio
     @patch("mcp_use.connectors.sandbox.SseConnectionManager")
     @patch("mcp_use.connectors.sandbox.ClientSession")
-    async def test_connect(self, mock_client_session, mock_connection_manager, mock_sandbox_modules):
+    async def test_connect(
+        self, mock_client_session, mock_connection_manager, mock_sandbox_modules
+    ):
         """Test connecting to the MCP implementation in sandbox."""
         # Setup mocks
         mock_manager_instance = Mock(spec=SseConnectionManager)
@@ -131,7 +132,9 @@ class TestSandboxConnectorConnection:
         mock_client_session.return_value = mock_client_instance
 
         # Mock wait_for_server_response to avoid actual HTTP calls
-        with patch.object(SandboxConnector, "wait_for_server_response", new_callable=AsyncMock, return_value=True):
+        with patch.object(
+            SandboxConnector, "wait_for_server_response", new_callable=AsyncMock, return_value=True
+        ):
             # Create connector and connect
             sandbox_options = SandboxOptions(api_key="test-api-key")
             connector = SandboxConnector("npx", ["test-command"], e2b_options=sandbox_options)
@@ -146,19 +149,13 @@ class TestSandboxConnectorConnection:
 
             # Verify client session creation
             mock_client_session.assert_called_once_with(
-                "read_stream",
-                "write_stream",
-                sampling_callback=None,
-                elicitation_callback=None,
-                message_handler=ANY,
-                logging_callback=None,
-                client_info=ANY,
+                "read_stream", "write_stream", sampling_callback=None
             )
             mock_client_instance.__aenter__.assert_called_once()
 
             # Verify state
             assert connector._connected is True
-            assert isinstance(connector.client_session, CallbackClientSession)
+            assert connector.client == mock_client_instance
             assert connector._connection_manager == mock_manager_instance
             assert connector.base_url == "https://test-host.sandbox.e2b.dev"
 
@@ -173,7 +170,7 @@ class TestSandboxConnectorConnection:
 
         # Verify no connection established since already connected
         assert connector._connection_manager is None
-        assert connector.client_session is None
+        assert connector.client is None
         assert connector.sandbox is None
 
     @pytest.mark.asyncio
@@ -200,7 +197,7 @@ class TestSandboxConnectorConnection:
         # Verify resources were cleaned up
         connector._cleanup_resources.assert_called_once()
         assert connector._connected is False
-        assert connector.client_session is None
+        assert connector.client is None
 
     @pytest.mark.asyncio
     async def test_disconnect(self, mock_sandbox_modules):

@@ -9,14 +9,10 @@ import json
 import warnings
 from typing import Any
 
-from mcp.client.session import ElicitationFnT, LoggingFnT, MessageHandlerFnT, SamplingFnT
-
-from mcp_use.types.sandbox import SandboxOptions
-
 from .config import create_connector_from_config, load_config_file
 from .logging import logger
-from .middleware import Middleware, default_logging_middleware
 from .session import MCPSession
+from .types.clientoptions import ClientOptions
 
 
 class MCPClient:
@@ -29,40 +25,20 @@ class MCPClient:
     def __init__(
         self,
         config: str | dict[str, Any] | None = None,
-        allowed_servers: list[str] | None = None,
-        sandbox: bool = False,
-        sandbox_options: SandboxOptions | None = None,
-        sampling_callback: SamplingFnT | None = None,
-        elicitation_callback: ElicitationFnT | None = None,
-        message_handler: MessageHandlerFnT | None = None,
-        logging_callback: LoggingFnT | None = None,
-        middleware: list[Middleware] | None = None,
+        options: ClientOptions | None = None,
     ) -> None:
         """Initialize a new MCP client.
 
         Args:
             config: Either a dict containing configuration or a path to a JSON config file.
                    If None, an empty configuration is used.
-            sandbox: Whether to use sandboxed execution mode for running MCP servers.
-            sandbox_options: Optional sandbox configuration options.
-            sampling_callback: Optional sampling callback function.
+            options: Configuration options for the client.
         """
         self.config: dict[str, Any] = {}
-        self.allowed_servers: list[str] = allowed_servers
-        self.sandbox = sandbox
-        self.sandbox_options = sandbox_options
+        self.options = options or {}
         self.sessions: dict[str, MCPSession] = {}
         self.active_sessions: list[str] = []
-        self.sampling_callback = sampling_callback
-        self.elicitation_callback = elicitation_callback
-        self.message_handler = message_handler
-        self.logging_callback = logging_callback
-        # Add default logging middleware if no middleware provided, or prepend it to existing middleware
-        default_middleware = [default_logging_middleware]
-        if middleware:
-            self.middleware = default_middleware + middleware
-        else:
-            self.middleware = default_middleware
+
         # Load configuration if provided
         if config is not None:
             if isinstance(config, str):
@@ -71,64 +47,24 @@ class MCPClient:
                 self.config = config
 
     @classmethod
-    def from_dict(
-        cls,
-        config: dict[str, Any],
-        sandbox: bool = False,
-        sandbox_options: SandboxOptions | None = None,
-        sampling_callback: SamplingFnT | None = None,
-        elicitation_callback: ElicitationFnT | None = None,
-        message_handler: MessageHandlerFnT | None = None,
-        logging_callback: LoggingFnT | None = None,
-    ) -> "MCPClient":
+    def from_dict(cls, config: dict[str, Any], options: ClientOptions | None = None) -> "MCPClient":
         """Create a MCPClient from a dictionary.
 
         Args:
             config: The configuration dictionary.
-            sandbox: Whether to use sandboxed execution mode for running MCP servers.
-            sandbox_options: Optional sandbox configuration options.
-            sampling_callback: Optional sampling callback function.
-            elicitation_callback: Optional elicitation callback function.
+            options: Optional client configuration options.
         """
-        return cls(
-            config=config,
-            sandbox=sandbox,
-            sandbox_options=sandbox_options,
-            sampling_callback=sampling_callback,
-            elicitation_callback=elicitation_callback,
-            message_handler=message_handler,
-            logging_callback=logging_callback,
-        )
+        return cls(config=config, options=options)
 
     @classmethod
-    def from_config_file(
-        cls,
-        filepath: str,
-        sandbox: bool = False,
-        sandbox_options: SandboxOptions | None = None,
-        sampling_callback: SamplingFnT | None = None,
-        elicitation_callback: ElicitationFnT | None = None,
-        message_handler: MessageHandlerFnT | None = None,
-        logging_callback: LoggingFnT | None = None,
-    ) -> "MCPClient":
+    def from_config_file(cls, filepath: str, options: ClientOptions | None = None) -> "MCPClient":
         """Create a MCPClient from a configuration file.
 
         Args:
             filepath: The path to the configuration file.
-            sandbox: Whether to use sandboxed execution mode for running MCP servers.
-            sandbox_options: Optional sandbox configuration options.
-            sampling_callback: Optional sampling callback function.
-            elicitation_callback: Optional elicitation callback function.
+            options: Optional client configuration options.
         """
-        return cls(
-            config=load_config_file(filepath),
-            sandbox=sandbox,
-            sandbox_options=sandbox_options,
-            sampling_callback=sampling_callback,
-            elicitation_callback=elicitation_callback,
-            message_handler=message_handler,
-            logging_callback=logging_callback,
-        )
+        return cls(config=load_config_file(filepath), options=options)
 
     def add_server(
         self,
@@ -158,21 +94,6 @@ class MCPClient:
             # If we removed an active session, remove it from active_sessions
             if name in self.active_sessions:
                 self.active_sessions.remove(name)
-
-    def add_middleware(self, middleware: Middleware) -> None:
-        """Add a middleware.
-
-        Args:
-            middleware: The middleware to add
-        """
-        if len(self.sessions) == 0 and middleware not in self.middleware:
-            self.middleware.append(middleware)
-            return
-
-        if middleware not in self.middleware:
-            self.middleware.append(middleware)
-            for session in self.sessions.values():
-                session.connector.middleware_manager.add_middleware(middleware)
 
     def get_server_names(self) -> list[str]:
         """Get the list of configured server names.
@@ -215,17 +136,8 @@ class MCPClient:
 
         server_config = servers[server_name]
 
-        # Create connector with options and client-level auth
-        connector = create_connector_from_config(
-            server_config,
-            sandbox=self.sandbox,
-            sandbox_options=self.sandbox_options,
-            sampling_callback=self.sampling_callback,
-            elicitation_callback=self.elicitation_callback,
-            message_handler=self.message_handler,
-            logging_callback=self.logging_callback,
-            middleware=self.middleware,
-        )
+        # Create connector with options
+        connector = create_connector_from_config(server_config, options=self.options)
 
         # Create the session
         session = MCPSession(connector)
@@ -260,10 +172,11 @@ class MCPClient:
             warnings.warn("No MCP servers defined in config", UserWarning, stacklevel=2)
             return {}
 
-        # Create sessions only for allowed servers if applicable else create for all servers
+        # Create sessions for all servers
         for name in servers:
-            if self.allowed_servers is None or name in self.allowed_servers:
-                await self.create_session(name, auto_initialize)
+            session = await self.create_session(name, auto_initialize)
+            if auto_initialize:
+                await session.initialize()
 
         return self.sessions
 

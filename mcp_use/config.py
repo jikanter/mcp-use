@@ -7,13 +7,15 @@ This module provides functionality to load MCP configuration from JSON files.
 import json
 from typing import Any
 
-from mcp.client.session import ElicitationFnT, LoggingFnT, MessageHandlerFnT, SamplingFnT
-
-from mcp_use.types.sandbox import SandboxOptions
-
-from .connectors import BaseConnector, HttpConnector, SandboxConnector, StdioConnector, WebSocketConnector
+from .connectors import (
+    BaseConnector,
+    HttpConnector,
+    SandboxConnector,
+    StdioConnector,
+    WebSocketConnector,
+)
 from .connectors.utils import is_stdio_server
-from .middleware import Middleware
+from .types.clientoptions import ClientOptions
 
 
 def load_config_file(filepath: str) -> dict[str, Any]:
@@ -31,51 +33,37 @@ def load_config_file(filepath: str) -> dict[str, Any]:
 
 def create_connector_from_config(
     server_config: dict[str, Any],
-    sandbox: bool = False,
-    sandbox_options: SandboxOptions | None = None,
-    sampling_callback: SamplingFnT | None = None,
-    elicitation_callback: ElicitationFnT | None = None,
-    message_handler: MessageHandlerFnT | None = None,
-    logging_callback: LoggingFnT | None = None,
-    middleware: list[Middleware] | None = None,
+    options: ClientOptions | None = None,
 ) -> BaseConnector:
     """Create a connector based on server configuration.
     This function can be called with just the server_config parameter:
     create_connector_from_config(server_config)
     Args:
         server_config: The server configuration section
-        sandbox: Whether to use sandboxed execution mode for running MCP servers.
-        sandbox_options: Optional sandbox configuration options.
-        sampling_callback: Optional sampling callback function.
+        options: Optional client configuration options including sandboxing preferences.
+                 If None, default client options will be used.
+
     Returns:
         A configured connector instance
     """
+    # Use default options if none provided
+    options = options or {"is_sandboxed": False}
 
     # Stdio connector (command-based)
-    if is_stdio_server(server_config) and not sandbox:
+    if is_stdio_server(server_config) and not options.get("is_sandboxed", False):
         return StdioConnector(
             command=server_config["command"],
             args=server_config["args"],
             env=server_config.get("env", None),
-            sampling_callback=sampling_callback,
-            elicitation_callback=elicitation_callback,
-            message_handler=message_handler,
-            logging_callback=logging_callback,
-            middleware=middleware,
         )
 
     # Sandboxed connector
-    elif is_stdio_server(server_config) and sandbox:
+    elif is_stdio_server(server_config) and options.get("is_sandboxed", False):
         return SandboxConnector(
             command=server_config["command"],
             args=server_config["args"],
             env=server_config.get("env", None),
-            e2b_options=sandbox_options,
-            sampling_callback=sampling_callback,
-            elicitation_callback=elicitation_callback,
-            message_handler=message_handler,
-            logging_callback=logging_callback,
-            middleware=middleware,
+            e2b_options=options.get("sandbox_options", {}),
         )
 
     # HTTP connector
@@ -83,14 +71,7 @@ def create_connector_from_config(
         return HttpConnector(
             base_url=server_config["url"],
             headers=server_config.get("headers", None),
-            auth=server_config.get("auth", {}),
-            timeout=server_config.get("timeout", 5),
-            sse_read_timeout=server_config.get("sse_read_timeout", 60 * 5),
-            sampling_callback=sampling_callback,
-            elicitation_callback=elicitation_callback,
-            message_handler=message_handler,
-            logging_callback=logging_callback,
-            middleware=middleware,
+            auth_token=server_config.get("auth_token", None),
         )
 
     # WebSocket connector
@@ -98,7 +79,7 @@ def create_connector_from_config(
         return WebSocketConnector(
             url=server_config["ws_url"],
             headers=server_config.get("headers", None),
-            auth=server_config.get("auth", {}),
+            auth_token=server_config.get("auth_token", None),
         )
 
     raise ValueError("Cannot determine connector type from config")
