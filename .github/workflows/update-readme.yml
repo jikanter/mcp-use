@@ -3,13 +3,15 @@ name: Update README
 on:
   # On manual launch
   workflow_dispatch:
+  # On every push on selected branches
+  push:
+    branches:
+      - main
   # Scheduled interval: Use CRON format https://crontab.guru/
   schedule:
     - cron: "0 0 * * 0" # Every sunday at midnight
 
-permissions:
-  contents: write
-  pull-requests: write
+permissions: read-all
 
 concurrency:
   group: ${{ github.ref }}-${{ github.workflow }}
@@ -100,13 +102,11 @@ jobs:
             echo "has_changes=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Create Pull Request
+      - name: Commit and push changes
         if: steps.changes.outputs.has_changes == 'true'
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "chore: update dependents info (automated)"
-          title: "chore: update dependents info (automated)"
-          body: "This PR updates the README with the latest dependents information."
-          branch: chore/update-dependents-info-${{ github.run_id }}
-          delete-branch: true
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add README.md
+          git commit -m "chore: update dependents info (automated)"
+          git push
