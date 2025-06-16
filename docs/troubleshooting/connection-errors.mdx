@@ -88,12 +88,21 @@ async def test_server_startup():
     start_time = time.time()
     try:
         client = MCPClient.from_config_file("config.json")
+<<<<<<< HEAD
+        await asyncio.wait_for(client.create_all_sessions(), timeout=10)
+        elapsed = time.time() - start_time
+        print(f"✅ Sessions created in {elapsed:.2f}s")
+    except asyncio.TimeoutError:
+        elapsed = time.time() - start_time
+        print(f"❌ Session creation timed out after {elapsed:.2f}s")
+=======
         await asyncio.wait_for(client.connect_all(), timeout=10)
         elapsed = time.time() - start_time
         print(f"✅ Servers connected in {elapsed:.2f}s")
     except asyncio.TimeoutError:
         elapsed = time.time() - start_time
         print(f"❌ Connection timed out after {elapsed:.2f}s")
+>>>>>>> cc42c8e (chore: improve docs (#125))
 
 # Run test
 await test_server_startup()
@@ -422,6 +431,24 @@ sudo ufw disable
 
 **Solutions**:
 ```dockerfile
+<<<<<<< HEAD
+# Install Node.js and npm
+RUN apt-get update && apt-get install -y nodejs npm && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY pyproject.toml ./
+
+# Install in editable mode
+COPY . .
+RUN pip install -e ".[dev,anthropic,openai]"
+
+# Expose necessary ports
+EXPOSE 8000
+
+# Set proper networking
+CMD ["python", "main.py", "--host", "0.0.0.0", "--port", "8000"]
+=======
 # Expose necessary ports
 EXPOSE 8000
 
@@ -430,6 +457,7 @@ RUN apt-get update && apt-get install -y nodejs npm
 
 # Set proper networking
 CMD ["python", "main.py", "--host", "0.0.0.0"]
+>>>>>>> cc42c8e (chore: improve docs (#125))
 ```
 
 ```yaml
@@ -440,7 +468,10 @@ services:
     build: .
     ports:
       - "8000:8000"
+<<<<<<< HEAD
+=======
     network_mode: "host"  # For localhost server access
+>>>>>>> cc42c8e (chore: improve docs (#125))
 ```
 
 ### Volume Mounting
@@ -542,7 +573,11 @@ class ResilientMCPClient:
         for attempt in range(self.max_retries):
             try:
                 self._client = MCPClient.from_config_file(self.config_file)
+<<<<<<< HEAD
+                await self._client.create_all_sessions()
+=======
                 await self._client.connect_all()
+>>>>>>> cc42c8e (chore: improve docs (#125))
                 print(f"✅ Connected on attempt {attempt + 1}")
                 return self._client
             except Exception as e:
@@ -560,8 +595,15 @@ class ResilientMCPClient:
 
         # Test connection
         try:
+<<<<<<< HEAD
+            # Test if sessions are active
+            active_sessions = self._client.get_all_active_sessions()
+            if len(active_sessions) > 0:
+                return self._client
+=======
             await self._client.list_tools()
             return self._client
+>>>>>>> cc42c8e (chore: improve docs (#125))
         except:
             print("Connection lost, reconnecting...")
             return await self.connect_with_retry()
@@ -588,11 +630,17 @@ class ServerHealthMonitor:
 
     async def health_check(self):
         try:
+<<<<<<< HEAD
+            # Check if we have active sessions
+            active_sessions = self.client.get_all_active_sessions()
+            self.is_healthy = len(active_sessions) > 0
+=======
             tools = await asyncio.wait_for(
                 self.client.list_tools(),
                 timeout=10
             )
             self.is_healthy = len(tools) > 0
+>>>>>>> cc42c8e (chore: improve docs (#125))
             self.last_check = datetime.now()
             return self.is_healthy
         except Exception as e:
@@ -606,7 +654,12 @@ class ServerHealthMonitor:
             if not self.is_healthy:
                 print("⚠️ Server unhealthy, attempting reconnection...")
                 try:
+<<<<<<< HEAD
+                    await self.client.close_all_sessions()
+                    await self.client.create_all_sessions()
+=======
                     await self.client.reconnect_all()
+>>>>>>> cc42c8e (chore: improve docs (#125))
                     await self.health_check()
                 except Exception as e:
                     print(f"Reconnection failed: {e}")
@@ -649,7 +702,11 @@ If connection issues persist:
                }
            }
        })
+<<<<<<< HEAD
+       await client.create_all_sessions()
+=======
        await client.connect_all()
+>>>>>>> cc42c8e (chore: improve docs (#125))
 
    await minimal_test()
    ```

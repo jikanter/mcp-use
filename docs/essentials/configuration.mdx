@@ -1,11 +1,14 @@
 ---
-title: Configuration
-description: "Configure your mcp_use environment"
+title: "Configuration Overview"
+description: "Complete guide to configuring mcp_use"
+icon: "cog"
 ---
 
-# Configuration Guide
+# Configuration Overview
 
-This guide covers all the configuration options available in mcp_use.
+<Info>
+mcp_use configuration is organized into two main areas: **Client Configuration** for connecting to MCP servers, and **Agent Configuration** for customizing agent behavior and LLM integration.
+</Info>
 
 ## Environment Variables
 
@@ -70,7 +73,7 @@ Here's a basic example of how to configure an MCP server:
 When creating an MCPAgent, you can configure several parameters:
 
 ```python
-from mcp_use import MCPAgent, MCPClient
+from mcp_use import MCPAgent
 from langchain_openai import ChatOpenAI
 
 # Basic configuration
@@ -98,18 +101,20 @@ agent = MCPAgent(
 - `temperature`: Controls randomness in the model's output (default: 0.7)
 - `verbose`: Whether to print detailed logs (default: False)
 
-## Error Handling
+## What's Next?
 
-mcp_use provides several ways to handle errors:
+<CardGroup cols={3}>
+  <Card title="Client Configuration" icon="server" href="/essentials/client-configuration">
+    Learn how to configure MCPClient and connect to MCP servers
+  </Card>
+  <Card title="Agent Configuration" icon="brain" href="/essentials/agent-configuration">
+    Discover how to customize MCPAgent behavior and LLM integration
+  </Card>
+  <Card title="Examples" icon="code" href="https://github.com/mcp-use/mcp-use/tree/main/examples">
+    Explore real-world configuration examples
+  </Card>
+</CardGroup>
 
-1. **Connection Errors**: Check your MCP server configuration and ensure the server is running
-2. **Authentication Errors**: Verify your API keys are correctly set in the environment
-3. **Timeout Errors**: Adjust the `max_steps` parameter if operations are timing out
-
-## Best Practices
-
-1. Always use environment variables for sensitive information
-2. Keep configuration files in version control (without sensitive data)
-3. Use appropriate timeouts for different types of operations
-4. Enable verbose logging during development
-5. Test configurations in a development environment before production
+<Tip>
+**New to mcp_use?** Start with the [Quickstart Guide](/quickstart) for a basic introduction, then return here for detailed configuration options.
+</Tip>
