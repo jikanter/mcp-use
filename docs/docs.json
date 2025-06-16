@@ -1,7 +1,6 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-<<<<<<< HEAD
-  "theme": "almond",
+  "theme": "maple",
   "name": "mcp_use",
   "colors": {
     "primary": "#000000",
@@ -195,7 +194,7 @@
         "tab": "Documentation",
         "groups": [
           {
-            "group": "Getting Started",
+            "group": "Changelog",
             "pages": [
               "introduction",
               "quickstart"
@@ -229,24 +228,17 @@
   "navbar": {
     "links": [
       {
-<<<<<<< HEAD
+        "label": "Community",
+        "href": "https://github.com/mcp-use/mcp-use/discussions"
+      },
+      {
         "label": "Examples",
         "href": "https://github.com/mcp-use/mcp-use/tree/main/examples"
-      },
-      {
-        "label": "Discord",
-        "icon": "discord",
-        "href": "https://discord.gg/XkNkSkMz3V"
-      },
-      {
-        "label": "",
-        "icon": "/images/xlogo.svg",
-        "href": "https://x.com/mcpuse"
       }
     ],
     "primary": {
-      "type": "github",
-      "label": "Github",
+      "type": "button",
+      "label": "Get Started",
       "href": "https://github.com/mcp-use/mcp-use"
     }
   },
@@ -263,11 +255,11 @@
         "items": [
           {
             "label": "Website",
-            "href": "https://mcp-use.com"
+            "href": "https://mcp-use.io"
           },
           {
             "label": "Cloud Chat",
-            "href": "https://chat.mcp-use.com"
+            "href": "https://chat.mcp-use.io"
           },
           {
             "label": "GitHub",
@@ -315,6 +307,14 @@
       }
     ]
   },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude"
+    ]
+  },
   "seo": {
     "metatags": {
       "charset": "UTF-8",
@@ -333,7 +333,7 @@
       "referrer": "origin",
       "language": "en",
       "copyright": "Copyright 2025 mcp-use",
-      "reply-to": "dev@mcp-use.com",
+      "reply-to": "dev@mcp-use.io",
       "distribution": "global",
       "coverage": "Worldwide",
       "category": "Technology",
@@ -349,8 +349,8 @@
       "msapplication-config": "/browserconfig.xml",
       "og:title": "mcp-use - Connect Any LLM to Any MCP Server",
       "og:type": "website",
-      "og:url": "https://mcp-use.com",
-      "og:image": "https://raw.githubusercontent.com/mcp-use/mcp-use/refs/heads/main/static/og_image_docs.jpg",
+      "og:url": "https://mcp-use.io",
+      "og:image": "https://repository-images.githubusercontent.com/956472076/d2b369ee-1bf9-466c-9ecc-e96c2f95b81a",
       "og:description": "Open source library enabling developers to connect any LLM to any MCP server. Build custom AI agents with tool access without vendor lock-in.",
       "og:site_name": "mcp-use",
       "og:locale": "en_US",
@@ -359,7 +359,7 @@
       "twitter:creator": "@mcpuse",
       "twitter:title": "mcp-use - Connect Any LLM to Any MCP Server",
       "twitter:description": "Open source library enabling developers to connect any LLM to any MCP server. Build custom AI agents with tool access without vendor lock-in.",
-      "twitter:image": "https://raw.githubusercontent.com/mcp-use/mcp-use/refs/heads/main/static/og_image_docs.jpg",
+      "twitter:image": "https://repository-images.githubusercontent.com/956472076/d2b369ee-1bf9-466c-9ecc-e96c2f95b81a",
       "twitter:image:alt": "mcp-use logo and interface showing LLM to MCP server connections",
       "article:published_time": "2024-12-01T00:00:00+00:00",
       "article:modified_time": "2025-06-16T00:00:00+00:00",
@@ -367,37 +367,5 @@
       "article:section": "Technology",
       "article:tag": "MCP, LLM, AI, open source, developers, API"
     }
-=======
-        "label": "GitHub",
-        "href": "https://github.com/pietrozullo/mcp-use"
-      }
-    ]
-  },
-  "footer": {
-    "socials": {
-      "github": "https://github.com/pietrozullo/mcp-use"
-    }
-  },
-  "anchors": [
-    {
-      "name": "Documentation",
-      "icon": "book-open",
-      "url": "/"
-    },
-    {
-      "name": "API Reference",
-      "icon": "code",
-      "url": "/api-reference"
-    },
-    {
-      "name": "Development",
-      "icon": "code-branch",
-      "url": "/development"
-    }
-  ],
-  "feedback": {
-    "suggestEdit": true,
-    "raiseIssue": true
->>>>>>> 4ed800c (doooocs, mintlify is mint)
   }
 }
