@@ -10,7 +10,6 @@ from mcp.types import CallToolResult, Tool
 from pydantic import AnyUrl
 
 from mcp_use.connectors.stdio import StdioConnector
-from mcp_use.middleware.middleware import CallbackClientSession
 from mcp_use.task_managers.stdio import StdioConnectionManager
 
 
@@ -84,19 +83,13 @@ class TestStdioConnectorConnection:
 
         # Verify client session creation
         mock_client_session.assert_called_once_with(
-            "read_stream",
-            "write_stream",
-            sampling_callback=None,
-            elicitation_callback=None,
-            message_handler=ANY,
-            logging_callback=None,
-            client_info=ANY,
+            "read_stream", "write_stream", sampling_callback=None, client_info=ANY
         )
         mock_client_instance.__aenter__.assert_called_once()
 
         # Verify state
         assert connector._connected is True
-        assert isinstance(connector.client_session, CallbackClientSession)
+        assert connector.client_session == mock_client_instance
         assert connector._connection_manager == mock_manager_instance
 
     @pytest.mark.asyncio
@@ -283,7 +276,7 @@ class TestStdioConnectorOperations:
         result = await connector.call_tool(tool_name, arguments)
 
         # Verify
-        mock_client.call_tool.assert_called_once_with(tool_name, arguments, None)
+        mock_client.call_tool.assert_called_once_with(tool_name, arguments)
         assert result == mock_result
 
     @pytest.mark.asyncio

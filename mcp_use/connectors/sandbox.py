@@ -12,6 +12,7 @@ import time
 
 import aiohttp
 from mcp import ClientSession
+from mcp.client.session import SamplingFnT
 
 from ..logging import logger
 from ..task_managers import SseConnectionManager
@@ -50,6 +51,7 @@ class SandboxConnector(BaseConnector):
         e2b_options: SandboxOptions | None = None,
         timeout: float = 5,
         sse_read_timeout: float = 60 * 5,
+        sampling_callback: SamplingFnT | None = None,
     ):
         """Initialize a new sandbox connector.
 
@@ -61,13 +63,13 @@ class SandboxConnector(BaseConnector):
                         See SandboxOptions for available options and defaults.
             timeout: Timeout for the sandbox process in seconds.
             sse_read_timeout: Timeout for the SSE connection in seconds.
+            sampling_callback: Optional sampling callback.
         """
-        super().__init__()
+        super().__init__(sampling_callback=sampling_callback)
         if Sandbox is None:
             raise ImportError(
-                "E2B SDK (e2b-code-interpreter) not found. "
-                "Please install it with 'pip install mcp-use[e2b]' "
-                "(or 'pip install e2b-code-interpreter')."
+                "E2B SDK (e2b-code-interpreter) not found. Please install it with "
+                "'pip install mcp-use[e2b]' (or 'pip install e2b-code-interpreter')."
             )
 
         self.user_command = command
@@ -79,18 +81,16 @@ class SandboxConnector(BaseConnector):
         self.api_key = _e2b_options.get("api_key") or os.environ.get("E2B_API_KEY")
         if not self.api_key:
             raise ValueError(
-                "E2B API key is required. Provide it via 'sandbox_options.api_key' "
-                "or the E2B_API_KEY environment variable."
+                "E2B API key is required. Provide it via 'sandbox_options.api_key'"
+                " or the E2B_API_KEY environment variable."
             )
 
         self.sandbox_template_id = _e2b_options.get("sandbox_template_id", "base")
-        self.supergateway_cmd_parts = _e2b_options.get(
-            "supergateway_command", "npx -y supergateway"
-        )
+        self.supergateway_cmd_parts = _e2b_options.get("supergateway_command", "npx -y supergateway")
 
         self.sandbox: Sandbox | None = None
         self.process: CommandHandle | None = None
-        self.client: ClientSession | None = None
+        self.client_session: ClientSession | None = None
         self.errlog = sys.stderr
         self.base_url: str | None = None
         self._connected = False
@@ -138,10 +138,7 @@ class SandboxConnector(BaseConnector):
                         async with session.get(ping_url, timeout=2) as response:
                             if response.status == 200:
                                 elapsed = time.time() - start_time
-                                logger.info(
-                                    f"Server is ready! "
-                                    f"SSE endpoint responded with 200 after {elapsed:.1f}s"
-                                )
+                                logger.info(f"Server is ready! SSE endpoint responded with 200 after {elapsed:.1f}s")
                                 return True
                     except Exception:
                         # If sse endpoint doesn't work, try the base URL
@@ -149,8 +146,7 @@ class SandboxConnector(BaseConnector):
                             if response.status < 500:  # Accept any non-server error
                                 elapsed = time.time() - start_time
                                 logger.info(
-                                    f"Server is ready! Base URL responded with "
-                                    f"{response.status} after {elapsed:.1f}s"
+                                    f"Server is ready! Base URL responded with {response.status} after {elapsed:.1f}s"
                                 )
                                 return True
             except Exception:
@@ -220,20 +216,18 @@ class SandboxConnector(BaseConnector):
             sse_url = f"{self.base_url}/sse"
 
             # Create and start the connection manager
-            self._connection_manager = SseConnectionManager(
-                sse_url, self.headers, self.timeout, self.sse_read_timeout
-            )
+            self._connection_manager = SseConnectionManager(sse_url, self.headers, self.timeout, self.sse_read_timeout)
             read_stream, write_stream = await self._connection_manager.start()
 
             # Create the client session
-            self.client = ClientSession(read_stream, write_stream, sampling_callback=None)
-            await self.client.__aenter__()
+            self.client_session = ClientSession(
+                read_stream, write_stream, sampling_callback=self.sampling_callback, client_info=self.client_info
+            )
+            await self.client_session.__aenter__()
 
             # Mark as connected
             self._connected = True
-            logger.debug(
-                f"Successfully connected to MCP implementation via HTTP/SSE: {self.base_url}"
-            )
+            logger.debug(f"Successfully connected to MCP implementation via HTTP/SSE: {self.base_url}")
 
         except Exception as e:
             logger.error(f"Failed to connect to MCP implementation: {e}")
@@ -289,3 +283,8 @@ class SandboxConnector(BaseConnector):
         await self._cleanup_resources()
         self._connected = False
         logger.debug("Disconnected from MCP implementation")
+
+    @property
+    def public_identifier(self) -> str:
+        """Get the identifier for the connector."""
+        return {"type": "sandbox", "command": self.user_command, "args": self.user_args}
