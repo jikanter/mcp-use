@@ -1,11 +1,16 @@
+<<<<<<<< HEAD:docs/changelog.mdx
+<Update label="2025‑05‑27" description="v1.3.0">
+  • Added optional E2B sandbox execution so MCP servers can run in secure cloud sandboxes. :contentReference[oaicite:0]{index=0}
+  • `MCPAgent.astream()` now lets you stream results **and** automatically log full conversation history. :contentReference[oaicite:1]{index=1}
+========
 ---
 title: "Library Updates"
 description: "New updates and improvements"
-icon:  "history"
+mode: "center"
 ---
 
-<Update label="v1.3.11 - 2025‑09‑29">
-  ## Auth Revolution
+<Update label="2025‑09‑29">
+  ## v1.3.11
   - **New**: Complete OAuth2 and Bearer token authentication framework ([#149](https://github.com/pietrozullo/mcp-use/pull/149))
   - Fix: HTTP connector error handling with better diagnostics ([#279](https://github.com/pietrozullo/mcp-use/pull/279))
   - Fix: Accept empty tool results without validation errors ([#273](https://github.com/pietrozullo/mcp-use/pull/273))
@@ -15,57 +20,36 @@ icon:  "history"
   - Fix: Subprocess cleanup for multiple MCP clients to prevent memory leaks ([#231](https://github.com/pietrozullo/mcp-use/pull/231))
 </Update>
 
-<Update label="v1.3.3 - 2025‑06‑19">
-  ## Stability Boost
+<Update label="2025‑06‑19">
+  ## v1.3.3
   - Set default logging level to info
   - Fix: prevent double async cleanup and event loop errors in astream
   - Fix: Raise import error for fastembed, server manager does not silently fail
   - Fix: search tools tuple unpacking error
+>>>>>>>> aa8d684 (chore: release docs):docs/changelog/changelog.mdx
 </Update>
 
-<Update label="v1.3.1 - 2025‑06‑10">
-  ## Stream Power
-  - Remove client options for easier usage
-  - Add streamable HTTP support
-  - Fix websocket error positional arguments (headers were missing)
-  - Fix connection state tracking after SSE disconnection
-  - Add CLAUDE.md for development guidance
+<Update label="2025‑05‑19" description="v1.2.13">
+  • Alpha support for **Resources** & **Prompts** exposed by remote servers. :contentReference[oaicite:2]{index=2}
+  • Routine version bump and stability tweaks across task / connection managers. :contentReference[oaicite:3]{index=3}
 </Update>
 
-<Update label="v1.3.0 - 2025‑05‑27">
-  ## Sandbox Magic
-  - Added optional E2B sandbox execution so MCP servers can run in secure cloud sandboxes.
-  - `MCPAgent.astream()` now lets you stream results **and** automatically log full conversation history.
+<Update label="2025‑05‑11" description="v1.2.10">
+  • Hot‑fix: patched **FastEmbed** import failure that could break vector search. :contentReference[oaicite:4]{index=4}
 </Update>
 
-
-<Update label="v1.2.13 - 2025‑05‑19">
-  ## Resource Discovery
-  - Alpha support for **Resources** & **Prompts** exposed by remote servers.
-  - Routine version bump and stability tweaks across task / connection managers.
+<Update label="2025‑04‑11" description="v1.1.5">
+  • Maintenance release – internal refactors, doc clean‑ups, and incremental API polish. :contentReference[oaicite:5]{index=5}
 </Update>
 
-<Update label="v1.2.10 - 2025‑05‑11">
-  ## Emergency Patch
-  - Hot‑fix: patched **FastEmbed** import failure that could break vector search.
+<Update label="2025‑04‑07" description="v1.0.1">
+  • Introduced HTTP transport layer and dynamic multi‑server selection. :contentReference[oaicite:6]{index=6}
 </Update>
 
-<Update label="v1.1.5 - 2025‑04‑11">
-  ## Polish Pass
-  - Maintenance release – internal refactors, doc clean‑ups, and incremental API polish.
+<Update label="2025‑04‑03" description="v1.0.0">
+  • First stable release of the unified Python client after the 0.0.x preview series. :contentReference[oaicite:7]{index=7}
 </Update>
 
-<Update label="v1.0.1 - 2025‑04‑07">
-  ## Transport Layer
-  - Introduced HTTP transport layer and dynamic multi‑server selection.
-</Update>
-
-<Update label="v1.0.0 - 2025‑04‑03">
-  ## Stable Launch
-  - First stable release of the unified Python client after the 0.0.x preview series.
-</Update>
-
-<Update label="v0.0.6 - 2025‑04‑02">
-  ## Public Preview
-  - Initial public preview published to PyPI; automated publish workflow enabled.
+<Update label="2025‑04‑02" description="v0.0.6">
+  • Initial public preview published to PyPI; automated publish workflow enabled. :contentReference[oaicite:8]{index=8}
 </Update>
