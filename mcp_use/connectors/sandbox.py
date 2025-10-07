@@ -12,18 +12,16 @@ import time
 
 import aiohttp
 from mcp import ClientSession
-from mcp.client.session import ElicitationFnT, SamplingFnT
+from mcp.client.session import ElicitationFnT, LoggingFnT, MessageHandlerFnT, SamplingFnT
 
 from ..logging import logger
+from ..middleware import CallbackClientSession, Middleware
 from ..task_managers import SseConnectionManager
 
 # Import E2B SDK components (optional dependency)
 try:
     logger.debug("Attempting to import e2b_code_interpreter...")
-    from e2b_code_interpreter import (
-        CommandHandle,
-        Sandbox,
-    )
+    from e2b_code_interpreter import CommandHandle, Sandbox
 
     logger.debug("Successfully imported e2b_code_interpreter")
 except ImportError as e:
@@ -53,6 +51,9 @@ class SandboxConnector(BaseConnector):
         sse_read_timeout: float = 60 * 5,
         sampling_callback: SamplingFnT | None = None,
         elicitation_callback: ElicitationFnT | None = None,
+        message_handler: MessageHandlerFnT | None = None,
+        logging_callback: LoggingFnT | None = None,
+        middleware: list[Middleware] | None = None,
     ):
         """Initialize a new sandbox connector.
 
@@ -67,7 +68,13 @@ class SandboxConnector(BaseConnector):
             sampling_callback: Optional sampling callback.
             elicitation_callback: Optional elicitation callback.
         """
-        super().__init__(sampling_callback=sampling_callback, elicitation_callback=elicitation_callback)
+        super().__init__(
+            sampling_callback=sampling_callback,
+            elicitation_callback=elicitation_callback,
+            message_handler=message_handler,
+            logging_callback=logging_callback,
+            middleware=middleware,
+        )
         if Sandbox is None:
             raise ImportError(
                 "E2B SDK (e2b-code-interpreter) not found. Please install it with "
@@ -222,14 +229,21 @@ class SandboxConnector(BaseConnector):
             read_stream, write_stream = await self._connection_manager.start()
 
             # Create the client session
-            self.client_session = ClientSession(
+            raw_client_session = ClientSession(
                 read_stream,
                 write_stream,
                 sampling_callback=self.sampling_callback,
                 elicitation_callback=self.elicitation_callback,
+                message_handler=self._internal_message_handler,
+                logging_callback=self.logging_callback,
                 client_info=self.client_info,
             )
-            await self.client_session.__aenter__()
+            await raw_client_session.__aenter__()
+
+            # Wrap with middleware
+            self.client_session = CallbackClientSession(
+                raw_client_session, self.public_identifier, self.middleware_manager
+            )
 
             # Mark as connected
             self._connected = True
@@ -293,4 +307,5 @@ class SandboxConnector(BaseConnector):
     @property
     def public_identifier(self) -> str:
         """Get the identifier for the connector."""
-        return {"type": "sandbox", "command": self.user_command, "args": self.user_args}
+        args_str = " ".join(self.user_args) if self.user_args else ""
+        return f"sandbox:{self.user_command} {args_str}".strip()

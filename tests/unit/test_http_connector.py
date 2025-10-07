@@ -11,6 +11,7 @@ from mcp import McpError
 from mcp.types import EmptyResult, ErrorData, Prompt, Resource, Tool
 
 from mcp_use.connectors.http import HttpConnector
+from mcp_use.middleware.middleware import CallbackClientSession
 from mcp_use.task_managers import SseConnectionManager
 
 
@@ -211,7 +212,7 @@ class TestHttpConnectorConnection(IsolatedAsyncioTestCase):
         mock_client_session_instance.list_prompts.assert_called_once()
 
         # Verify final state
-        self.assertEqual(self.connector.client_session, mock_client_session_instance)
+        self.assertIsInstance(self.connector.client_session, CallbackClientSession)
         self.assertEqual(self.connector._connection_manager, mock_cm_instance)
         self.assertTrue(self.connector._connected)
         self.assertTrue(self.connector._initialized)
