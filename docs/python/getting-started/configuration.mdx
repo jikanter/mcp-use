@@ -68,13 +68,11 @@ const config = {
             command: 'npx',
             args: ['@playwright/mcp@latest'],
             env: { DISPLAY: ':1' }
->>>>>>> 8f43938 (move docs)
         }
     }
 }
 
-<<<<<<< HEAD
-client = MCPClient(config)
+const client = new MCPClient(config)
 ```
 <<<<<<< HEAD
 =======
@@ -290,7 +288,7 @@ const agent = new MCPAgent({
 ## What's Next?
 
 <CardGroup cols={3}>
-  <Card title="Client Configuration" icon="server" href="/python/client/client-configuration">
+  <Card title="Client Configuration" icon="server" href="/typescript/client/client-configuration">
     Learn how to configure MCPClient and connect to MCP servers
   </Card>
   <Card title="Agent Configuration" icon="brain" href="/python/agent/agent-configuration">

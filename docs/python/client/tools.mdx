@@ -27,28 +27,61 @@ Common examples include:
 To see what tools are available from a connected MCP server:
 
 <CodeGroup>
-<<<<<<< HEAD
-```python Python
-import asyncio
-from mcp_use import MCPClient
+```typescript TypeScript
+import { MCPClient } from 'mcp-use'
 
-async def list_tools():
-    # Initialize client with server configuration
-    config = {
-        "mcpServers": {
-            # Your server definitions here
+async function listTools() {
+    // Initialize client with server configuration
+    const config = {
+        mcpServers: {
+            // Your server definitions here
         }
     }
-    client = MCPClient(config)
+    const client = new MCPClient(config)
 
-    # Connect to servers
-    await client.create_all_sessions()
+    // Connect to servers
+    await client.createAllSessions()
 
-    # Get a session for a specific server
-    session = client.get_session("my_server")
+    // Get a session for a specific server
+    const session = client.getSession('my_server')
 
-    # List all available tools - always returns fresh data
-    tools = await session.list_tools()
+    // List all available tools - always returns fresh data
+    const tools = await session.listTools()
+
+    for (const tool of tools) {
+        console.log(`Tool: ${tool.name}`)
+        console.log(`Description: ${tool.description}`)
+        console.log(`Schema: ${JSON.stringify(tool.inputSchema)}`)
+        console.log('---')
+    }
+
+    await client.closeAllSessions()
+}
+
+// Run the example
+listTools().catch(console.error)
+```
+
+```typescript TypeScript
+import { MCPClient } from 'mcp-use'
+
+async function listTools() {
+    // Initialize client with server configuration
+    const config = {
+        mcpServers: {
+            // Your server definitions here
+        }
+    }
+    const client = new MCPClient(config)
+
+    // Connect to servers
+    await client.createAllSessions()
+
+    // Get a session for a specific server
+    const session = client.getSession('my_server')
+
+    // List all available tools - always returns fresh data
+    const tools = await session.listTools()
 
     for tool in tools:
         print(f"Tool: {tool.name}")
@@ -192,10 +225,17 @@ sequenceDiagram
 **Important:** Always use `await session.list_tools()` instead of the deprecated `session.tools` property to ensure you get fresh data:
 
 <CodeGroup>
-<<<<<<< HEAD
-```python Python
-# ✅ Recommended - always returns fresh data
-tools = await session.list_tools()
+```typescript TypeScript
+// ✅ Recommended - always returns fresh data
+const tools = await session.listTools()
+
+// ⚠️ Deprecated - may return stale data
+// const tools = session.tools
+```
+
+```typescript TypeScript
+// ✅ Recommended - always returns fresh data
+const tools = await session.listTools()
 
 # ⚠️ Deprecated - may return stale data
 # tools = session.tools
@@ -234,28 +274,62 @@ const tools = await session.listTools()
 Tools are executed using the `call_tool` method:
 
 <CodeGroup>
-<<<<<<< HEAD
-```python Python
-import asyncio
-from mcp_use import MCPClient
+```typescript TypeScript
+import { MCPClient } from 'mcp-use'
 
-async def call_tool_example():
-    config = {
-        "mcpServers": {
-            # Your server definitions here
+async function callToolExample() {
+    const config = {
+        mcpServers: {
+            // Your server definitions here
         }
     }
-    client = MCPClient(config)
-    await client.create_all_sessions()
+    const client = new MCPClient(config)
+    await client.createAllSessions()
 
-    session = client.get_session("filesystem_server")
+    const session = client.getSession('filesystem_server')
 
-    # Call a tool with arguments
-    result = await session.call_tool(
-        name="read_file",
-        arguments={
-            "path": "/path/to/file.txt",
-            "encoding": "utf-8"
+    // Call a tool with arguments
+    const result = await session.callTool(
+        'read_file',
+        {
+            path: '/path/to/file.txt',
+            encoding: 'utf-8'
+        }
+    )
+
+    // Handle the result
+    if (result.isError) {
+        console.error(`Error: ${result.content}`)
+    } else {
+        console.log(`File content: ${result.content}`)
+    }
+
+    await client.closeAllSessions()
+}
+
+callToolExample().catch(console.error)
+```
+
+```typescript TypeScript
+import { MCPClient } from 'mcp-use'
+
+async function callToolExample() {
+    const config = {
+        mcpServers: {
+            // Your server definitions here
+        }
+    }
+    const client = new MCPClient(config)
+    await client.createAllSessions()
+
+    const session = client.getSession('filesystem_server')
+
+    // Call a tool with arguments
+    const result = await session.callTool(
+        'read_file',
+        {
+            path: '/path/to/file.txt',
+            encoding: 'utf-8'
         }
     )
 

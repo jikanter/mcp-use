@@ -39,28 +39,66 @@ Well-designed prompts can be reused across different contexts and conversations.
 To see what prompts are available from a connected MCP server:
 
 <CodeGroup>
-<<<<<<< HEAD
-```python Python
-import asyncio
-from mcp_use import MCPClient
+```typescript TypeScript
+import { MCPClient } from 'mcp-use'
 
-async def list_prompts():
-    # Initialize client with server configuration
-    config = {
-        "mcpServers": {
-            # Your server definitions here
+async function listPrompts() {
+    // Initialize client with server configuration
+    const config = {
+        mcpServers: {
+            // Your server definitions here
         }
     }
-    client = MCPClient(config)
+    const client = new MCPClient(config)
 
-    # Connect to servers
-    await client.create_all_sessions()
+    // Connect to servers
+    await client.createAllSessions()
 
-    # Get a session for a specific server
-    session = client.get_session("my_server")
+    // Get a session for a specific server
+    const session = client.getSession('my_server')
 
-    # List all available prompts - always returns fresh data
-    prompts = await session.list_prompts()
+    // List all available prompts - always returns fresh data
+    const prompts = await session.listPrompts()
+
+    for (const prompt of prompts) {
+        console.log(`Prompt: ${prompt.name}`)
+        console.log(`Description: ${prompt.description}`)
+        if (prompt.arguments) {
+            console.log('Arguments:')
+            for (const arg of prompt.arguments) {
+                console.log(`  - ${arg.name}: ${arg.description}`)
+            }
+        }
+        console.log('---')
+    }
+
+    await client.closeAllSessions()
+}
+
+// Run the example
+listPrompts().catch(console.error)
+```
+
+```typescript TypeScript
+import { MCPClient } from 'mcp-use'
+
+async function listPrompts() {
+    // Initialize client with server configuration
+    const config = {
+        mcpServers: {
+            // Your server definitions here
+        }
+    }
+    const client = new MCPClient(config)
+
+    // Connect to servers
+    await client.createAllSessions()
+
+    // Get a session for a specific server
+    const session = client.getSession('my_server')
+
+    // List all available prompts - always returns fresh data
+    const prompts = await session.listPrompts()
 
     for prompt in prompts:
         print(f"Prompt: {prompt.name}")
@@ -226,10 +264,17 @@ sequenceDiagram
 **Important:** Always use `await session.list_prompts()` instead of the deprecated `session.prompts` property to ensure you get fresh data:
 
 <CodeGroup>
-<<<<<<< HEAD
-```python Python
-# ✅ Recommended - always returns fresh data
-prompts = await session.list_prompts()
+```typescript TypeScript
+// ✅ Recommended - always returns fresh data
+const prompts = await session.listPrompts()
+
+// ⚠️ Deprecated - may return stale data
+// const prompts = session.prompts
+```
+
+```typescript TypeScript
+// ✅ Recommended - always returns fresh data
+const prompts = await session.listPrompts()
 
 # ⚠️ Deprecated - may return stale data
 # prompts = session.prompts
@@ -268,30 +313,66 @@ const prompts = await session.listPrompts()
 Prompts are retrieved using the `get_prompt` method:
 
 <CodeGroup>
-<<<<<<< HEAD
-```python Python
-import asyncio
-from mcp_use import MCPClient
+```typescript TypeScript
+import { MCPClient } from 'mcp-use'
 
-async def use_prompt_example():
-    config = {
-        "mcpServers": {
-            # Your server definitions here
+async function usePromptExample() {
+    const config = {
+        mcpServers: {
+            // Your server definitions here
         }
     }
-    client = MCPClient(config)
-    await client.create_all_sessions()
+    const client = new MCPClient(config)
+    await client.createAllSessions()
 
-    session = client.get_session("planning_server")
+    const session = client.getSession('planning_server')
 
-    # Get a prompt with arguments
-    result = await session.get_prompt(
-        name="plan_vacation",
-        arguments={
-            "destination": "Japan",
-            "duration": "2 weeks",
-            "budget": "$5000",
-            "interests": ["culture", "food", "nature"]
+    // Get a prompt with arguments
+    const result = await session.getPrompt(
+        'plan_vacation',
+        {
+            destination: 'Japan',
+            duration: '2 weeks',
+            budget: '$5000',
+            interests: ['culture', 'food', 'nature']
+        }
+    )
+
+    // Use the prompt content
+    console.log(`Prompt description: ${result.description}`)
+    for (const message of result.messages) {
+        console.log(`Role: ${message.role}`)
+        console.log(`Content: ${message.content.text}`)
+    }
+
+    await client.closeAllSessions()
+}
+
+usePromptExample().catch(console.error)
+```
+
+```typescript TypeScript
+import { MCPClient } from 'mcp-use'
+
+async function usePromptExample() {
+    const config = {
+        mcpServers: {
+            // Your server definitions here
+        }
+    }
+    const client = new MCPClient(config)
+    await client.createAllSessions()
+
+    const session = client.getSession('planning_server')
+
+    // Get a prompt with arguments
+    const result = await session.getPrompt(
+        'plan_vacation',
+        {
+            destination: 'Japan',
+            duration: '2 weeks',
+            budget: '$5000',
+            interests: ['culture', 'food', 'nature']
         }
     )
 
@@ -430,21 +511,46 @@ usePromptExample().catch(console.error)
 Some prompts don't require parameters:
 
 <CodeGroup>
-<<<<<<< HEAD
-```python Python
-async def simple_prompt_example():
-    config = {
-        "mcpServers": {
-            # Your server definitions here
+```typescript TypeScript
+async function simplePromptExample() {
+    const config = {
+        mcpServers: {
+            // Your server definitions here
         }
     }
-    client = MCPClient(config)
-    await client.create_all_sessions()
+    const client = new MCPClient(config)
+    await client.createAllSessions()
 
-    session = client.get_session("content_server")
+    const session = client.getSession('content_server')
 
-    # Get a prompt without arguments
-    result = await session.get_prompt(name="writing_tips")
+    // Get a prompt without arguments
+    const result = await session.getPrompt('writing_tips')
+
+    // Display the prompt content
+    for (const message of result.messages) {
+        console.log(`${message.role}: ${message.content.text}`)
+    }
+
+    await client.closeAllSessions()
+}
+
+simplePromptExample().catch(console.error)
+```
+
+```typescript TypeScript
+async function simplePromptExample() {
+    const config = {
+        mcpServers: {
+            // Your server definitions here
+        }
+    }
+    const client = new MCPClient(config)
+    await client.createAllSessions()
+
+    const session = client.getSession('content_server')
+
+    // Get a prompt without arguments
+    const result = await session.getPrompt('writing_tips')
 
     # Display the prompt content
     for message in result.messages:
@@ -724,15 +830,15 @@ async def dynamic_prompt_example():
             # Your server definitions here
         }
     }
-    client = MCPClient(config)
-    await client.create_all_sessions()
+    const client = new MCPClient(config)
+    await client.createAllSessions()
 
-    session = client.get_session("adaptive_server")
+    const session = client.getSession('adaptive_server')
 
-    # Same prompt with different parameters
-    contexts = [
-        {"domain": "healthcare", "complexity": "beginner"},
-        {"domain": "finance", "complexity": "expert"}
+    // Same prompt with different parameters
+    const contexts = [
+        { domain: 'healthcare', complexity: 'beginner' },
+        { domain: 'finance', complexity: 'expert' }
     ]
 
     for context in contexts:

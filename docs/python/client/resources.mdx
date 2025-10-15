@@ -36,28 +36,62 @@ Dynamic resources that accept parameters to generate different content based on 
 To see what resources are available from a connected MCP server:
 
 <CodeGroup>
-<<<<<<< HEAD
-```python Python
-import asyncio
-from mcp_use import MCPClient
+```typescript TypeScript
+import { MCPClient } from 'mcp-use'
 
-async def list_resources():
-    # Initialize client with server configuration
-    config = {
-        "mcpServers": {
-            # Your server definitions here
+async function listResources() {
+    // Initialize client with server configuration
+    const config = {
+        mcpServers: {
+            // Your server definitions here
         }
     }
-    client = MCPClient(config)
+    const client = new MCPClient(config)
 
-    # Connect to servers
-    await client.create_all_sessions()
+    // Connect to servers
+    await client.createAllSessions()
 
-    # Get a session for a specific server
-    session = client.get_session("my_server")
+    // Get a session for a specific server
+    const session = client.getSession('my_server')
 
-    # List all available resources - always returns fresh data
-    resources = await session.list_resources()
+    // List all available resources - always returns fresh data
+    const resources = await session.listResources()
+
+    for (const resource of resources) {
+        console.log(`Resource: ${resource.name}`)
+        console.log(`URI: ${resource.uri}`)
+        console.log(`Description: ${resource.description}`)
+        console.log(`MIME Type: ${resource.mimeType}`)
+        console.log('---')
+    }
+
+    await client.closeAllSessions()
+}
+
+// Run the example
+listResources().catch(console.error)
+```
+
+```typescript TypeScript
+import { MCPClient } from 'mcp-use'
+
+async function listResources() {
+    // Initialize client with server configuration
+    const config = {
+        mcpServers: {
+            // Your server definitions here
+        }
+    }
+    const client = new MCPClient(config)
+
+    // Connect to servers
+    await client.createAllSessions()
+
+    // Get a session for a specific server
+    const session = client.getSession('my_server')
+
+    // List all available resources - always returns fresh data
+    const resources = await session.listResources()
 
     for resource in resources:
         print(f"Resource: {resource.name}")
@@ -205,10 +239,17 @@ sequenceDiagram
 **Important:** Always use `await session.list_resources()` instead of the deprecated `session.resources` property to ensure you get fresh data:
 
 <CodeGroup>
-<<<<<<< HEAD
-```python Python
-# ✅ Recommended - always returns fresh data
-resources = await session.list_resources()
+```typescript TypeScript
+// ✅ Recommended - always returns fresh data
+const resources = await session.listResources()
+
+// ⚠️ Deprecated - may return stale data
+// const resources = session.resources
+```
+
+```typescript TypeScript
+// ✅ Recommended - always returns fresh data
+const resources = await session.listResources()
 
 # ⚠️ Deprecated - may return stale data
 # resources = session.resources
@@ -247,26 +288,58 @@ const resources = await session.listResources()
 Resources are accessed using the `read_resource` method with their URI:
 
 <CodeGroup>
-<<<<<<< HEAD
-```python Python
-import asyncio
-from mcp_use import MCPClient
-from pydantic import HttpUrl
+```typescript TypeScript
+import { MCPClient } from 'mcp-use'
 
-async def read_resource_example():
-    config = {
-        "mcpServers": {
-            # Your server definitions here
+async function readResourceExample() {
+    const config = {
+        mcpServers: {
+            // Your server definitions here
         }
     }
-    client = MCPClient(config)
-    await client.create_all_sessions()
+    const client = new MCPClient(config)
+    await client.createAllSessions()
 
-    session = client.get_session("file_server")
+    const session = client.getSession('file_server')
 
-    # Read a resource by URI
-    resource_uri = HttpUrl("file:///path/to/config.json")
-    result = await session.read_resource(resource_uri)
+    // Read a resource by URI
+    const resourceUri = 'file:///path/to/config.json'
+    const result = await session.readResource(resourceUri)
+
+    // Handle the result
+    for (const content of result.contents) {
+        if (content.mimeType === 'application/json') {
+            console.log(`JSON content: ${content.text}`)
+        } else if (content.mimeType === 'text/plain') {
+            console.log(`Text content: ${content.text}`)
+        } else {
+            console.log(`Binary content length: ${content.blob?.length}`)
+        }
+    }
+
+    await client.closeAllSessions()
+}
+
+readResourceExample().catch(console.error)
+```
+
+```typescript TypeScript
+import { MCPClient } from 'mcp-use'
+
+async function readResourceExample() {
+    const config = {
+        mcpServers: {
+            // Your server definitions here
+        }
+    }
+    const client = new MCPClient(config)
+    await client.createAllSessions()
+
+    const session = client.getSession('file_server')
+
+    // Read a resource by URI
+    const resourceUri = 'file:///path/to/config.json'
+    const result = await session.readResource(resourceUri)
 
     # Handle the result
     for content in result.contents:
@@ -397,27 +470,54 @@ readResourceExample().catch(console.error)
 Resource templates allow dynamic content generation based on parameters:
 
 <CodeGroup>
-<<<<<<< HEAD
-```python Python
-import asyncio
-from mcp_use import MCPClient
-from pydantic import HttpUrl
+```typescript TypeScript
+import { MCPClient } from 'mcp-use'
 
-async def template_resource_example():
-    config = {
-        "mcpServers": {
-            # Your server definitions here
+async function templateResourceExample() {
+    const config = {
+        mcpServers: {
+            // Your server definitions here
         }
     }
-    client = MCPClient(config)
-    await client.create_all_sessions()
+    const client = new MCPClient(config)
+    await client.createAllSessions()
 
-    session = client.get_session("database_server")
+    const session = client.getSession('database_server')
 
-    # Access a parameterized resource
-    # Template URI might be: "db://users/{user_id}/profile"
-    resource_uri = HttpUrl("db://users/12345/profile")
-    result = await session.read_resource(resource_uri)
+    // Access a parameterized resource
+    // Template URI might be: "db://users/{user_id}/profile"
+    const resourceUri = 'db://users/12345/profile'
+    const result = await session.readResource(resourceUri)
+
+    // Process the user profile data
+    for (const content of result.contents) {
+        console.log(`User profile: ${content.text}`)
+    }
+
+    await client.closeAllSessions()
+}
+
+templateResourceExample().catch(console.error)
+```
+
+```typescript TypeScript
+import { MCPClient } from 'mcp-use'
+
+async function templateResourceExample() {
+    const config = {
+        mcpServers: {
+            // Your server definitions here
+        }
+    }
+    const client = new MCPClient(config)
+    await client.createAllSessions()
+
+    const session = client.getSession('database_server')
+
+    // Access a parameterized resource
+    // Template URI might be: "db://users/{user_id}/profile"
+    const resourceUri = 'db://users/12345/profile'
+    const result = await session.readResource(resourceUri)
 
     # Process the user profile data
     for content in result.contents:
