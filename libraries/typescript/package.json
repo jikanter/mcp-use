@@ -3,6 +3,16 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "author": "mcp-use, Inc.",
+  "license": "MIT",
+  "homepage": "https://github.com/mcp-use/mcp-use#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mcp-use/mcp-use.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mcp-use/mcp-use/issues"
+  },
   "workspaces": [
     "packages/*"
   ],
