@@ -1,11 +1,10 @@
-name-template: 'v$RESOLVED_VERSION'
-tag-template: 'python-v$RESOLVED_VERSION'
-include-paths:
-  - 'libraries/python/**'
+name-template: '$RESOLVED_VERSION 🌈'
+tag-template: '$RESOLVED_VERSION'
 categories:
   - title: '🚀 Features'
     labels:
       - 'feature'
+      - 'feat'
       - 'enhancement'
   - title: '🐛 Bug Fixes'
     labels:
@@ -13,11 +12,9 @@ categories:
       - 'bugfix'
       - 'bug'
   - title: '🧰 Maintenance'
-    labels:
-      - 'chore'
-      - 'dependencies'
+    label: 'chore'
 change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
-change-title-escapes: '\<*_&'
+change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
 version-resolver:
   major:
     labels:

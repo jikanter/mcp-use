@@ -6,13 +6,6 @@ on:
       - main
     paths:
       - "libraries/typescript/**"
-  workflow_dispatch:
-    inputs:
-      force_publish:
-        description: 'Force publish packages'
-        required: false
-        type: boolean
-        default: false
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -24,6 +17,9 @@ jobs:
       contents: write
       pull-requests: write
       id-token: write
+    defaults:
+      run:
+        working-directory: libraries/typescript
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -44,166 +40,20 @@ jobs:
           registry-url: "https://registry.npmjs.org"
 
       - name: Install Dependencies
-        working-directory: libraries/typescript
         run: pnpm install --no-frozen-lockfile
 
       - name: Build Packages
-        working-directory: libraries/typescript
         run: pnpm build
 
-<<<<<<< HEAD
-      - name: Check if this is a release commit
-        id: check
-        run: |
-          COMMIT_MSG=$(git log -1 --pretty=%B)
-
-          if echo "$COMMIT_MSG" | grep -q "chore(release): exit prerelease mode" || [ "${{ github.event.inputs.force_publish }}" = "true" ]; then
-            echo "should_publish=true" >> $GITHUB_OUTPUT
-            echo "🚀 Detected release commit - will publish packages"
-          else
-            echo "should_publish=false" >> $GITHUB_OUTPUT
-            echo "ℹ️  Not a release commit - skipping publish"
-          fi
-
-      - name: Publish packages
-        if: steps.check.outputs.should_publish == 'true'
-        run: |
-          # Setup npm auth
-          cd libraries/typescript
-          echo "//registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN" > .npmrc
-
-          # Publish to npm
-          pnpm changeset publish
-
-          # Push git tags from repo root
-          cd ../..
-          git push --follow-tags
-
-          echo "✅ Published packages to npm and pushed tags"
-=======
-      - name: Exit Prerelease Mode
-        working-directory: libraries/typescript
-        run: |
-          if [ -f .changeset/pre.json ]; then
-            echo "Exiting prerelease mode..."
-            pnpm changeset pre exit
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add .changeset/pre.json
-            git commit -m "chore: exit prerelease mode" || echo "No changes to commit"
-            git push
-          else
-            echo "Not in prerelease mode"
-          fi
-
-      - name: Create Release Pull Request or Publish
+      - name: Create Release Pull Request or Publish to npm
+        id: changesets
         uses: changesets/action@v1
         with:
-          version: pnpm changeset version
-          publish: pnpm changeset publish
+          publish: pnpm release
+          version: pnpm run version
+          commit: "chore(typescript): version packages"
+          title: "chore(typescript): version packages"
           cwd: libraries/typescript
->>>>>>> 1e8af4c (chore: update TypeScript release workflows and documentation (#328))
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-<<<<<<< HEAD
-
-      - name: Create GitHub Release
-        if: steps.check.outputs.should_publish == 'true'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # Fetch all tags
-          git fetch --tags
-
-          # Get tags from the last commit (the publish commit creates tags)
-          TAGS=$(git tag --points-at HEAD)
-
-          if [ -z "$TAGS" ]; then
-            echo "ℹ️  No tags found on current commit"
-            exit 0
-          fi
-
-          # Get the date for the release title
-          RELEASE_DATE=$(date +"%Y-%m-%d")
-
-          # Generate release notes combining all packages
-          RELEASE_NOTES="# TypeScript Packages Release - $RELEASE_DATE"$'\n\n'
-          RELEASE_NOTES+="## 📦 Published Packages"$'\n\n'
-
-          # Track the first/main tag for the release name
-          MAIN_TAG=""
-
-          # Loop through all tags to build combined release notes
-          for TAG in $TAGS; do
-            if [ -z "$MAIN_TAG" ]; then
-              MAIN_TAG="$TAG"
-            fi
-
-            echo "Processing $TAG..."
-
-            # Extract package name and version
-            PACKAGE_NAME=$(echo "$TAG" | sed 's/@[0-9].*//')
-            VERSION=$(echo "$TAG" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+.*')
-
-            # Add package header
-            RELEASE_NOTES+="### \`$TAG\`"$'\n\n'
-
-            # Try to extract changelog for this version
-            CHANGELOG_FILE="libraries/typescript/packages/${PACKAGE_NAME##*\/}/CHANGELOG.md"
-
-            if [ -f "$CHANGELOG_FILE" ]; then
-              # Extract the changelog for this specific version
-              PACKAGE_CHANGELOG=$(awk -v ver="$VERSION" '
-                /^## / {
-                  if (found) exit;
-                  if ($0 ~ ver) found=1;
-                  next;
-                }
-                found {print}
-              ' "$CHANGELOG_FILE")
-
-              if [ -n "$PACKAGE_CHANGELOG" ]; then
-                RELEASE_NOTES+="$PACKAGE_CHANGELOG"$'\n\n'
-              else
-                RELEASE_NOTES+="_No changelog entry found for this version._"$'\n\n'
-              fi
-            else
-              RELEASE_NOTES+="_No CHANGELOG.md found._"$'\n\n'
-            fi
-
-            RELEASE_NOTES+="---"$'\n\n'
-          done
-
-          # Create a single consolidated release using the first tag
-          RELEASE_TITLE="TypeScript Release - $RELEASE_DATE"
-
-          gh release create "$MAIN_TAG" \
-            --title "$RELEASE_TITLE" \
-            --notes "$RELEASE_NOTES" \
-            --latest || echo "⚠️  Failed to create release (may already exist)"
-
-          echo "✅ Created consolidated GitHub release: $RELEASE_TITLE"
-
-      - name: Reset canary to main
-        if: steps.check.outputs.should_publish == 'true'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # Configure git
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          # Fetch latest changes
-          git fetch origin
-
-          # Checkout canary and reset to main (clean slate with stable versions)
-          git checkout canary
-          git reset --hard origin/main
-
-          # Force push canary (since we did a reset)
-          git push --force origin canary
-
-          echo "✅ Reset canary to main (canary workflow will auto-enter prerelease mode)"
-=======
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN_ORG }}
->>>>>>> 1e8af4c (chore: update TypeScript release workflows and documentation (#328))
