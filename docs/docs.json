@@ -36,16 +36,16 @@
     },
     "tabs": [
       {
-        "tab": "Documentation",
-        "icon": "book",
+        "tab": "Python",
+        "icon": "python",
         "groups": [
           {
             "group": "Getting Started",
             "pages": [
-              "getting-started/index",
-              "getting-started/quickstart",
-              "getting-started/installation",
-              "getting-started/configuration"
+              "python/getting-started/index",
+              "python/getting-started/quickstart",
+              "python/getting-started/installation",
+              "python/getting-started/configuration"
             ]
           },
           {
@@ -55,30 +55,30 @@
                 "group": "Overview",
                 "icon": "globe",
                 "pages": [
-                  "client/client-configuration",
-                  "client/connection-types",
-                  "client/sandbox",
-                  "client/direct-tool-calls"
+                  "python/client/client-configuration",
+                  "python/client/connection-types",
+                  "python/client/sandbox",
+                  "python/client/direct-tool-calls"
                 ]
               },
               {
                 "group": "Core Features",
                 "icon": "list-plus",
                 "pages": [
-                  "client/tools",
-                  "client/resources",
-                  "client/prompts"
+                  "python/client/tools",
+                  "python/client/resources",
+                  "python/client/prompts"
                 ]
               },
               {
                 "group": "Advanced Features",
                 "icon": "sparkle",
                 "pages": [
-                  "client/middleware",
-                  "client/sampling",
-                  "client/elicitation",
-                  "client/notifications",
-                  "client/logging"
+                  "python/client/middleware",
+                  "python/client/sampling",
+                  "python/client/elicitation",
+                  "python/client/notifications",
+                  "python/client/logging"
                 ]
               },
                 "client/authentication"
@@ -98,32 +98,32 @@
           {
             "group": "Advanced Usage",
             "pages": [
-              "advanced/building-custom-agents",
-              "advanced/logging",
-              "advanced/multi-server-setup",
-              "advanced/security"
+              "python/advanced/building-custom-agents",
+              "python/advanced/logging",
+              "python/advanced/multi-server-setup",
+              "python/advanced/security"
             ]
           },
           {
             "group": "Development",
             "pages": [
-              "development",
-              "development/telemetry",
-              "development/observability"
+              "python/development",
+              "python/development/telemetry",
+              "python/development/observability"
             ]
           },
           {
             "group": "Troubleshooting",
             "pages": [
-              "troubleshooting/common-issues",
-              "troubleshooting/performance",
-              "troubleshooting/connection-errors"
+              "python/troubleshooting/common-issues",
+              "python/troubleshooting/performance",
+              "python/troubleshooting/connection-errors"
             ]
           }
         ]
       },
       {
-        "tab": "API Reference",
+        "tab": "Python API Reference",
         "icon": "terminal",
         "groups": [
           {
@@ -144,7 +144,7 @@
           {
             "group": "Community",
             "pages": [
-              "community/showcase"
+              "python/community/showcase"
             ]
           }
         ]
@@ -175,7 +175,7 @@
           {
             "group": "Blog",
             "pages": [
-              "blog/middleware"
+              "python/blog/middleware"
             ]
           }
         ]

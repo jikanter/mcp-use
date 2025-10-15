@@ -84,6 +84,53 @@ async def main():
 if __name__ == "__main__":
     asyncio.run(main())
 ```
+<<<<<<< HEAD
+=======
+
+```typescript TypeScript
+import { ChatOpenAI } from '@langchain/openai'
+import { AgentExecutor, createToolCallingAgent } from 'langchain/agents'
+import { ChatPromptTemplate, MessagesPlaceholder } from '@langchain/core/prompts'
+import { MCPClient, LangChainAdapter, loadConfigFile } from 'mcp-use'
+
+async function main() {
+    // Initialize the MCP client
+    const config = await loadConfigFile('path/to/config.json')
+    const client = new MCPClient(config)
+
+    // Create adapter instance
+    const adapter = new LangChainAdapter()
+
+    // Get LangChain tools directly from the client with a single line
+    const tools = await adapter.createTools(client)
+
+    // Initialize your language model
+    const llm = new ChatOpenAI({ model: 'gpt-4o' })
+
+    // Create a prompt template
+    const prompt = ChatPromptTemplate.fromMessages([
+        ['system', 'You are a helpful assistant with access to powerful tools.'],
+        new MessagesPlaceholder('chat_history'),
+        ['human', '{input}'],
+        new MessagesPlaceholder('agent_scratchpad'),
+    ])
+
+    // Create the agent
+    const agent = createToolCallingAgent({ llm, tools, prompt })
+
+    // Create the agent executor
+    const agentExecutor = new AgentExecutor({ agent, tools, verbose: true })
+
+    // Run the agent
+    const result = await agentExecutor.invoke({ input: 'What can you do?' })
+    console.log(result.output)
+
+    await client.closeAllSessions()
+}
+
+main().catch(console.error)
+```
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>
 
 <Tip>
@@ -94,6 +141,14 @@ if __name__ == "__main__":
 adapter = LangChainAdapter()
 tools = await adapter.create_tools(client)
 ```
+<<<<<<< HEAD
+=======
+
+```typescript TypeScript
+const adapter = new LangChainAdapter()
+const tools = await adapter.createTools(client)
+```
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>
 
 You don't need to worry about sessions, connectors, or initialization. The adapter handles everything for you.
@@ -184,25 +239,58 @@ tools = await adapter.create_tools(client)
 # Use the tools with your framework
 agent = your_framework.create_agent(tools=tools)
 ```
+<<<<<<< HEAD
+=======
+
+```typescript TypeScript
+import { YourFrameworkAdapter } from './your-module'
+import { MCPClient, loadConfigFile } from 'mcp-use'
+
+// Initialize the client
+const config = await loadConfigFile('config.json')
+const client = new MCPClient(config)
+
+// Create an adapter instance
+const adapter = new YourFrameworkAdapter()
+
+// Get tools with a single line
+const tools = await adapter.createTools(client)
+
+// Use the tools with your framework
+const agent = yourFramework.createAgent({ tools })
+```
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>
 
 ### Tips for Implementing an Adapter
 
+<<<<<<< HEAD
 <AccordionGroup>
   <Accordion title="Schema Conversion">
+=======
+<Accordion title="Implementation Guidelines">
+  <AccordionItem title="Schema Conversion">
+>>>>>>> 3ff31be (move docs)
     Most frameworks have their own way of handling argument schemas. You'll need to convert the MCP tool's JSON Schema to your framework's format.
 
     <Tip>
     Look at the LangChain adapter implementation as a reference for handling schema conversion patterns.
     </Tip>
+<<<<<<< HEAD
   </Accordion>
 
   <Accordion title="Tool Execution">
+=======
+  </AccordionItem>
+
+  <AccordionItem title="Tool Execution">
+>>>>>>> 3ff31be (move docs)
     When a tool is called in your framework, you'll need to pass the call to the connector's `call_tool` method and handle the result.
 
     <Warning>
     Always ensure proper async/await handling when calling MCP tools, as they are inherently asynchronous.
     </Warning>
+<<<<<<< HEAD
   </Accordion>
 
   <Accordion title="Result Parsing">
@@ -210,13 +298,27 @@ agent = your_framework.create_agent(tools=tools)
   </Accordion>
 
   <Accordion title="Error Handling">
+=======
+  </AccordionItem>
+
+  <AccordionItem title="Result Parsing">
+    MCP tools return structured data with types like text, images, or embedded resources. Your adapter should parse these into a format your framework understands.
+  </AccordionItem>
+
+  <AccordionItem title="Error Handling">
+>>>>>>> 3ff31be (move docs)
     Ensure your adapter handles errors gracefully, both during tool conversion and execution.
 
     <Note>
     The base adapter provides logging utilities to help with error reporting and debugging.
     </Note>
+<<<<<<< HEAD
   </Accordion>
 </AccordionGroup>
+=======
+  </AccordionItem>
+</Accordion>
+>>>>>>> 3ff31be (move docs)
 
 
 ## Conclusion

@@ -7,7 +7,11 @@ icon: "server"
 # Client Configuration
 
 <Info>
+<<<<<<< HEAD
 This guide covers MCPClient configuration options for connecting to MCP servers. For agent configuration, see the [Agent Configuration](/python/agent/agent-configuration) guide.
+=======
+This guide covers MCPClient configuration options for connecting to MCP servers. For agent configuration, see the [Agent Configuration](/agent/agent-configuration) guide.
+>>>>>>> 3ff31be (move docs)
 </Info>
 
 
@@ -125,6 +129,25 @@ config = {
 
 client = MCPClient(config)
 ```
+<<<<<<< HEAD
+=======
+
+```typescript TypeScript
+import { MCPClient } from 'mcp-use'
+
+const config = {
+    mcpServers: {
+        playwright: {
+            command: 'npx',
+            args: ['@playwright/mcp@latest'],
+            env: { DISPLAY: ':1' }
+        }
+    }
+}
+
+const client = new MCPClient(config)
+```
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>
 
 ### From Configuration File
@@ -137,6 +160,16 @@ from mcp_use import MCPClient
 
 client = MCPClient.from_config_file("config.json")
 ```
+<<<<<<< HEAD
+=======
+
+```typescript TypeScript
+import { MCPClient, loadConfigFile } from 'mcp-use'
+
+const config = await loadConfigFile('config.json')
+const client = new MCPClient(config)
+```
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>
 
 
@@ -160,6 +193,14 @@ client = MCPClient.from_dict(
     sandbox_options=sandbox_options
 )
 ```
+<<<<<<< HEAD
+=======
+
+```typescript TypeScript
+// Note: Sandbox mode is not yet supported in the TypeScript library
+// This is a planned feature for a future release
+```
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>
 
 ## Best Practices

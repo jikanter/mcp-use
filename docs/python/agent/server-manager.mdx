@@ -8,7 +8,11 @@ icon: 'server-cog'
 
 The Server Manager is the brain behind intelligent MCP server orchestration. It transforms your agent from a static tool user into a dynamic, adaptive assistant that can discover, connect to, and intelligently utilize tools from multiple MCP servers on-demand.
 
+<<<<<<< HEAD
 ## What Makes It Special
+=======
+## 🎯 What Makes It Special
+>>>>>>> 3ff31be (move docs)
 
 Instead of overwhelming your agent with hundreds of tools from all servers at once, the Server Manager:
 
@@ -18,7 +22,11 @@ Instead of overwhelming your agent with hundreds of tools from all servers at on
 - **Provides semantic search** across all server tools
 - **Manages connection lifecycle** efficiently
 
+<<<<<<< HEAD
 ## Architecture Overview
+=======
+## 🏗️ Architecture Overview
+>>>>>>> 3ff31be (move docs)
 
 ```mermaid
 graph TB
@@ -30,7 +38,11 @@ graph TB
     SM --> Tools[Dynamic Tools]
 ```
 
+<<<<<<< HEAD
 ## Dynamic Tool Loading Process
+=======
+## 🔄 Dynamic Tool Loading Process
+>>>>>>> 3ff31be (move docs)
 
 ```mermaid
 sequenceDiagram
@@ -41,7 +53,11 @@ sequenceDiagram
     Agent->>Server: Use tools directly
 ```
 
+<<<<<<< HEAD
 ## Getting Started
+=======
+## 🚀 Getting Started
+>>>>>>> 3ff31be (move docs)
 
 Enable the Server Manager in your agent:
 
@@ -64,6 +80,7 @@ client = MCPClient.from_dict({
     }
 })
 
+<<<<<<< HEAD
 # Enable Server Manager
 agent = MCPAgent(
     llm=ChatOpenAI(model="gpt-4"),
@@ -75,11 +92,54 @@ agent = MCPAgent(
 
 
 ## Tool Discovery Flow
+=======
+# 🎯 Enable Server Manager
+agent = MCPAgent(
+    llm=ChatOpenAI(model="gpt-4"),
+    client=client,
+    use_server_manager=True  # ✨ This is the magic switch!
+)
+```
+
+```typescript TypeScript
+import { MCPClient, MCPAgent } from 'mcp-use'
+import { ChatOpenAI } from '@langchain/openai'
+
+// Create client with multiple servers
+const client = new MCPClient({
+    mcpServers: {
+        playwright: {
+            command: 'npx',
+            args: ['@playwright/mcp@latest']
+        },
+        filesystem: {
+            command: 'uvx',
+            args: ['mcp-server-filesystem', '/tmp']
+        }
+    }
+})
+
+// 🎯 Enable Server Manager
+const agent = new MCPAgent({
+    llm: new ChatOpenAI({ model: 'gpt-4' }),
+    client,
+    useServerManager: true  // ✨ This is the magic switch!
+})
+```
+</CodeGroup>
+
+
+## 🔍 Tool Discovery Flow
+>>>>>>> 3ff31be (move docs)
 
 
 
 
+<<<<<<< HEAD
 ## Management Tools Deep Dive
+=======
+## 🛠️ Management Tools Deep Dive
+>>>>>>> 3ff31be (move docs)
 
 ### Core Server Management
 
@@ -106,6 +166,22 @@ I need to:
 Start by searching for relevant tools.
 """)
 ```
+<<<<<<< HEAD
+=======
+
+```typescript TypeScript
+// Agent automatically discovers and uses the right tools
+const result = await agent.run(`
+I need to:
+1. Find tools for web scraping
+2. Connect to the right server
+3. Scrape data from https://example.com
+4. Save it to a file
+
+Start by searching for relevant tools.
+`)
+```
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>
 
 **Agent Process:**
@@ -115,7 +191,11 @@ graph LR
     Connect --> Use[Use Tools]
 ```
 
+<<<<<<< HEAD
 ## Real-World Use Cases
+=======
+## 🎭 Real-World Use Cases
+>>>>>>> 3ff31be (move docs)
 
 ### 1. Multi-Server Data Pipeline
 
@@ -131,6 +211,21 @@ Create a data pipeline that:
 Figure out which servers and tools you need.
 """)
 ```
+<<<<<<< HEAD
+=======
+
+```typescript TypeScript
+const result = await agent.run(`
+Create a data pipeline that:
+1. Scrapes product data from an e-commerce site
+2. Processes and cleans the data
+3. Saves it to a CSV file
+4. Loads it into a SQLite database
+
+Figure out which servers and tools you need.
+`)
+```
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>
 
 **Server Flow:**
@@ -154,9 +249,27 @@ I want to:
 What tools do I need for this?
 """)
 ```
+<<<<<<< HEAD
 </CodeGroup>
 
 ## Performance Benefits
+=======
+
+```typescript TypeScript
+const result = await agent.run(`
+I want to:
+1. Search for trending topics online
+2. Generate an image based on the topic
+3. Write a blog post about it
+4. Save everything to files
+
+What tools do I need for this?
+`)
+```
+</CodeGroup>
+
+## 🚀 Performance Benefits
+>>>>>>> 3ff31be (move docs)
 
 The Server Manager provides focused tool access:
 
@@ -167,6 +280,7 @@ The Server Manager provides focused tool access:
 
 The Server Manager provides these powerful capabilities:
 
+<<<<<<< HEAD
 - **Dynamic Tool Addition**: Server tools automatically added with full schemas
 - **Real-time Updates**: Tool list updates immediately when connecting/disconnecting
 - **Clean Architecture**: Direct tool access with proper schemas
@@ -174,6 +288,15 @@ The Server Manager provides these powerful capabilities:
 - **Smart Logging**: Detailed insights into tool changes and server status
 
 ## Complete Example
+=======
+- **🔗 Dynamic Tool Addition**: Server tools automatically added with full schemas
+- **⚡ Real-time Updates**: Tool list updates immediately when connecting/disconnecting
+- **🧹 Clean Architecture**: Direct tool access with proper schemas
+- **🎯 Model Understanding**: Tools come with native schemas and validation
+- **📊 Smart Logging**: Detailed insights into tool changes and server status
+
+## 🏁 Complete Example
+>>>>>>> 3ff31be (move docs)
 
 <CodeGroup>
 ```python Python
@@ -213,7 +336,11 @@ async def demo_server_manager():
     Guide me through each step and show me how you discover and use the right tools.
     """)
 
+<<<<<<< HEAD
     print("Task completed!")
+=======
+    print("🎉 Task completed!")
+>>>>>>> 3ff31be (move docs)
     print(result)
 
     await agent.close()
@@ -221,9 +348,60 @@ async def demo_server_manager():
 if __name__ == "__main__":
     asyncio.run(demo_server_manager())
 ```
+<<<<<<< HEAD
 </CodeGroup>
 
 The Server Manager transforms your MCP agent from a static tool user into an intelligent, adaptive assistant that can dynamically discover and utilize the perfect tools for any task!
+=======
+
+```typescript TypeScript
+import { MCPClient, MCPAgent } from 'mcp-use'
+import { ChatOpenAI } from '@langchain/openai'
+
+async function demoServerManager() {
+    // Multi-server configuration
+    const client = new MCPClient({
+        mcpServers: {
+            web: { command: 'npx', args: ['@playwright/mcp@latest'] },
+            files: { command: 'uvx', args: ['mcp-server-filesystem', '/tmp'] },
+            database: { command: 'uvx', args: ['mcp-server-sqlite'] }
+        }
+    })
+
+    // Agent with Server Manager
+    const agent = new MCPAgent({
+        llm: new ChatOpenAI({ model: 'gpt-4' }),
+        client,
+        useServerManager: true,
+        verbose: true  // See the magic happen!
+    })
+
+    // Complex multi-server task
+    const result = await agent.run(`
+    I need to build a complete data collection system:
+
+    1. First, show me what servers and tools are available
+    2. Scrape product information from https://example-store.com
+    3. Clean and structure the data
+    4. Save it as both JSON and CSV files
+    5. Load the data into a SQLite database
+    6. Generate a summary report
+
+    Guide me through each step and show me how you discover and use the right tools.
+    `)
+
+    console.log('🎉 Task completed!')
+    console.log(result)
+
+    await client.closeAllSessions()
+}
+
+demoServerManager().catch(console.error)
+```
+</CodeGroup>
+
+The Server Manager transforms your MCP agent from a static tool user into an intelligent, adaptive assistant that can dynamically discover and utilize the perfect tools for any task! 🚀
+>>>>>>> 3ff31be (move docs)
 
 
 

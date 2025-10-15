@@ -68,6 +68,45 @@ async def list_resources():
 # Run the example
 asyncio.run(list_resources())
 ```
+<<<<<<< HEAD
+=======
+
+```typescript TypeScript
+import { MCPClient } from 'mcp-use'
+
+async function listResources() {
+    // Initialize client with server configuration
+    const config = {
+        mcpServers: {
+            // Your server definitions here
+        }
+    }
+    const client = new MCPClient(config)
+
+    // Connect to servers
+    await client.createAllSessions()
+
+    // Get a session for a specific server
+    const session = client.getSession('my_server')
+
+    // List all available resources - always returns fresh data
+    const resources = await session.listResources()
+
+    for (const resource of resources) {
+        console.log(`Resource: ${resource.name}`)
+        console.log(`URI: ${resource.uri}`)
+        console.log(`Description: ${resource.description}`)
+        console.log(`MIME Type: ${resource.mimeType}`)
+        console.log('---')
+    }
+
+    await client.closeAllSessions()
+}
+
+// Run the example
+listResources().catch(console.error)
+```
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>
 
 ### Automatic Resource List Update
@@ -100,6 +139,17 @@ resources = await session.list_resources()
 # ⚠️ Deprecated - may return stale data
 # resources = session.resources
 ```
+<<<<<<< HEAD
+=======
+
+```typescript TypeScript
+// ✅ Recommended - always returns fresh data
+const resources = await session.listResources()
+
+// ⚠️ Deprecated - may return stale data
+// const resources = session.resources
+```
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>
 
 ## Reading Resources
@@ -136,8 +186,49 @@ async def read_resource_example():
         else:
             print(f"Binary content length: {len(content.blob)}")
 
+<<<<<<< HEAD
 asyncio.run(read_resource_example())
 ```
+=======
+
+asyncio.run(read_resource_example())
+```
+
+```typescript TypeScript
+import { MCPClient } from 'mcp-use'
+
+async function readResourceExample() {
+    const config = {
+        mcpServers: {
+            // Your server definitions here
+        }
+    }
+    const client = new MCPClient(config)
+    await client.createAllSessions()
+
+    const session = client.getSession('file_server')
+
+    // Read a resource by URI
+    const resourceUri = 'file:///path/to/config.json'
+    const result = await session.readResource(resourceUri)
+
+    // Handle the result
+    for (const content of result.contents) {
+        if (content.mimeType === 'application/json') {
+            console.log(`JSON content: ${content.text}`)
+        } else if (content.mimeType === 'text/plain') {
+            console.log(`Text content: ${content.text}`)
+        } else {
+            console.log(`Binary content length: ${content.blob?.length}`)
+        }
+    }
+
+    await client.closeAllSessions()
+}
+
+readResourceExample().catch(console.error)
+```
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>
 
 ## Working with Resource Templates
@@ -172,6 +263,39 @@ async def template_resource_example():
 
 asyncio.run(template_resource_example())
 ```
+<<<<<<< HEAD
+=======
+
+```typescript TypeScript
+import { MCPClient } from 'mcp-use'
+
+async function templateResourceExample() {
+    const config = {
+        mcpServers: {
+            // Your server definitions here
+        }
+    }
+    const client = new MCPClient(config)
+    await client.createAllSessions()
+
+    const session = client.getSession('database_server')
+
+    // Access a parameterized resource
+    // Template URI might be: "db://users/{user_id}/profile"
+    const resourceUri = 'db://users/12345/profile'
+    const result = await session.readResource(resourceUri)
+
+    // Process the user profile data
+    for (const content of result.contents) {
+        console.log(`User profile: ${content.text}`)
+    }
+
+    await client.closeAllSessions()
+}
+
+templateResourceExample().catch(console.error)
+```
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>
 
 ## Resource Content Types
@@ -190,6 +314,21 @@ for content in result.contents:
         print(f"Text content: {content.text}")
         print(f"MIME type: {content.mimeType}")
 ```
+<<<<<<< HEAD
+=======
+
+```typescript TypeScript
+// Text-based resources (JSON, XML, plain text)
+const result = await session.readResource('file:///config.json')
+
+for (const content of result.contents) {
+    if ('text' in content) {
+        console.log(`Text content: ${content.text}`)
+        console.log(`MIME type: ${content.mimeType}`)
+    }
+}
+```
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>
 
 ### Binary Content
@@ -206,6 +345,24 @@ for content in result.contents:
         with open("downloaded_image.png", "wb") as f:
             f.write(content.blob)
 ```
+<<<<<<< HEAD
+=======
+
+```typescript TypeScript
+import { writeFileSync } from 'fs'
+
+// Binary resources (images, files, etc.)
+const result = await session.readResource('file:///image.png')
+
+for (const content of result.contents) {
+    if ('blob' in content && content.blob) {
+        console.log(`Binary data size: ${content.blob.length} bytes`)
+        // Save or process binary data
+        writeFileSync('downloaded_image.png', Buffer.from(content.blob))
+    }
+}
+```
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>
 
 ## Resource Discovery
@@ -228,6 +385,26 @@ async def find_resources():
     for resource in config_resources:
         print(f"Found config: {resource.name} at {resource.uri}")
 ```
+<<<<<<< HEAD
+=======
+
+```typescript TypeScript
+async function findResources() {
+    const session = client.getSession('my_server')
+    const resources = await session.listResources()
+
+    // Find JSON configuration files
+    const configResources = resources.filter(
+        r => r.mimeType === 'application/json'
+            && r.name.toLowerCase().includes('config')
+    )
+
+    for (const resource of configResources) {
+        console.log(`Found config: ${resource.name} at ${resource.uri}`)
+    }
+}
+```
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>
 
 ## Error Handling
@@ -243,4 +420,18 @@ try:
 except Exception as e:
     print(f"Failed to read resource: {e}")
 ```
+<<<<<<< HEAD
+=======
+
+```typescript TypeScript
+try {
+    const result = await session.readResource('file:///missing.txt')
+    for (const content of result.contents) {
+        console.log(`Content: ${content.text}`)
+    }
+} catch (error) {
+    console.error(`Failed to read resource: ${error}`)
+}
+```
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>

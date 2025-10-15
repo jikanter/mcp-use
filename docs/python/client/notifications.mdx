@@ -45,9 +45,15 @@ async def long_running_task(task_name: str, ctx: Context, steps: int = 5) -> str
 The `fastmcp` server context provides several methods for sending specific notifications. Here are the ones you can use and the corresponding type to check for in your client's `message_handler`:
 
 -   `ctx.report_progress(...)` sends a `types.ProgressNotification`. This is used to report the progress of a long-running operation.
+<<<<<<< HEAD
 -   `ctx.send_tool_list_changed()` sends a `types.ToolListChangedNotification`. This signals that the tool list has changed (see [Tools documentation](/python/client/tools)).
 -   `ctx.send_resource_list_changed()` sends a `types.ResourceListChangedNotification`. This signals that the resource list has changed (see [Resources documentation](/python/client/resources)).
 -   `ctx.send_prompt_list_changed()` sends a `types.PromptListChangedNotification`. This signals that the prompt list has changed (see [Prompts documentation](/python/client/prompts)).
+=======
+-   `ctx.send_tool_list_changed()` sends a `types.ToolListChangedNotification`. This signals that the tool list has changed (see [Tools documentation](/client/tools)).
+-   `ctx.send_resource_list_changed()` sends a `types.ResourceListChangedNotification`. This signals that the resource list has changed (see [Resources documentation](/client/resources)).
+-   `ctx.send_prompt_list_changed()` sends a `types.PromptListChangedNotification`. This signals that the prompt list has changed (see [Prompts documentation](/client/prompts)).
+>>>>>>> 3ff31be (move docs)
 
 ## Client-Side: Handling Notifications
 
@@ -106,6 +112,34 @@ async def test_notifications(primitive_server):
     finally:
         await client.close_all_sessions()
 ```
+<<<<<<< HEAD
+=======
+
+```typescript TypeScript
+// ⚠️ Notification handlers are not yet supported in the TypeScript library.
+// Support is coming soon! If you need this feature now, please open an issue:
+// https://github.com/mcp-use/mcp-use-ts
+
+// When supported, the API will look similar to:
+/*
+import { MCPClient, types } from 'mcp-use'
+
+// The message handler receives all server-sent messages
+async function handleMessages(message: any) {
+    // Check notification types and handle accordingly
+    // ...
+}
+
+const config = {
+    mcpServers: {
+        PrimitiveServer: { url: `${primitiveServer}/mcp` }
+    }
+}
+
+const client = new MCPClient(config, { messageHandler: handleMessages })
+*/
+```
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>
 
 <Callout>

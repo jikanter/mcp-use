@@ -1,13 +1,21 @@
 ---
 title: "Agent Configuration"
 description: "Configure MCPAgent behavior and LLM integration"
+<<<<<<< HEAD
 icon: "cog"
+=======
+icon: "brain"
+>>>>>>> 3ff31be (move docs)
 ---
 
 # Agent Configuration
 
 <Info>
+<<<<<<< HEAD
 This guide covers MCPAgent configuration options for customizing agent behavior and LLM integration. For client configuration, see the [Client Configuration](/python/client/client-configuration) guide.
+=======
+This guide covers MCPAgent configuration options for customizing agent behavior and LLM integration. For client configuration, see the [Client Configuration](/client/client-configuration) guide.
+>>>>>>> 3ff31be (move docs)
 </Info>
 
 ## API Keys
@@ -36,11 +44,24 @@ Since agents use LLM providers that require API keys, you need to configure them
     Load it in your application:
 
     <CodeGroup>
+<<<<<<< HEAD
 ```python Python
     from dotenv import load_dotenv
     load_dotenv()
     ```
 </CodeGroup>
+=======
+    ```python Python
+    from dotenv import load_dotenv
+    load_dotenv()
+    ```
+
+    ```typescript TypeScript
+    import { config } from 'dotenv'
+    config()
+    ```
+    </CodeGroup>
+>>>>>>> 3ff31be (move docs)
 
     <Tip>
     This method keeps your keys organized and makes them available to your Python runtime.
@@ -58,11 +79,23 @@ Since agents use LLM providers that require API keys, you need to configure them
     Access them in your application:
 
     <CodeGroup>
+<<<<<<< HEAD
 ```python Python
     import os
     api_key = os.getenv("OPENAI_API_KEY", "")
     ```
 </CodeGroup>
+=======
+    ```python Python
+    import os
+    api_key = os.getenv("OPENAI_API_KEY", "")
+    ```
+
+    ```typescript TypeScript
+    const apiKey = process.env.OPENAI_API_KEY || ''
+    ```
+    </CodeGroup>
+>>>>>>> 3ff31be (move docs)
   </Tab>
 
   <Tab title="System Configuration">
@@ -103,6 +136,35 @@ agent = MCPAgent(
     disallowed_tools=["file_system", "network", "shell"]  # Restrict potentially dangerous tools
 )
 ```
+<<<<<<< HEAD
+=======
+
+```typescript TypeScript
+import { MCPAgent, MCPClient, loadConfigFile } from 'mcp-use'
+import { ChatOpenAI } from '@langchain/openai'
+
+// Basic configuration
+const config = await loadConfigFile('config.json')
+const agent = new MCPAgent({
+    llm: new ChatOpenAI({ model: 'gpt-4o', temperature: 0.7 }),
+    client: new MCPClient(config),
+    maxSteps: 30
+})
+
+// Advanced configuration
+const advancedAgent = new MCPAgent({
+    llm: new ChatOpenAI({ model: 'gpt-4o', temperature: 0.7 }),
+    client: new MCPClient(config),
+    maxSteps: 30,
+    serverName: undefined,
+    autoInitialize: true,
+    memoryEnabled: true,
+    systemPrompt: 'Custom instructions for the agent',
+    additionalInstructions: 'Additional guidelines for specific tasks',
+    disallowedTools: ['file_system', 'network', 'shell']  // Restrict potentially dangerous tools
+})
+```
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>
 
 ### Available Parameters
@@ -172,6 +234,57 @@ async def main():
 if __name__ == "__main__":
     asyncio.run(main())
 ```
+<<<<<<< HEAD
+=======
+
+```typescript TypeScript
+import { config } from 'dotenv'
+import { ChatOpenAI } from '@langchain/openai'
+import { MCPAgent, MCPClient } from 'mcp-use'
+
+async function main() {
+    // Load environment variables
+    config()
+
+    // Create configuration object
+    const configuration = {
+        mcpServers: {
+            playwright: {
+                command: 'npx',
+                args: ['@playwright/mcp@latest'],
+                env: {
+                    DISPLAY: ':1'
+                }
+            }
+        }
+    }
+
+    // Create MCPClient from configuration object
+    const client = new MCPClient(configuration)
+
+    // Create LLM
+    const llm = new ChatOpenAI({ model: 'gpt-4o' })
+
+    // Create agent with restricted tools
+    const agent = new MCPAgent({
+        llm,
+        client,
+        maxSteps: 30,
+        disallowedTools: ['file_system', 'network']  // Restrict potentially dangerous tools
+    })
+
+    // Run the query
+    const result = await agent.run(
+        'Find the best restaurant in San Francisco USING GOOGLE SEARCH'
+    )
+    console.log(`\nResult: ${result}`)
+
+    await client.closeAllSessions()
+}
+
+main().catch(console.error)
+```
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>
 
 You can also manage tool restrictions dynamically:
@@ -186,6 +299,19 @@ await agent.initialize()  # Reinitialize to apply changes
 restricted_tools = agent.get_disallowed_tools()
 print(f"Restricted tools: {restricted_tools}")
 ```
+<<<<<<< HEAD
+=======
+
+```typescript TypeScript
+// Update restrictions after initialization
+agent.setDisallowedTools(['file_system', 'network', 'shell', 'database'])
+await agent.initialize()  // Reinitialize to apply changes
+
+// Check current restrictions
+const restrictedTools = agent.getDisallowedTools()
+console.log(`Restricted tools: ${restrictedTools}`)
+```
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>
 
 This feature is useful for:
@@ -266,6 +392,18 @@ agent = MCPAgent(
     use_server_manager=True  # Enable dynamic server selection
 )
 ```
+<<<<<<< HEAD
+=======
+
+```typescript TypeScript
+// Enable server manager for automatic server selection
+const agent = new MCPAgent({
+    llm,
+    client,
+    useServerManager: true  // Enable dynamic server selection
+})
+```
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>
 
 ### How It Works
@@ -287,6 +425,25 @@ result = await agent.run(
     "Search for a place in Barcelona on Airbnb, then Google nearby restaurants."
 )
 ```
+<<<<<<< HEAD
+=======
+
+```typescript TypeScript
+// Multi-server setup with server manager
+const config = await loadConfigFile('multi_server_config.json')
+const client = new MCPClient(config)
+const agent = new MCPAgent({
+    llm,
+    client,
+    useServerManager: true
+})
+
+// The agent automatically selects servers based on tool usage
+const result = await agent.run(
+    'Search for a place in Barcelona on Airbnb, then Google nearby restaurants.'
+)
+```
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>
 
 ### Benefits
@@ -326,6 +483,25 @@ agent = MCPAgent(
     memory_enabled=False
 )
 ```
+<<<<<<< HEAD
+=======
+
+```typescript TypeScript
+// Enable memory (default)
+const agent = new MCPAgent({
+    llm,
+    client,
+    memoryEnabled: true
+})
+
+// Disable memory for stateless interactions
+const statelessAgent = new MCPAgent({
+    llm,
+    client,
+    memoryEnabled: false
+})
+```
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>
 
 ## System Prompt Customization
@@ -348,6 +524,23 @@ agent = MCPAgent(
     system_prompt=custom_prompt
 )
 ```
+<<<<<<< HEAD
+=======
+
+```typescript TypeScript
+const customPrompt = `
+You are a helpful assistant specialized in data analysis.
+Always provide detailed explanations for your reasoning.
+When working with data, prioritize accuracy over speed.
+`
+
+const agent = new MCPAgent({
+    llm,
+    client,
+    systemPrompt: customPrompt
+})
+```
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>
 
 ### Additional Instructions
@@ -362,6 +555,17 @@ agent = MCPAgent(
     additional_instructions="Focus on finding recent information from the last 6 months."
 )
 ```
+<<<<<<< HEAD
+=======
+
+```typescript TypeScript
+const agent = new MCPAgent({
+    llm,
+    client,
+    additionalInstructions: 'Focus on finding recent information from the last 6 months.'
+})
+```
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>
 
 ### System Prompt Templates

@@ -27,7 +27,12 @@ icon: "download"
   <Step title="Install the library">
     Install mcp_use using your preferred package manager:
     <CodeGroup>
+<<<<<<< HEAD
 ```bash Python (pip)
+=======
+
+    ```bash Python (pip)
+>>>>>>> 3ff31be (move docs)
     pip install mcp-use
     ```
 
@@ -50,12 +55,22 @@ icon: "download"
     ```bash TypeScript (pnpm)
     pnpm add mcp-use
     ```
+<<<<<<< HEAD
 </CodeGroup>
+=======
+
+    </CodeGroup>
+>>>>>>> 3ff31be (move docs)
   </Step>
   <Step title="Install LLM provider">
     Choose and install your preferred LangChain provider:
     <CodeGroup>
+<<<<<<< HEAD
 ```bash Python (OpenAI)
+=======
+
+    ```bash Python (OpenAI)
+>>>>>>> 3ff31be (move docs)
     pip install langchain-openai
     ```
 
@@ -86,7 +101,12 @@ icon: "download"
     ```bash TypeScript (Groq)
     npm install @langchain/groq
     ```
+<<<<<<< HEAD
 </CodeGroup>
+=======
+
+    </CodeGroup>
+>>>>>>> 3ff31be (move docs)
   </Step>
   <Step title="Set up environment">
     Create a `.env` file for your API keys:
@@ -102,15 +122,29 @@ icon: "download"
     Test your installation with a simple script:
 
     <CodeGroup>
+<<<<<<< HEAD
 ```python Python
     from mcp_use import MCPAgent, MCPClient
     print("mcp_use installed successfully!")
     ```
 </CodeGroup>
+=======
+    ```python Python
+    from mcp_use import MCPAgent, MCPClient
+    print("mcp_use installed successfully!")
+    ```
+
+    ```typescript TypeScript
+    import { MCPAgent, MCPClient } from 'mcp-use'
+    console.log('mcp_use installed successfully!')
+    ```
+    </CodeGroup>
+>>>>>>> 3ff31be (move docs)
   </Step>
 </Steps>
 
 ## Development Installation
+<<<<<<< HEAD
 {/* TODO: Add instructions for development installation after monorepo */}
 If you want to contribute or use the latest features, install from source:
 
@@ -126,6 +160,39 @@ git clone https://github.com/mcp-use/mcp-use.git
 cd mcp-use/libraries/python
 pip install -e ".[dev]"
 ```
+=======
+
+If you want to contribute or use the latest features, install from source:
+
+<CodeGroup>
+
+```bash Python (Git Clone)
+git clone https://github.com/mcp-use/mcp-use.git
+cd mcp-use
+pip install -e .
+```
+
+```bash TypeScript (Git Clone)
+git clone https://github.com/mcp-use/mcp-use.git
+cd mcp-use-ts
+npm install
+npm run build
+```
+
+```bash Python (Dev Mode)
+git clone https://github.com/mcp-use/mcp-use.git
+cd mcp-use
+pip install -e ".[dev]"
+```
+
+```bash TypeScript (Dev Mode)
+git clone https://github.com/mcp-use/mcp-use.git
+cd mcp-use-ts
+npm install
+npm run dev
+```
+
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>
 
 ## Installing MCP Servers
@@ -238,6 +305,18 @@ load_dotenv()
 # Your API keys are now available as environment variables
 openai_key = os.getenv("OPENAI_API_KEY")
 ```
+<<<<<<< HEAD
+=======
+
+```typescript TypeScript
+import { config } from 'dotenv'
+
+config()
+
+// Your API keys are now available as environment variables
+const openaiKey = process.env.OPENAI_API_KEY
+```
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>
 
 ## Verification
@@ -284,11 +363,57 @@ async def verify_installation():
 if __name__ == "__main__":
     asyncio.run(verify_installation())
 ```
+<<<<<<< HEAD
+=======
+
+```typescript TypeScript
+import { config } from 'dotenv'
+import { ChatOpenAI } from '@langchain/openai'
+import { MCPAgent, MCPClient } from 'mcp-use'
+
+async function verifyInstallation() {
+    config()
+
+    // Simple configuration for testing
+    const configuration = {
+        mcpServers: {
+            test: {
+                command: 'echo',
+                args: ['Hello from MCP!']
+            }
+        }
+    }
+
+    try {
+        const client = new MCPClient(configuration)
+        console.log('✅ MCPClient created successfully')
+
+        const llm = new ChatOpenAI({ model: 'gpt-3.5-turbo' })
+        console.log('✅ LLM initialized successfully')
+
+        const agent = new MCPAgent({ llm, client })
+        console.log('✅ MCPAgent created successfully')
+
+        console.log('\n🎉 Installation verified! You\'re ready to use mcp_use.')
+
+        // Clean up
+        await client.closeAllSessions()
+
+    } catch (error) {
+        console.error('❌ Verification failed:', error)
+        console.error('Please check your installation and API keys.')
+    }
+}
+
+verifyInstallation().catch(console.error)
+```
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>
 
 ## Next Steps
 
 <CardGroup cols={2}>
+<<<<<<< HEAD
   <Card title="Quick Start" icon="rocket" href="/python/getting-started/quickstart">
     Follow our quickstart guide to build your first agent
   </Card>
@@ -296,6 +421,15 @@ if __name__ == "__main__":
     Learn how to configure MCP servers
   </Card>
   <Card title="LLM Integration" icon="brain" href="/python/agent/llm-integration">
+=======
+  <Card title="Quick Start" icon="rocket" href="/getting-started/quickstart">
+    Follow our quickstart guide to build your first agent
+  </Card>
+  <Card title="Configuration" icon="gear" href="/getting-started/configuration">
+    Learn how to configure MCP servers
+  </Card>
+  <Card title="LLM Integration" icon="brain" href="/agent/llm-integration">
+>>>>>>> 3ff31be (move docs)
     Explore different LLM providers and their setup
   </Card>
   <Card title="Examples" icon="code" href="https://github.com/mcp-use/mcp-use/tree/main/examples">

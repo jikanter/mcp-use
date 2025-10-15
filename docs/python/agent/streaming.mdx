@@ -64,6 +64,46 @@ if __name__ == "__main__":
     # Run the appropriate example
     asyncio.run(main())
 ```
+<<<<<<< HEAD
+=======
+
+```typescript TypeScript
+import { ChatOpenAI } from '@langchain/openai'
+import { MCPAgent, MCPClient } from 'mcp-use'
+
+async function stepStreamingExample() {
+    // Setup agent
+    const config = {
+        mcpServers: {
+            playwright: {
+                command: 'npx',
+                args: ['@playwright/mcp@latest']
+            }
+        }
+    }
+
+    const client = new MCPClient(config)
+    const llm = new ChatOpenAI({ model: 'gpt-4' })
+    const agent = new MCPAgent({ llm, client })
+
+    // Stream the agent's steps
+    console.log('🤖 Agent is working...')
+    console.log('-'.repeat(50))
+
+    for await (const step of agent.stream('Search for the latest Python news and summarize it')) {
+        console.log(`\n🔧 Tool: ${step.action.tool}`)
+        console.log(`📝 Input: ${JSON.stringify(step.action.toolInput)}`)
+        const result = step.observation.substring(0, 100)
+        console.log(`📄 Result: ${result}${step.observation.length > 100 ? '...' : ''}`)
+    }
+
+    console.log('\n🎉 Done!')
+    await client.closeAllSessions()
+}
+
+stepStreamingExample().catch(console.error)
+```
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>
 
 ### Understanding Yielded Objects
@@ -120,6 +160,48 @@ async def basic_streaming_example():
 if __name__ == "__main__":
     asyncio.run(basic_streaming_example())
 ```
+<<<<<<< HEAD
+=======
+
+```typescript TypeScript
+import { ChatOpenAI } from '@langchain/openai'
+import { MCPAgent, MCPClient } from 'mcp-use'
+
+async function basicStreamingExample() {
+    // Setup agent
+    const config = {
+        mcpServers: {
+            playwright: {
+                command: 'npx',
+                args: ['@playwright/mcp@latest']
+            }
+        }
+    }
+
+    const client = new MCPClient(config)
+    const llm = new ChatOpenAI({ model: 'gpt-4' })
+    const agent = new MCPAgent({ llm, client })
+
+    // Stream the agent's response
+    console.log('Agent is working...')
+
+    for await (const event of agent.streamEvents('Search for the latest Python news and summarize it')) {
+        if (event.event === 'on_chat_model_stream') {
+            // Stream LLM output token by token
+            const text = event.data?.chunk?.text
+            if (text) {
+                process.stdout.write(text)
+            }
+        }
+    }
+
+    console.log('\n\nDone!')
+    await client.closeAllSessions()
+}
+
+basicStreamingExample().catch(console.error)
+```
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>
 
 <Tip>
@@ -261,7 +343,11 @@ import asyncio
 import json
 from langchain_openai import ChatOpenAI
 from mcp_use import MCPAgent, MCPClient
+<<<<<<< HEAD
 import time
+=======
+
+>>>>>>> 3ff31be (move docs)
 app = FastAPI()
 
 async def create_agent():
@@ -284,12 +370,19 @@ async def stream_agent_response(query: str):
     async def event_generator():
         agent = await create_agent()
 
+<<<<<<< HEAD
         async for event in agent.stream_events(query):
             event_type = event.get("event")
             if event_type == "on_chat_model_stream":
                 data = event["data"]["chunk"].content
             else:
                 data = ""
+=======
+        async for event in agent.stream_events(query, version="v1"):
+            event_type = event.get("event")
+            data = event.get("data", {})
+
+>>>>>>> 3ff31be (move docs)
             # Format as SSE
             sse_data = {
                 "type": event_type,
@@ -322,6 +415,7 @@ if __name__ == "__main__":
 ## Next Steps
 
 <CardGroup cols={3}>
+<<<<<<< HEAD
   <Card title="Agent Configuration" icon="gear" href="/python/agent/agent-configuration">
     Learn more about configuring agents for optimal streaming performance
   </Card>
@@ -329,6 +423,15 @@ if __name__ == "__main__":
     Stream output from agents using multiple MCP servers
   </Card>
   <Card title="Performance Optimization" icon="zap" href="/python/troubleshooting/performance">
+=======
+  <Card title="Agent Configuration" icon="gear" href="/agent/agent-configuration">
+    Learn more about configuring agents for optimal streaming performance
+  </Card>
+  <Card title="Multi-Server Setup" icon="server" href="/advanced/multi-server-setup">
+    Stream output from agents using multiple MCP servers
+  </Card>
+  <Card title="Performance Optimization" icon="zap" href="/troubleshooting/performance">
+>>>>>>> 3ff31be (move docs)
     Optimize streaming performance for production use
   </Card>
 </CardGroup>

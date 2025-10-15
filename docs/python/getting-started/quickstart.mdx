@@ -13,7 +13,11 @@ This guide will get you started with mcp_use in **under 5 minutes**. We'll cover
 ## Installation
 
 <CodeGroup>
+<<<<<<< HEAD
 ```bash Python (pip)
+=======
+  ```bash Python (pip)
+>>>>>>> 3ff31be (move docs)
   pip install mcp-use
   ```
 
@@ -44,7 +48,11 @@ Installing from source gives you access to the latest features and examples!
 mcp_use works with various LLM providers through LangChain. You'll need to install the appropriate LangChain provider package for your chosen LLM:
 
 <CodeGroup>
+<<<<<<< HEAD
 ```bash Python (OpenAI)
+=======
+  ```bash Python (OpenAI)
+>>>>>>> 3ff31be (move docs)
   pip install langchain-openai
   ```
 
@@ -103,7 +111,11 @@ GOOGLE_API_KEY=your_api_key_here
 Here's a simple example to get you started:
 
 <CodeGroup>
+<<<<<<< HEAD
 ```python Python
+=======
+  ```python Python
+>>>>>>> 3ff31be (move docs)
   import asyncio
   import os
   from dotenv import load_dotenv
@@ -145,6 +157,57 @@ Here's a simple example to get you started:
   if __name__ == "__main__":
       asyncio.run(main())
   ```
+<<<<<<< HEAD
+=======
+
+  ```typescript TypeScript
+  import { ChatOpenAI } from '@langchain/openai'
+  import { config } from 'dotenv'
+  import { MCPAgent, MCPClient } from 'mcp-use'
+
+  async function main() {
+      // Load environment variables
+      config()
+
+      // Create configuration object
+      const configuration = {
+        mcpServers: {
+          playwright: {
+            command: 'npx',
+            args: ['@playwright/mcp@latest'],
+            env: {
+              DISPLAY: ':1'
+            }
+          }
+        }
+      }
+
+      // Create MCPClient from configuration object
+      const client = new MCPClient(configuration)
+
+      // Create LLM
+      const llm = new ChatOpenAI({ model: 'gpt-4o' })
+
+      // Create agent with the client
+      const agent = new MCPAgent({
+        llm,
+        client,
+        maxSteps: 30
+      })
+
+      // Run the query
+      const result = await agent.run(
+          'Find the best restaurant in San Francisco USING GOOGLE SEARCH'
+      )
+      console.log(`\nResult: ${result}`)
+
+      // Clean up
+      await client.closeAllSessions()
+  }
+
+  main().catch(console.error)
+  ```
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>
 
 ## Configuration Options
@@ -152,9 +215,22 @@ Here's a simple example to get you started:
 You can also load servers configuration from a config file:
 
 <CodeGroup>
+<<<<<<< HEAD
 ```python Python
   client = MCPClient.from_config_file("browser_mcp.json")
   ```
+=======
+  ```python Python
+  client = MCPClient.from_config_file("browser_mcp.json")
+  ```
+
+  ```typescript TypeScript
+  import { loadConfigFile } from 'mcp-use'
+
+  const config = await loadConfigFile("browser_mcp.json")
+  const client = new MCPClient(config)
+  ```
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>
 
 Example configuration file (`browser_mcp.json`):
@@ -174,7 +250,11 @@ Example configuration file (`browser_mcp.json`):
 ```
 
 <Tip>
+<<<<<<< HEAD
 For multi-server setups, tool restrictions, and advanced configuration options, see the [Configuration Overview](/python/getting-started/configuration).
+=======
+For multi-server setups, tool restrictions, and advanced configuration options, see the [Configuration Overview](/getting-started/configuration).
+>>>>>>> 3ff31be (move docs)
 </Tip>
 
 
@@ -187,10 +267,32 @@ mcp_use supports **any MCP server**. Check out the [Awesome MCP Servers](https:/
 Stream agent responses as they're generated:
 
 <CodeGroup>
+<<<<<<< HEAD
 ```python Python
   async for chunk in agent.stream("your query here"):
       print(chunk, end="", flush=True)
   ```
+=======
+  ```python Python
+  async for chunk in agent.astream("your query here"):
+      print(chunk, end="", flush=True)
+  ```
+
+  ```typescript TypeScript
+  // Stream intermediate steps
+  for await (const step of agent.stream("your query here")) {
+      console.log(`Tool: ${step.action.tool}`)
+      console.log(`Result: ${step.observation}`)
+  }
+
+  // Or stream token-level events
+  for await (const event of agent.streamEvents("your query here")) {
+      if (event.event === 'on_chat_model_stream') {
+          process.stdout.write(event.data?.chunk?.text || '')
+      }
+  }
+  ```
+>>>>>>> 3ff31be (move docs)
 </CodeGroup>
 
 <Tip>
@@ -201,10 +303,17 @@ Uses LangChain's streaming API. See [streaming documentation](https://python.lan
 ## Next Steps
 
 <CardGroup cols={3}>
+<<<<<<< HEAD
   <Card title="Configuration" icon="gear" href="/python/getting-started/configuration">
     Complete configuration guide covering client setup and agent customization
   </Card>
   <Card title="LLM Integration" icon="brain" href="/python/agent/llm-integration">
+=======
+  <Card title="Configuration" icon="gear" href="/getting-started/configuration">
+    Complete configuration guide covering client setup and agent customization
+  </Card>
+  <Card title="LLM Integration" icon="brain" href="/agent/llm-integration">
+>>>>>>> 3ff31be (move docs)
     Discover all supported LLM providers and optimization tips
   </Card>
   <Card title="Examples" icon="code" href="https://github.com/mcp-use/mcp-use/tree/main/examples">
