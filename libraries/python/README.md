@@ -7,8 +7,7 @@
   </picture>
 </div>
 
-
-<h1 align="center">🚀 Create MCP Clients and Agents</h1>
+<h1 align="center">🚀 MCP-Use for Python</h1>
 <p align="center">
     <a href="https://github.com/pietrozullo/mcp-use/stargazers" alt="GitHub stars">
         <img src="https://img.shields.io/github/stars/pietrozullo/mcp-use?style=social" /></a>
@@ -16,37 +15,42 @@
         <img src="https://static.pepy.tech/badge/mcp-use" /></a>
     <a href="https://pypi.org/project/mcp_use/" alt="PyPI Version">
         <img src="https://img.shields.io/pypi/v/mcp_use.svg"/></a>
-    <a href="https://github.com/mcp-use/mcp-use-ts" alt="TypeScript">
-      <img src="https://img.shields.io/badge/TypeScript-mcp--use-3178C6?logo=typescript&logoColor=white" /></a>
     <a href="https://github.com/pietrozullo/mcp-use/blob/main/LICENSE" alt="License">
         <img src="https://img.shields.io/github/license/pietrozullo/mcp-use" /></a>
     <a href="https://docs.mcp-use.com" alt="Documentation">
         <img src="https://img.shields.io/badge/docs-mcp--use.com-blue" /></a>
-    <a href="https://mcp-use.com" alt="Website">
-        <img src="https://img.shields.io/badge/website-mcp--use.com-blue" /></a>
-    </p>
-    <p align="center">
-    <a href="https://x.com/pietrozullo" alt="Twitter Follow - Pietro">
-        <img src="https://img.shields.io/twitter/follow/Pietro?style=social" /></a>
-    <a href="https://x.com/pederzh" alt="Twitter Follow - Luigi">
-        <img src="https://img.shields.io/twitter/follow/Luigi?style=social" /></a>
     <a href="https://discord.gg/XkNkSkMz3V" alt="Discord">
         <img src="https://dcbadge.limes.pink/api/server/XkNkSkMz3V?style=flat" /></a>
 </p>
 </div>
 
-🌐 MCP-Use is the open source way to connect **any LLM to any MCP server** and build custom MCP agents that have tool access, without using closed source or application clients.
+> **📦 Part of the [MCP-Use Monorepo](../../README.md)** - This is the Python implementation. Also available in [TypeScript](../typescript/README.md).
 
-💡 Let developers easily connect any LLM to tools like web browsing, file operations, and more.
+🌐 **MCP-Use for Python** is the complete way to connect **any LLM to any MCP server** and build custom MCP agents with tool access.
 
-- If you want to get started quickly check out [mcp-use.com website](https://mcp-use.com/) to build and deploy agents with your favorite MCP servers.
-- Visit the [mcp-use docs](https://docs.mcp-use.com/) to get started with mcp-use library
-- For the TypeScript version, visit [mcp-use-ts](https://github.com/mcp-use/mcp-use-ts)
+💡 Let your Python applications leverage the power of the Model Context Protocol with support for agents, clients, and advanced features.
 
-| Supports       |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| :------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+## 🏗️ What's Included
+
+MCP-Use for Python provides three main capabilities:
+
+- **🤖 MCP Agent** - Build AI agents that can use tools and reason across multiple steps
+- **🔌 MCP Client** - Connect directly to MCP servers for programmatic tool access
+- **🛠️ MCP Server** - _Coming soon!_ For now, use the [TypeScript version](../typescript/README.md#%EF%B8%8F-mcp-server-framework)
+
+---
+
+## 📖 Quick Links
+
+- **[Main Repository](../../README.md)** - Overview of the entire MCP-Use ecosystem
+- **[TypeScript Version](../typescript/README.md)** - TypeScript implementation with server framework
+- **[Documentation](https://docs.mcp-use.com)** - Complete online documentation
+- **[Examples](./examples/)** - Python code examples
+
+| Supports       |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| :------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Primitives** | [![Tools](https://img.shields.io/github/actions/workflow/status/pietrozullo/mcp-use/tests.yml?job=primitive-tools&label=Tools&style=flat)](https://github.com/pietrozullo/mcp-use/actions/workflows/tests.yml) [![Resources](https://img.shields.io/github/actions/workflow/status/pietrozullo/mcp-use/tests.yml?job=primitive-resources&label=Resources&style=flat)](https://github.com/pietrozullo/mcp-use/actions/workflows/tests.yml) [![Prompts](https://img.shields.io/github/actions/workflow/status/pietrozullo/mcp-use/tests.yml?job=primitive-prompts&label=Prompts&style=flat)](https://github.com/pietrozullo/mcp-use/actions/workflows/tests.yml) [![Sampling](https://img.shields.io/github/actions/workflow/status/pietrozullo/mcp-use/tests.yml?job=primitive-sampling&label=Sampling&style=flat)](https://github.com/pietrozullo/mcp-use/actions/workflows/tests.yml) [![Elicitation](https://img.shields.io/github/actions/workflow/status/pietrozullo/mcp-use/tests.yml?job=primitive-elicitation&label=Elicitation&style=flat)](https://github.com/pietrozullo/mcp-use/actions/workflows/tests.yml) [![Authentication](https://img.shields.io/github/actions/workflow/status/pietrozullo/mcp-use/tests.yml?job=primitive-authentication&label=Authentication&style=flat)](https://github.com/pietrozullo/mcp-use/actions/workflows/tests.yml) |
-| **Transports** | [![Stdio](https://img.shields.io/github/actions/workflow/status/pietrozullo/mcp-use/tests.yml?job=transport-stdio&label=Stdio&style=flat)](https://github.com/pietrozullo/mcp-use/actions/workflows/tests.yml) [![SSE](https://img.shields.io/github/actions/workflow/status/pietrozullo/mcp-use/tests.yml?job=transport-sse&label=SSE&style=flat)](https://github.com/pietrozullo/mcp-use/actions/workflows/tests.yml) [![Streamable HTTP](https://img.shields.io/github/actions/workflow/status/pietrozullo/mcp-use/tests.yml?job=transport-streamableHttp&label=Streamable%20HTTP&style=flat)](https://github.com/pietrozullo/mcp-use/actions/workflows/tests.yml)                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **Transports** | [![Stdio](https://img.shields.io/github/actions/workflow/status/pietrozullo/mcp-use/tests.yml?job=transport-stdio&label=Stdio&style=flat)](https://github.com/pietrozullo/mcp-use/actions/workflows/tests.yml) [![SSE](https://img.shields.io/github/actions/workflow/status/pietrozullo/mcp-use/tests.yml?job=transport-sse&label=SSE&style=flat)](https://github.com/pietrozullo/mcp-use/actions/workflows/tests.yml) [![Streamable HTTP](https://img.shields.io/github/actions/workflow/status/pietrozullo/mcp-use/tests.yml?job=transport-streamableHttp&label=Streamable%20HTTP&style=flat)](https://github.com/pietrozullo/mcp-use/actions/workflows/tests.yml)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 
 ## Features
 
@@ -93,7 +97,13 @@
   </tr>
 </table>
 
-# Quick start
+---
+
+# 🤖 MCP Agent
+
+The **MCP Agent** is an AI-powered agent that can use tools from MCP servers to accomplish complex tasks. It reasons across multiple steps, selecting and executing tools as needed.
+
+## Quick Start
 
 With pip:
 
@@ -628,7 +638,13 @@ The `SandboxOptions` type provides configuration for the sandbox environment:
 - **Consistent environment**: Ensure consistent behavior across different systems
 - **Resource efficiency**: Offload resource-intensive tasks to cloud infrastructure
 
-# Direct Tool Calls (Without LLM)
+---
+
+# 🔌 MCP Client
+
+The **MCP Client** allows you to connect directly to MCP servers and call tools programmatically without an AI agent. This is useful when you know exactly which tools to call and don't need AI reasoning.
+
+## Direct Tool Calls (Without LLM)
 
 You can call MCP server tools directly without an LLM when you need programmatic control:
 
@@ -705,6 +721,23 @@ if __name__ == "__main__":
 
 ```
 
+---
+
+# 🛠️ MCP Server
+
+**Coming Soon!** Python support for creating MCP servers is under development.
+
+In the meantime, you can create MCP servers using our [TypeScript implementation](../typescript/README.md#%EF%B8%8F-mcp-server-framework), which offers:
+
+- Complete server framework with tools, resources, and prompts
+- Built-in inspector for debugging
+- React-based UI widgets for interactive experiences
+- Hot reload development workflow
+
+Python agents and clients can connect to TypeScript servers seamlessly - the MCP protocol is language-agnostic.
+
+---
+
 # Debugging
 
 MCP-Use provides a built-in debug mode that increases log verbosity and helps diagnose issues in your agent implementation.
@@ -767,14 +800,6 @@ This is useful when you only need to see the agent's steps and decision-making p
 # Contributing
 
 We love contributions! Feel free to open issues for bugs or feature requests. Look at [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-## Contributors
-
-Thanks to all our amazing contributors!
-
-<a href="https://github.com/mcp-use/mcp-use/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=mcp-use/mcp-use" />
-</a>
 
 ## Top Starred Dependents
 

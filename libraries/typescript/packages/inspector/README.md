@@ -25,29 +25,29 @@
 
 ## 📦 Related Packages
 
-| Package | Description | Version |
-|---------|-------------|---------|
-| [mcp-use](https://github.com/mcp-use/mcp-use-ts/tree/main/packages/mcp-use) | Core MCP framework | [![npm](https://img.shields.io/npm/v/mcp-use.svg)](https://www.npmjs.com/package/mcp-use) |
-| [@mcp-use/cli](https://github.com/mcp-use/mcp-use-ts/tree/main/packages/cli) | Build tool for MCP apps | [![npm](https://img.shields.io/npm/v/@mcp-use/cli.svg)](https://www.npmjs.com/package/@mcp-use/cli) |
-| [create-mcp-use-app](https://github.com/mcp-use/mcp-use-ts/tree/main/packages/create-mcp-use-app) | Create MCP apps | [![npm](https://img.shields.io/npm/v/create-mcp-use-app.svg)](https://www.npmjs.com/package/create-mcp-use-app) |
+| Package                                                                                           | Description             | Version                                                                                                         |
+| ------------------------------------------------------------------------------------------------- | ----------------------- | --------------------------------------------------------------------------------------------------------------- |
+| [mcp-use](https://github.com/mcp-use/mcp-use-ts/tree/main/packages/mcp-use)                       | Core MCP framework      | [![npm](https://img.shields.io/npm/v/mcp-use.svg)](https://www.npmjs.com/package/mcp-use)                       |
+| [@mcp-use/cli](https://github.com/mcp-use/mcp-use-ts/tree/main/packages/cli)                      | Build tool for MCP apps | [![npm](https://img.shields.io/npm/v/@mcp-use/cli.svg)](https://www.npmjs.com/package/@mcp-use/cli)             |
+| [create-mcp-use-app](https://github.com/mcp-use/mcp-use-ts/tree/main/packages/create-mcp-use-app) | Create MCP apps         | [![npm](https://img.shields.io/npm/v/create-mcp-use-app.svg)](https://www.npmjs.com/package/create-mcp-use-app) |
 
 ---
 
 ## ✨ Key Features
 
-| Feature | Description |
-|---------|-------------|
-| **🚀 Auto-Mount** | Automatically available at `/inspector` for all MCP-Use servers |
-| **🔌 Multi-Connection** | Connect to and manage multiple MCP servers simultaneously |
-| **🎯 Interactive Testing** | Test tools with live execution and real-time results |
-| **📊 Real-time Status** | Monitor connection states, errors, and server health |
-| **🔐 OAuth Support** | Built-in OAuth flow handling with popup authentication |
-| **💾 Persistent Sessions** | Connections saved to localStorage and auto-reconnect |
-| **🎨 Beautiful UI** | Modern, responsive interface built with React and Tailwind |
-| **🔍 Tool Explorer** | Browse and execute all available tools with schema validation |
-| **📁 Resource Browser** | View and copy resource URIs with syntax highlighting |
-| **💬 Prompt Manager** | Test and manage prompts with argument templates |
-| **🌐 Universal Support** | Works with HTTP/SSE and WebSocket connections |
+| Feature                    | Description                                                     |
+| -------------------------- | --------------------------------------------------------------- |
+| **🚀 Auto-Mount**          | Automatically available at `/inspector` for all MCP-Use servers |
+| **🔌 Multi-Connection**    | Connect to and manage multiple MCP servers simultaneously       |
+| **🎯 Interactive Testing** | Test tools with live execution and real-time results            |
+| **📊 Real-time Status**    | Monitor connection states, errors, and server health            |
+| **🔐 OAuth Support**       | Built-in OAuth flow handling with popup authentication          |
+| **💾 Persistent Sessions** | Connections saved to localStorage and auto-reconnect            |
+| **🎨 Beautiful UI**        | Modern, responsive interface built with React and Tailwind      |
+| **🔍 Tool Explorer**       | Browse and execute all available tools with schema validation   |
+| **📁 Resource Browser**    | View and copy resource URIs with syntax highlighting            |
+| **💬 Prompt Manager**      | Test and manage prompts with argument templates                 |
+| **🌐 Universal Support**   | Works with HTTP/SSE and WebSocket connections                   |
 
 ---
 
@@ -61,7 +61,7 @@ When you create an MCP server with `mcp-use`, the inspector is automatically ava
 import { createMCPServer } from 'mcp-use/server'
 
 const server = createMCPServer('my-server', {
-  version: '1.0.0'
+  version: '1.0.0',
 })
 
 // Add your tools, resources, prompts...
@@ -72,6 +72,7 @@ server.listen(3000)
 ```
 
 **That's it!** No additional configuration needed. The inspector:
+
 - Automatically mounts at `/inspector`
 - Auto-connects to your local MCP server
 - Provides instant debugging capabilities
@@ -83,13 +84,13 @@ Use the inspector with any MCP server (local or remote):
 
 ```bash
 # Inspect a remote server
-npx mcp-inspect --url https://mcp.linear.app/sse
+npx @mcp-use/inspector --url https://mcp.linear.app/sse
 
 # Custom port
-npx mcp-inspect --url http://localhost:3000/mcp --port 8080
+npx @mcp-use/inspector --url http://localhost:3000/mcp --port 8080
 
 # Open inspector without auto-connect
-npx mcp-inspect
+npx @mcp-use/inspector
 ```
 
 ### Method 3: Custom Integration
@@ -116,6 +117,7 @@ app.listen(3000)
 ### Dashboard Overview
 
 The main dashboard shows:
+
 - **Connection Overview**: Total servers, active connections, available tools
 - **Server List**: All configured servers with their current status
 - **Quick Actions**: Add new server, refresh all, clear sessions
@@ -123,10 +125,12 @@ The main dashboard shows:
 ### Adding Servers
 
 Click "Add New MCP Server" and provide:
+
 - **Server Name** (optional): Friendly name for identification
 - **Server URL**: The MCP endpoint URL
 
 Example URLs:
+
 - Local: `http://localhost:3000/mcp`
 - Linear: `https://mcp.linear.app/sse`
 - WebSocket: `ws://localhost:8080`
@@ -135,15 +139,15 @@ Example URLs:
 
 The inspector displays real-time connection states:
 
-| State | Description | Action |
-|-------|-------------|---------|
-| 🔍 **discovering** | Finding the server | Wait |
-| 🔄 **connecting** | Establishing connection | Wait |
-| 🔐 **authenticating** | OAuth flow in progress | Complete auth |
-| 📥 **loading** | Loading tools & resources | Wait |
-| ✅ **ready** | Connected and operational | Use tools |
-| ❌ **failed** | Connection failed | Retry |
-| ⏳ **pending_auth** | Waiting for authentication | Click Authenticate |
+| State                 | Description                | Action             |
+| --------------------- | -------------------------- | ------------------ |
+| 🔍 **discovering**    | Finding the server         | Wait               |
+| 🔄 **connecting**     | Establishing connection    | Wait               |
+| 🔐 **authenticating** | OAuth flow in progress     | Complete auth      |
+| 📥 **loading**        | Loading tools & resources  | Wait               |
+| ✅ **ready**          | Connected and operational  | Use tools          |
+| ❌ **failed**         | Connection failed          | Retry              |
+| ⏳ **pending_auth**   | Waiting for authentication | Click Authenticate |
 
 ### Testing Tools
 
@@ -183,6 +187,7 @@ For servers requiring OAuth (like Linear):
 4. Connection automatically completes
 
 If popup is blocked:
+
 - Click "open auth page" link
 - Complete authentication manually
 - Return to inspector
@@ -190,6 +195,7 @@ If popup is blocked:
 ### Resource Management
 
 Browse available resources:
+
 - View resource descriptions
 - Copy resource URIs
 - Check MIME types
@@ -198,6 +204,7 @@ Browse available resources:
 ### Prompt Testing
 
 Test prompts with the inspector:
+
 1. Navigate to **Prompts** tab
 2. Select a prompt
 3. Fill in required arguments
@@ -211,6 +218,7 @@ Test prompts with the inspector:
 ### Server Card
 
 Each server displays:
+
 - Connection status indicator
 - Server name and URL
 - Available tools count
@@ -220,6 +228,7 @@ Each server displays:
 ### Tool Explorer
 
 The tool explorer shows:
+
 - Tool name and description
 - Input schema with types
 - Output schema
@@ -229,6 +238,7 @@ The tool explorer shows:
 ### Chat Interface
 
 Interactive chat for testing conversational flows:
+
 - Send messages to test prompts
 - View tool calls in real-time
 - See formatted responses
@@ -251,6 +261,7 @@ Manage multiple servers efficiently:
 ### Session Management
 
 Sessions are automatically saved to localStorage:
+
 - Preserves server configurations
 - Maintains connection preferences
 - Restores on page reload
@@ -259,18 +270,19 @@ Sessions are automatically saved to localStorage:
 ### Custom Themes
 
 The inspector respects system theme preferences:
+
 - Light mode for better readability
 - Dark mode for reduced eye strain
 - Automatic switching based on OS settings
 
 ### Keyboard Shortcuts
 
-| Shortcut | Action |
-|----------|--------|
-| `Cmd/Ctrl + K` | Quick server search |
-| `Cmd/Ctrl + N` | Add new server |
+| Shortcut       | Action                  |
+| -------------- | ----------------------- |
+| `Cmd/Ctrl + K` | Quick server search     |
+| `Cmd/Ctrl + N` | Add new server          |
 | `Cmd/Ctrl + R` | Refresh all connections |
-| `Esc` | Close modals |
+| `Esc`          | Close modals            |
 
 ---
 
@@ -284,18 +296,18 @@ import { createMCPServer } from 'mcp-use/server'
 
 const server = createMCPServer('dev-server', {
   version: '1.0.0',
-  description: 'Development MCP Server'
+  description: 'Development MCP Server',
 })
 
 server.tool('debug_tool', {
   description: 'Debug tool for testing',
   parameters: z.object({
-    message: z.string()
+    message: z.string(),
   }),
   execute: async ({ message }) => {
     console.log('Debug:', message)
     return { received: message, timestamp: Date.now() }
-  }
+  },
 })
 
 server.listen(3000)
@@ -311,8 +323,8 @@ const server = createMCPServer('production-server', {
     clientId: process.env.OAUTH_CLIENT_ID,
     clientSecret: process.env.OAUTH_CLIENT_SECRET,
     authorizationUrl: 'https://api.example.com/oauth/authorize',
-    tokenUrl: 'https://api.example.com/oauth/token'
-  }
+    tokenUrl: 'https://api.example.com/oauth/token',
+  },
 })
 
 // Inspector handles OAuth flow automatically
@@ -341,6 +353,7 @@ URL: https://api.example.com/mcp
 The inspector is built with modern web technologies:
 
 ### Frontend Stack
+
 - **React 19**: UI framework
 - **React Router**: Navigation
 - **Tailwind CSS**: Styling
@@ -368,6 +381,7 @@ src/client/
 ### Connection Management
 
 The `useMcp` hook handles:
+
 - WebSocket/SSE connections
 - Automatic reconnection
 - OAuth flow management
@@ -381,6 +395,7 @@ The `useMcp` hook handles:
 ### Common Issues and Solutions
 
 **Inspector not loading:**
+
 ```bash
 # Check server is running
 curl http://localhost:3000/inspector
@@ -390,23 +405,27 @@ curl http://localhost:3000/inspector
 ```
 
 **Connection fails immediately:**
+
 - Check CORS configuration
 - Verify server URL is correct
 - Ensure server supports SSE/WebSocket
 - Check network/firewall settings
 
 **OAuth popup blocked:**
+
 - Allow popups for the inspector domain
 - Use the manual auth link provided
 - Check browser console for errors
 
 **Tools not executing:**
+
 - Verify tool schemas are valid
 - Check server logs for errors
 - Ensure proper authentication
 - Validate input parameters
 
 **Session not persisting:**
+
 - Check localStorage is enabled
 - Clear browser cache
 - Try incognito/private mode
@@ -422,7 +441,7 @@ curl http://localhost:3000/inspector
 // Use pagination for many tools
 server.configurePagination({
   toolsPerPage: 50,
-  enableSearch: true
+  enableSearch: true,
 })
 ```
 
@@ -433,7 +452,7 @@ server.configurePagination({
 const inspector = {
   maxConnections: 5,
   connectionTimeout: 30000,
-  keepAlive: true
+  keepAlive: true,
 }
 ```
 
@@ -443,7 +462,7 @@ const inspector = {
 // Cache tool results
 server.enableCache({
   ttl: 300, // 5 minutes
-  maxSize: 100 // MB
+  maxSize: 100, // MB
 })
 ```
 
@@ -457,7 +476,7 @@ server.enableCache({
 // Configure CORS for inspector access
 server.configureCORS({
   origin: ['http://localhost:3000'],
-  credentials: true
+  credentials: true,
 })
 ```
 
@@ -474,7 +493,7 @@ server.use(authMiddleware)
 // Prevent abuse
 server.configureRateLimit({
   windowMs: 60000, // 1 minute
-  max: 100 // requests
+  max: 100, // requests
 })
 ```
 
@@ -499,9 +518,9 @@ configureInspector(options: InspectorOptions): void
 
 ```typescript
 interface InspectorOptions {
-  autoConnect?: boolean      // Auto-connect to local server
+  autoConnect?: boolean // Auto-connect to local server
   theme?: 'light' | 'dark' | 'auto'
-  persistence?: boolean       // Save sessions
+  persistence?: boolean // Save sessions
   maxConnections?: number
   connectionTimeout?: number
 }
@@ -512,6 +531,7 @@ interface InspectorOptions {
 ## 🤝 Contributing
 
 We welcome contributions! Areas for improvement:
+
 - Additional UI themes
 - More keyboard shortcuts
 - Enhanced tool testing features
