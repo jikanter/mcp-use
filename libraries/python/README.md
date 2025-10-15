@@ -7,7 +7,7 @@
   </picture>
 </div>
 
-<h1 align="center">🚀 mcp-use for Python</h1>
+<h1 align="center">🚀 MCP-Use for Python</h1>
 <p align="center">
     <a href="https://github.com/pietrozullo/mcp-use/stargazers" alt="GitHub stars">
         <img src="https://img.shields.io/github/stars/pietrozullo/mcp-use?style=social" /></a>
@@ -24,15 +24,15 @@
 </p>
 </div>
 
-> **📦 Part of the [mcp-use Monorepo](../../README.md)** - This is the Python implementation. Also available in [TypeScript](../typescript/README.md).
+> **📦 Part of the [MCP-Use Monorepo](../../README.md)** - This is the Python implementation. Also available in [TypeScript](../typescript/README.md).
 
-🌐 **mcp-use for Python** is the complete way to connect **any LLM to any MCP server** and build custom MCP agents with tool access.
+🌐 **MCP-Use for Python** is the complete way to connect **any LLM to any MCP server** and build custom MCP agents with tool access.
 
 💡 Let your Python applications leverage the power of the Model Context Protocol with support for agents, clients, and advanced features.
 
 ## 🏗️ What's Included
 
-mcp-use for Python provides three main capabilities:
+MCP-Use for Python provides three main capabilities:
 
 - **🤖 MCP Agent** - Build AI agents that can use tools and reason across multiple steps
 - **🔌 MCP Client** - Connect directly to MCP servers for programmatic tool access
@@ -42,7 +42,7 @@ mcp-use for Python provides three main capabilities:
 
 ## 📖 Quick Links
 
-- **[Main Repository](../../README.md)** - Overview of the entire mcp-use ecosystem
+- **[Main Repository](../../README.md)** - Overview of the entire MCP-Use ecosystem
 - **[TypeScript Version](../typescript/README.md)** - TypeScript implementation with server framework
 - **[Documentation](https://docs.mcp-use.com)** - Complete online documentation
 - **[Examples](./examples/)** - Python code examples

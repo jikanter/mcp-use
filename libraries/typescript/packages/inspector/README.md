@@ -47,6 +47,11 @@ For detailed usage instructions and guides, visit [docs.mcp-use.com/inspector](h
 | [mcp-use](https://github.com/mcp-use/mcp-use-ts/tree/main/packages/mcp-use)                       | Core MCP framework      | [![npm](https://img.shields.io/npm/v/mcp-use.svg)](https://www.npmjs.com/package/mcp-use)                       |
 | [@mcp-use/cli](https://github.com/mcp-use/mcp-use-ts/tree/main/packages/cli)                      | Build tool for MCP apps | [![npm](https://img.shields.io/npm/v/@mcp-use/cli.svg)](https://www.npmjs.com/package/@mcp-use/cli)             |
 | [create-mcp-use-app](https://github.com/mcp-use/mcp-use-ts/tree/main/packages/create-mcp-use-app) | Create MCP apps         | [![npm](https://img.shields.io/npm/v/create-mcp-use-app.svg)](https://www.npmjs.com/package/create-mcp-use-app) |
+| Package                                                                                           | Description             | Version                                                                                                         |
+| ------------------------------------------------------------------------------------------------- | ----------------------- | --------------------------------------------------------------------------------------------------------------- |
+| [mcp-use](https://github.com/mcp-use/mcp-use-ts/tree/main/packages/mcp-use)                       | Core MCP framework      | [![npm](https://img.shields.io/npm/v/mcp-use.svg)](https://www.npmjs.com/package/mcp-use)                       |
+| [@mcp-use/cli](https://github.com/mcp-use/mcp-use-ts/tree/main/packages/cli)                      | Build tool for MCP apps | [![npm](https://img.shields.io/npm/v/@mcp-use/cli.svg)](https://www.npmjs.com/package/@mcp-use/cli)             |
+| [create-mcp-use-app](https://github.com/mcp-use/mcp-use-ts/tree/main/packages/create-mcp-use-app) | Create MCP apps         | [![npm](https://img.shields.io/npm/v/create-mcp-use-app.svg)](https://www.npmjs.com/package/create-mcp-use-app) |
 
 ---
 
@@ -54,7 +59,7 @@ For detailed usage instructions and guides, visit [docs.mcp-use.com/inspector](h
 
 | Feature                    | Description                                                     |
 | -------------------------- | --------------------------------------------------------------- |
-| **🚀 Auto-Mount**          | Automatically available at `/inspector` for all mcp-use servers |
+| **🚀 Auto-Mount**          | Automatically available at `/inspector` for all MCP-Use servers |
 | **🔌 Multi-Connection**    | Connect to and manage multiple MCP servers simultaneously       |
 | **🎯 Interactive Testing** | Test tools with live execution and real-time results            |
 | **📊 Real-time Status**    | Monitor connection states, errors, and server health            |
@@ -125,6 +130,46 @@ mountInspector(app, '/debug/inspector')
 
 app.listen(3000)
 // Inspector available at http://localhost:3000/debug/inspector
+// 🚀 Auto-connects to your local server at http://localhost:3000/mcp
+```
+
+**That's it!** No additional configuration needed. The inspector:
+
+- Automatically mounts at `/inspector`
+- Auto-connects to your local MCP server
+- Provides instant debugging capabilities
+- Opens automatically in dev mode with `@mcp-use/cli`
+
+### Method 2: Standalone CLI Tool
+
+Use the inspector with any MCP server (local or remote):
+
+```bash
+# Inspect a remote server
+npx @mcp-use/inspector --url https://mcp.linear.app/sse
+
+# Custom port
+npx @mcp-use/inspector --url http://localhost:3000/mcp --port 8080
+
+# Open inspector without auto-connect
+npx @mcp-use/inspector
+```
+
+### Method 3: Custom Integration
+
+Mount the inspector in your Express app at a custom path:
+
+```typescript
+import { mountInspector } from '@mcp-use/inspector'
+import express from 'express'
+
+const app = express()
+
+// Mount at custom path
+mountInspector(app, '/debug/inspector')
+
+app.listen(3000)
+// Inspector available at http://localhost:3000/debug/inspector
 ```
 
 ---
@@ -154,7 +199,52 @@ To connect to an MCP server:
 
 Example URLs:
 
+
 - Local: `http://localhost:3000/mcp`
+- Linear: `https://mcp.linear.app/sse`
+- WebSocket: `ws://localhost:8080`
+
+### Connection States
+
+The inspector displays real-time connection states:
+
+| State                 | Description                | Action             |
+| --------------------- | -------------------------- | ------------------ |
+| 🔍 **discovering**    | Finding the server         | Wait               |
+| 🔄 **connecting**     | Establishing connection    | Wait               |
+| 🔐 **authenticating** | OAuth flow in progress     | Complete auth      |
+| 📥 **loading**        | Loading tools & resources  | Wait               |
+| ✅ **ready**          | Connected and operational  | Use tools          |
+| ❌ **failed**         | Connection failed          | Retry              |
+| ⏳ **pending_auth**   | Waiting for authentication | Click Authenticate |
+
+### Testing Tools
+
+1. Click **"Inspect"** on a connected server
+2. Navigate to the **Tools** tab
+3. Select a tool to view its schema
+4. Click **"Execute"** to open the test panel
+5. Enter JSON parameters
+6. Click **"Run"** to execute
+7. View results in real-time
+
+Example tool execution:
+
+```json
+// Input for 'search_database' tool
+{
+  "query": "user analytics",
+  "limit": 10,
+  "sortBy": "date"
+}
+
+// Result
+{
+  "results": [...],
+  "total": 42,
+  "executionTime": "23ms"
+}
+```
 - Linear: `https://mcp.linear.app/sse`
 - WebSocket: `ws://localhost:8080`
 
@@ -204,10 +294,10 @@ Example tool execution:
 
 For servers requiring OAuth (like Linear):
 
-1. Connection shows "pending_auth" status
-2. Click **"Authenticate"** button
-3. Complete OAuth in the popup window
-4. Connection automatically completes
+1. After clicking **Connect**, you'll see the authorization page
+2. Click **"Approve"** to grant access
+3. The inspector handles the redirect automatically
+4. Server appears in Connected Servers list with a green indicator
 
 If popup is blocked:
 
@@ -215,7 +305,7 @@ If popup is blocked:
 - Complete authentication manually
 - Return to inspector
 
-### Resource Management
+### Connected Servers
 
 Browse available resources:
 
@@ -245,8 +335,7 @@ Each server displays:
 - Connection status indicator
 - Server name and URL
 - Available tools count
-- Last connection time
-- Action buttons (Connect/Disconnect/Inspect/Remove)
+- Action buttons: **Inspect**, **Disconnect**, **Remove**
 
 ### Tool Explorer
 
@@ -269,19 +358,21 @@ Interactive chat for testing conversational flows:
 
 ---
 
-## 🔧 Advanced Features
+## 🔍 Server Detail View
 
-### Bulk Operations
+After clicking **"Inspect"** on a connected server, you'll see four main tabs:
 
-Manage multiple servers efficiently:
+### Tools Tab
 
-```javascript
-// Select multiple servers
-// Click "Bulk Actions"
-// Choose: Connect All, Disconnect All, Remove Selected
-```
+The Tools tab displays all available tools from the MCP server.
 
-### Session Management
+**Features:**
+- Browse all available tools with their names and descriptions
+- Select a tool to view its detailed schema
+- Click **"Execute"** to test the tool
+- Enter JSON parameters in the input panel
+- View real-time results with syntax highlighting
+- Support for MCP-UI and OpenAI Apps SDK widgets
 
 Sessions are automatically saved to localStorage:
 
@@ -290,7 +381,7 @@ Sessions are automatically saved to localStorage:
 - Restores on page reload
 - Clear with "Clear All Sessions"
 
-### Custom Themes
+### Resources Tab
 
 The inspector respects system theme preferences:
 
@@ -298,7 +389,10 @@ The inspector respects system theme preferences:
 - Dark mode for reduced eye strain
 - Automatic switching based on OS settings
 
-### Keyboard Shortcuts
+- View resource descriptions and metadata
+- Copy resource URIs for use in your applications
+- Check MIME types and resource properties
+- Preview resource content
 
 | Shortcut       | Action                  |
 | -------------- | ----------------------- |
@@ -309,9 +403,12 @@ The inspector respects system theme preferences:
 
 ---
 
-## 🛠️ Configuration Examples
+## ⌨️ Keyboard Shortcuts
 
-### Local Development Server
+| Shortcut       | Action                     |
+| -------------- | -------------------------- |
+| `Cmd/Ctrl + K` | Quick search and navigation |
+| `Esc`          | Close modals and overlays  |
 
 ```javascript
 // Your MCP server
@@ -320,19 +417,16 @@ import { createMCPServer } from 'mcp-use/server'
 const server = createMCPServer('dev-server', {
   version: '1.0.0',
   description: 'Development MCP Server',
-  description: 'Development MCP Server',
 })
 
 server.tool('debug_tool', {
   description: 'Debug tool for testing',
   parameters: z.object({
     message: z.string(),
-    message: z.string(),
   }),
   execute: async ({ message }) => {
     console.log('Debug:', message)
     return { received: message, timestamp: Date.now() }
-  },
   },
 })
 
@@ -349,8 +443,6 @@ const server = createMCPServer('production-server', {
     clientId: process.env.OAUTH_CLIENT_ID,
     clientSecret: process.env.OAUTH_CLIENT_SECRET,
     authorizationUrl: 'https://api.example.com/oauth/authorize',
-    tokenUrl: 'https://api.example.com/oauth/token',
-  },
     tokenUrl: 'https://api.example.com/oauth/token',
   },
 })
@@ -376,9 +468,9 @@ URL: https://api.example.com/mcp
 
 ---
 
-## 🏗️ Architecture
+## 💾 Persistency
 
-The inspector is built with modern web technologies:
+The inspector automatically saves your configurations:
 
 ### Frontend Stack
 
@@ -418,28 +510,20 @@ The `useMcp` hook handles:
 
 ---
 
-## 🐛 Troubleshooting
+## 🐳 Self-Hosting
 
-### Common Issues and Solutions
+Deploy the MCP Inspector to your own infrastructure with a single Docker container. Perfect for enterprise environments, air-gapped networks, or when you need full control over your debugging environment.
+
+### Docker Image
+
+The official Docker image is available on [Docker Hub](https://hub.docker.com/r/mcpuse/inspector).
+
+**Quick Start:**
 
 **Inspector not loading:**
 
 ```bash
 docker run -d -p 8080:8080 --name mcp-inspector mcpuse/inspector:latest
-```
-
-Then visit `http://localhost:8080` to access your self-hosted inspector.
-
-### Docker Deployment Options
-
-**Using Docker Run:**
-
-```bash
-docker run -d \
-  --name mcp-inspector \
-  -p 8080:8080 \
-  -e NODE_ENV=production \
-  mcpuse/inspector:latest
 ```
 
 **Connection fails immediately:**
@@ -471,20 +555,19 @@ docker run -d \
 
 ---
 
-## 🚀 Performance Tips
+## 📊 Telemetry & Privacy
 
-### Optimize for Large Tool Sets
+The MCP Inspector collects anonymized usage data to help us improve the tool.
 
 ```javascript
 // Use pagination for many tools
 server.configurePagination({
   toolsPerPage: 50,
   enableSearch: true,
-  enableSearch: true,
 })
 ```
 
-### Reduce Connection Overhead
+**Option 2: localStorage (Browser)**
 
 ```javascript
 // Configure connection pooling
@@ -492,17 +575,15 @@ const inspector = {
   maxConnections: 5,
   connectionTimeout: 30000,
   keepAlive: true,
-  keepAlive: true,
 }
 ```
 
-### Enable Caching
+### Telemetry Providers
 
 ```javascript
 // Cache tool results
 server.enableCache({
   ttl: 300, // 5 minutes
-  maxSize: 100, // MB
   maxSize: 100, // MB
 })
 ```
@@ -517,7 +598,6 @@ server.enableCache({
 // Configure CORS for inspector access
 server.configureCORS({
   origin: ['http://localhost:3000'],
-  credentials: true,
   credentials: true,
 })
 ```
@@ -535,7 +615,6 @@ server.use(authMiddleware)
 // Prevent abuse
 server.configureRateLimit({
   windowMs: 60000, // 1 minute
-  max: 100, // requests
   max: 100, // requests
 })
 ```
@@ -569,6 +648,7 @@ interface InspectorOptions {
 }
 ```
 
+Both providers respect your privacy and follow GDPR compliance.
 ---
 
 ## 🤝 Contributing
@@ -591,4 +671,4 @@ See our [contributing guide](https://github.com/mcp-use/mcp-use/blob/main/CONTRI
 
 ## 📜 License
 
-MIT © [mcp-use](https://github.com/mcp-use)
+MIT © [MCP-Use](https://github.com/mcp-use)
