@@ -1,5 +1,13 @@
 # @mcp-use/inspector
 
+## 0.3.11
+
+### Patch Changes
+
+- fix: update to monorepo
+- Updated dependencies
+  - mcp-use@1.0.7
+
 ## 0.3.10
 
 ### Patch Changes

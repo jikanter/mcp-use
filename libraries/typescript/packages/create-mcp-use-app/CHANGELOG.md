@@ -1,5 +1,11 @@
 # create-mcp-use-app
 
+## 0.3.5
+
+### Patch Changes
+
+- fix: update to monorepo
+
 ## 0.3.4
 
 ### Patch Changes
