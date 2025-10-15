@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main, canary]
+    branches: [main, monorepo]
   pull_request:
-    branches: [main, canary]
+    branches: [main, monorepo]
 
 jobs:
   detect-changes:
@@ -248,7 +248,7 @@ jobs:
 
   typescript-changeset-check:
     needs: detect-changes
-    if: needs.detect-changes.outputs.typescript == 'true' && github.event_name == 'pull_request' && github.base_ref != 'canary'
+    if: needs.detect-changes.outputs.typescript == 'true' && github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     defaults:
       run:
