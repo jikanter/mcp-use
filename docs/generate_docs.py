@@ -1187,7 +1187,7 @@ def generate_module_docs(module_name: str, output_dir: str) -> None:
 
     # Generate GitHub URL for source code
     # Handle library-specific paths
-    module_path = module_name.replace(".", "/")
+    module_path = module_name.replace('.', '/')
     github_url = f"https://github.com/mcp-use/mcp-use/blob/main/libraries/python/{module_path}.py"
 
     frontmatter = {
@@ -1588,13 +1588,8 @@ def generate_api_reference_groups(
 
                 # Add root items directly to subpackages list (no Overview section)
                 if "root" in packages[package] and packages[package]["root"]:
-                    root_modules = sorted(
-                        packages[package]["root"], key=lambda x: x["display_name"]
-                    )
-                    root_pages = [
-                        f"python/api-reference/{module['module']}"
-                        for module in root_modules
-                    ]
+                    root_modules = sorted(packages[package]["root"], key=lambda x: x["display_name"])
+                    root_pages = [f"python/api-reference/{module['module']}" for module in root_modules]
                     subpackages.extend(root_pages)
 
                 # Add other subpackages - only create subsections if they have more than 1 item
@@ -1607,13 +1602,8 @@ def generate_api_reference_groups(
                     # Only create subsection if there's more than 1 module
                     if len(modules) > 1:
                         subpackage_info = get_subpackage_display_info(subpackage_name)
-                        sorted_modules = sorted(
-                            modules, key=lambda x: x["display_name"]
-                        )
-                        pages = [
-                            f"python/api-reference/{module['module']}"
-                            for module in sorted_modules
-                        ]
+                        sorted_modules = sorted(modules, key=lambda x: x["display_name"])
+                        pages = [f"python/api-reference/{module['module']}" for module in sorted_modules]
 
                         subpackages.append(
                             {
@@ -1626,6 +1616,7 @@ def generate_api_reference_groups(
                         # Single module - add directly to root level
                         module = modules[0]
                         subpackages.append(f"python/api-reference/{module['module']}")
+                        subpackages.append(f"python/api-reference/{module['module']}")
 
                 group = {
                     "group": package_info["name"],
@@ -1634,12 +1625,8 @@ def generate_api_reference_groups(
                 }
             else:
                 # Simple structure without subpackages
-                modules = sorted(
-                    packages[package]["root"], key=lambda x: x["display_name"]
-                )
-                pages = [
-                    f"python/api-reference/{module['module']}" for module in modules
-                ]
+                modules = sorted(packages[package]["root"], key=lambda x: x["display_name"])
+                pages = [f"python/api-reference/{module['module']}" for module in modules]
 
                 group = {
                     "group": package_info["name"],
@@ -1703,15 +1690,11 @@ def update_docs_json(docs_json_path: str, api_reference_dir: str) -> None:
     api_groups = generate_api_reference_groups(packages)
 
     # Update the navigation structure
-    # Find the Python SDK product and then the API Reference tab within it.
-    for product in docs_config["navigation"]["products"]:
-        if product.get("product") == "Python SDK":
-            if "tabs" in product:
-                for tab in product["tabs"]:
-                    if "API Reference" in tab.get("tab", ""):
-                        tab["groups"] = api_groups
-                        break  # Found the tab, stop searching tabs
-            break  # Found the product, stop searching products
+    # Handle both "API Reference" and "Python API Reference" tab names
+    for tab in docs_config["navigation"]["tabs"]:
+        if "API Reference" in tab["tab"]:
+            tab["groups"] = api_groups
+            break
 
     # Write updated docs.json
     with open(docs_json_path, "w", encoding="utf-8") as f:
@@ -1739,27 +1722,6 @@ def main():
     package_dir = sys.argv[1]
     output_dir = sys.argv[2] if len(sys.argv) > 2 else "api-reference"
     docs_json_path = sys.argv[3] if len(sys.argv) > 3 else "docs.json"
-    scan_only = "--scan-only" in sys.argv
-
-    # If scan-only mode, just scan for deprecated items and exit
-    if scan_only:
-        print("🔍 Scanning for deprecated items...")
-        deprecated_files = scan_all_files_for_deprecated_items(package_dir)
-
-        if not deprecated_files:
-            print("✅ No deprecated items found!")
-            return
-
-        print(f"⚠️  Found deprecated items in {len(deprecated_files)} files:")
-        print()
-
-        for file_path, deprecated_items in deprecated_files.items():
-            print(f"📁 {file_path}")
-            for item in deprecated_items:
-                print(f"   - {item}")
-        print()
-
-        return
 
     # Add the directory containing the package to Python path
     # Convert package_dir (e.g., ../libraries/python/mcp_use) to absolute path

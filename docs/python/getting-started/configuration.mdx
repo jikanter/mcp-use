@@ -48,6 +48,7 @@ For a basic setup, you need both client and agent configuration:
 ### 1. Client Setup
 
 <CodeGroup>
+<<<<<<< HEAD
 ```python Python
 from mcp_use import MCPClient
 
@@ -58,10 +59,23 @@ config = {
             "command": "npx",
             "args": ["@playwright/mcp@latest"],
             "env": {"DISPLAY": ":1"}
+=======
+```typescript TypeScript
+import { MCPClient } from 'mcp-use'
+
+// Configure your MCP servers
+const config = {
+    mcpServers: {
+        playwright: {
+            command: 'npx',
+            args: ['@playwright/mcp@latest'],
+            env: { DISPLAY: ':1' }
+>>>>>>> 8f43938 (move docs)
         }
     }
 }
 
+<<<<<<< HEAD
 client = MCPClient(config)
 ```
 <<<<<<< HEAD
@@ -89,6 +103,7 @@ const client = new MCPClient(config)
 ### 2. Agent Setup
 
 <CodeGroup>
+<<<<<<< HEAD
 ```python Python
 from mcp_use import MCPAgent
 from langchain_openai import ChatOpenAI
@@ -114,6 +129,7 @@ const agent = new MCPAgent({ llm, client })
 ### 3. Basic Usage
 
 <CodeGroup>
+<<<<<<< HEAD
 ```python Python
 import asyncio
 
@@ -176,6 +192,7 @@ main().catch(console.error)
 ### Development Setup
 
 <CodeGroup>
+<<<<<<< HEAD
 ```python Python
 # Simple development configuration
 from dotenv import load_dotenv
@@ -215,6 +232,7 @@ const agent = new MCPAgent({
 ### Production Setup
 
 <CodeGroup>
+<<<<<<< HEAD
 ```python Python
 # Production configuration with restrictions
 agent = MCPAgent(
@@ -246,6 +264,7 @@ const agent = new MCPAgent({
 ### Multi-Server Setup
 
 <CodeGroup>
+<<<<<<< HEAD
 ```python Python
 # Complex multi-server configuration
 client = MCPClient.from_config_file("multi-server.json")

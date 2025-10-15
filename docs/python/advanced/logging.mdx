@@ -58,13 +58,22 @@ Programmatic control is useful for debugging specific parts of your application 
 </Note>
 
 <CodeGroup>
-```python Python
-import mcp_use
+```typescript TypeScript
+import { logger } from 'mcp-use'
 
-# Different debug levels
-mcp_use.set_debug(1)  # INFO level
-mcp_use.set_debug(2)  # DEBUG level (full verbose output)
-mcp_use.set_debug(0)  # Turn off debug (WARNING level)
+// Set the logger level
+logger.level = 'info'   // INFO level
+logger.level = 'debug'  // DEBUG level (full verbose output)
+logger.level = 'warn'   // Turn off debug (WARNING level)
+```
+
+```typescript TypeScript
+import { logger } from 'mcp-use'
+
+// Set the logger level
+logger.level = 'info'   // INFO level
+logger.level = 'debug'  // DEBUG level (full verbose output)
+logger.level = 'warn'   // Turn off debug (WARNING level)
 ```
 <<<<<<< HEAD
 =======
@@ -84,12 +93,20 @@ logger.level = 'warn'   // Turn off debug (WARNING level)
 You can conditionally enable debugging based on environment or configuration:
 
 <CodeGroup>
-```python Python
-import os
-import mcp_use
+```typescript TypeScript
+import { logger } from 'mcp-use'
 
-if os.getenv("ENVIRONMENT") == "development":
-    mcp_use.set_debug(2)
+if (process.env.ENVIRONMENT === 'development') {
+    logger.level = 'debug'
+}
+```
+
+```typescript TypeScript
+import { logger } from 'mcp-use'
+
+if (process.env.ENVIRONMENT === 'development') {
+    logger.level = 'debug'
+}
 ```
 <<<<<<< HEAD
 =======
@@ -138,15 +155,26 @@ if (process.env.ENVIRONMENT === 'development') {
 If you only want to increase verbosity for the agent component without enabling full debug mode for the entire package, you can use the `verbose` parameter when creating an MCPAgent:
 
 <CodeGroup>
-```python Python
-from mcp_use import MCPAgent
+```typescript TypeScript
+import { MCPAgent } from 'mcp-use'
 
-# Create agent with increased verbosity
-agent = MCPAgent(
-    llm=your_llm,
-    client=your_client,
-    verbose=True  # Only shows debug messages from the agent
-)
+// Create agent with increased verbosity
+const agent = new MCPAgent({
+    llm: yourLlm,
+    client: yourClient,
+    verbose: true  // Only shows debug messages from the agent
+})
+```
+
+```typescript TypeScript
+import { MCPAgent } from 'mcp-use'
+
+// Create agent with increased verbosity
+const agent = new MCPAgent({
+    llm: yourLlm,
+    client: yourClient,
+    verbose: true  // Only shows debug messages from the agent
+})
 ```
 <<<<<<< HEAD
 =======

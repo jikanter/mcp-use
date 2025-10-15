@@ -27,6 +27,7 @@ Direct tool calls are appropriate when:
 Here's how to call tools directly using the MCPClient:
 
 <CodeGroup>
+<<<<<<< HEAD
 ```python Python
 import asyncio
 from mcp_use import MCPClient
@@ -38,10 +39,23 @@ async def call_tool_example():
             "everything": {
                 "command": "npx",
                 "args": ["-y", "@modelcontextprotocol/server-everything"],
+=======
+```typescript TypeScript
+import { MCPClient } from 'mcp-use'
+
+async function callToolExample() {
+    // Configure the MCP server
+    const config = {
+        mcpServers: {
+            everything: {
+                command: 'npx',
+                args: ['-y', '@modelcontextprotocol/server-everything']
+>>>>>>> 8f43938 (move docs)
             }
         }
     }
 
+<<<<<<< HEAD
     # Create client from configuration
     client = MCPClient(config)
 
@@ -145,6 +159,7 @@ The `call_tool` method returns a `CallToolResult` object with the following attr
 ### Accessing Results
 
 <CodeGroup>
+<<<<<<< HEAD
 ```python Python
 # Call a tool
 result = await session.call_tool(
@@ -198,6 +213,7 @@ if (result.isError) {
 You can work with multiple MCP servers and call tools from each:
 
 <CodeGroup>
+<<<<<<< HEAD
 ```python Python
 import asyncio
 from mcp_use import MCPClient
@@ -213,10 +229,27 @@ async def multi_server_example():
             "time": {
                 "command": "npx",
                 "args": ["-y", "@modelcontextprotocol/server-time"]
+=======
+```typescript TypeScript
+import { MCPClient } from 'mcp-use'
+
+async function multiServerExample() {
+    const config = {
+        mcpServers: {
+            filesystem: {
+                command: 'npx',
+                args: ['-y', '@modelcontextprotocol/server-filesystem'],
+                env: { FILE_PATH: '/tmp' }
+            },
+            time: {
+                command: 'npx',
+                args: ['-y', '@modelcontextprotocol/server-time']
+>>>>>>> 8f43938 (move docs)
             }
         }
     }
 
+<<<<<<< HEAD
     client = MCPClient(config)
 
     try:
@@ -301,6 +334,7 @@ multiServerExample().catch(console.error)
 Before calling tools, you may want to discover what's available:
 
 <CodeGroup>
+<<<<<<< HEAD
 ```python Python
 async def discover_tools():
     client = MCPClient(config)
@@ -362,6 +396,7 @@ async function discoverTools() {
 Always handle potential errors when making direct tool calls:
 
 <CodeGroup>
+<<<<<<< HEAD
 ```python Python
 async def safe_tool_call():
     try:
