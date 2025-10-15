@@ -1,20 +1,25 @@
-name: Release
+name: TypeScript Release Beta
 
 on:
   push:
     branches:
-      - main
+      - beta
+    paths:
+      - "libraries/typescript/**"
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
   release:
-    name: Release
+    name: Release Beta
     runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: write
       id-token: write
+    defaults:
+      run:
+        working-directory: libraries/typescript
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -24,29 +29,28 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
-          version: 10.6.1
+          version: 9.14.2
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 23
-          cache: 'pnpm'
-          registry-url: 'https://registry.npmjs.org'
+          cache: "pnpm"
+          cache-dependency-path: libraries/typescript/pnpm-lock.yaml
+          registry-url: "https://registry.npmjs.org"
 
       - name: Install Dependencies
         run: pnpm install --no-frozen-lockfile
-
-      - name: Build Packages
-        run: pnpm build
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
         uses: changesets/action@v1
         with:
           publish: pnpm release
-          version: pnpm run version
-          commit: 'chore(release): version packages'
-          title: 'chore(release): version packages'
+          version: pnpm version
+          commit: "chore(typescript): version packages (beta)"
+          title: "chore(typescript): version packages (beta)"
+          cwd: libraries/typescript
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN_ORG }}
