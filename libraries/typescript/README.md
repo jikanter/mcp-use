@@ -21,17 +21,17 @@
   <strong>Build powerful AI agents, create MCP servers with UI widgets, and debug with built-in inspector - all in TypeScript</strong>
 </p>
 
-> **📦 Part of the [mcp-use Monorepo](../../README.md)** - This is the TypeScript implementation. Also available in [Python](../python/README.md).
+> **📦 Part of the [MCP-Use Monorepo](../../README.md)** - This is the TypeScript implementation. Also available in [Python](../python/README.md).
 
 ---
 
 ## 🎯 What is mcp-use?
 
-mcp-use is a comprehensive TypeScript framework for building and using [Model Context Protocol (MCP)](https://modelcontextprotocol.io) applications. It provides everything you need to create AI agents that can use tools, build MCP servers with rich UI interfaces, and debug your applications with powerful developer tools.
+MCP-Use is a comprehensive TypeScript framework for building and using [Model Context Protocol (MCP)](https://modelcontextprotocol.io) applications. It provides everything you need to create AI agents that can use tools, build MCP servers with rich UI interfaces, and debug your applications with powerful developer tools.
 
 ## 🏗️ What's Included
 
-mcp-use for TypeScript provides the complete MCP stack:
+MCP-Use for TypeScript provides the complete MCP stack:
 
 - **🤖 MCP Agent** - Build AI agents that can use tools and reason across multiple steps
 - **🔌 MCP Client** - Connect directly to MCP servers for programmatic tool access
@@ -43,13 +43,19 @@ mcp-use for TypeScript provides the complete MCP stack:
 
 ## 📖 Quick Links
 
-- **[Main Repository](../../README.md)** - Overview of the entire mcp-use ecosystem
+- **[Main Repository](../../README.md)** - Overview of the entire MCP-Use ecosystem
 - **[Python Version](../python/README.md)** - Python implementation for agents and clients
 - **[Inspector Documentation](./packages/inspector/README.md)** - Debug your MCP servers
 - **[CLI Documentation](./packages/cli/README.md)** - Build tool for MCP apps
 
 ## 📦 Packages Overview
 
+| Package                                       | Description                                   | Version                                                                                                         | Downloads                                                                                                        |
+| --------------------------------------------- | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| **[mcp-use](#mcp-use-core-framework)**        | Core framework for MCP clients and servers    | [![npm](https://img.shields.io/npm/v/mcp-use.svg)](https://www.npmjs.com/package/mcp-use)                       | [![npm](https://img.shields.io/npm/dw/mcp-use.svg)](https://www.npmjs.com/package/mcp-use)                       |
+| **[@mcp-use/cli](#mcp-use-cli)**              | Build tool with hot reload and auto-inspector | [![npm](https://img.shields.io/npm/v/@mcp-use/cli.svg)](https://www.npmjs.com/package/@mcp-use/cli)             | [![npm](https://img.shields.io/npm/dw/@mcp-use/cli.svg)](https://www.npmjs.com/package/@mcp-use/cli)             |
+| **[@mcp-use/inspector](#mcp-use-inspector)**  | Web-based debugger for MCP servers            | [![npm](https://img.shields.io/npm/v/@mcp-use/inspector.svg)](https://www.npmjs.com/package/@mcp-use/inspector) | [![npm](https://img.shields.io/npm/dw/@mcp-use/inspector.svg)](https://www.npmjs.com/package/@mcp-use/inspector) |
+| **[create-mcp-use-app](#create-mcp-use-app)** | Project scaffolding tool                      | [![npm](https://img.shields.io/npm/v/create-mcp-use-app.svg)](https://www.npmjs.com/package/create-mcp-use-app) | [![npm](https://img.shields.io/npm/dw/create-mcp-use-app.svg)](https://www.npmjs.com/package/create-mcp-use-app) |
 | Package                                       | Description                                   | Version                                                                                                         | Downloads                                                                                                        |
 | --------------------------------------------- | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | **[mcp-use](#mcp-use-core-framework)**        | Core framework for MCP clients and servers    | [![npm](https://img.shields.io/npm/v/mcp-use.svg)](https://www.npmjs.com/package/mcp-use)                       | [![npm](https://img.shields.io/npm/dw/mcp-use.svg)](https://www.npmjs.com/package/mcp-use)                       |
@@ -80,7 +86,7 @@ Your MCP server is now running at `http://localhost:3000` with the inspector aut
 
 ## 🎨 Build ChatGPT-Style Apps with MCP-UI Resources
 
-One of the most powerful features of mcp-use is the ability to build **interactive UI widgets** that work alongside your MCP tools. Create ChatGPT-like experiences with custom React components that can call MCP tools and display rich, interactive content.
+One of the most powerful features of MCP-Use is the ability to build **interactive UI widgets** that work alongside your MCP tools. Create ChatGPT-like experiences with custom React components that can call MCP tools and display rich, interactive content.
 
 ### Why MCP-UI Resources?
 
@@ -130,7 +136,7 @@ server.uiResource({
 **Learn More:**
 
 - [MCP-UI Resources Guide](#mcp-ui-resources) (detailed section below)
-- [Create mcp-use App](./packages/create-mcp-use-app/README.md) - Scaffolding with UI examples
+- [Create MCP-Use App](./packages/create-mcp-use-app/README.md) - Scaffolding with UI examples
 - [AI SDK Integration](#-ai-sdk-integration) - Build with Vercel AI SDK
 
 ---
@@ -155,10 +161,14 @@ const client = MCPClient.fromDict({
     filesystem: {
       command: 'npx',
       args: ['@modelcontextprotocol/server-filesystem'],
+      args: ['@modelcontextprotocol/server-filesystem'],
     },
     github: {
       command: 'npx',
       args: ['@modelcontextprotocol/server-github'],
+      env: { GITHUB_TOKEN: process.env.GITHUB_TOKEN },
+    },
+  },
       env: { GITHUB_TOKEN: process.env.GITHUB_TOKEN },
     },
   },
@@ -169,6 +179,7 @@ const agent = new MCPAgent({
   llm: new ChatOpenAI({ model: 'gpt-4' }),
   client,
   maxSteps: 10,
+  maxSteps: 10,
 })
 
 // Use the agent with natural language
@@ -178,6 +189,7 @@ const result = await agent.run(
 ```
 
 **Key Client Features:**
+
 
 - 🤖 **LLM Agnostic**: Works with OpenAI, Anthropic, Google, or any LangChain-supported LLM
 - 🔄 **Streaming Support**: Real-time streaming with `stream()` and `streamEvents()` methods
@@ -198,6 +210,7 @@ import { z } from 'zod'
 const server = createMCPServer('weather-server', {
   version: '1.0.0',
   description: 'Weather information MCP server',
+  description: 'Weather information MCP server',
 })
 
 // Define tools with Zod schemas
@@ -206,6 +219,7 @@ server.tool('get_weather', {
   parameters: z.object({
     city: z.string().describe('City name'),
     units: z.enum(['celsius', 'fahrenheit']).optional(),
+    units: z.enum(['celsius', 'fahrenheit']).optional(),
   }),
   execute: async ({ city, units = 'celsius' }) => {
     const weather = await fetchWeather(city, units)
@@ -213,7 +227,9 @@ server.tool('get_weather', {
       temperature: weather.temp,
       condition: weather.condition,
       humidity: weather.humidity,
+      humidity: weather.humidity,
     }
+  },
   },
 })
 
@@ -225,6 +241,7 @@ server.resource('weather_map', {
   fetch: async () => {
     return generateWeatherMapHTML()
   },
+  },
 })
 
 // Start the server
@@ -234,6 +251,7 @@ server.listen(3000)
 ```
 
 **Key Server Features:**
+
 
 - 🔍 **Auto Inspector**: Debugging UI automatically mounts at `/inspector`
 - 🎨 **UI Widgets**: Build React components served alongside MCP tools
@@ -274,6 +292,7 @@ export default function AnalyticsDashboard() {
 
   useEffect(() => {
     callTool('get_analytics', { period: '7d' }).then(setData)
+    callTool('get_analytics', { period: '7d' }).then(setData)
   }, [])
 
   return (
@@ -306,6 +325,7 @@ mcp-use start
 
 **What it does:**
 
+
 - 🚀 Auto-opens inspector in development mode
 - ♻️ Hot reload for both server and UI widgets
 - 📦 Bundles React widgets into standalone HTML pages
@@ -337,6 +357,7 @@ Web-based debugging tool for MCP servers - like Swagger UI but for MCP.
 
 **Features:**
 
+
 - 🔍 Test tools interactively with live execution
 - 📊 Monitor connection status and server health
 - 🔐 Handle OAuth flows automatically
@@ -347,6 +368,7 @@ Web-based debugging tool for MCP servers - like Swagger UI but for MCP.
 
 1. **Automatic** (with mcp-use server):
 
+
 ```typescript
 server.listen(3000)
 // Inspector at http://localhost:3000/inspector
@@ -354,11 +376,14 @@ server.listen(3000)
 
 2. **Standalone CLI**:
 
+
 ```bash
+npx @mcp-use/inspector --url https://mcp.example.com/sse
 npx @mcp-use/inspector --url https://mcp.example.com/sse
 ```
 
 3. **Custom mounting**:
+
 
 ```typescript
 import { mountInspector } from '@mcp-use/inspector'
@@ -382,6 +407,7 @@ npx create-mcp-use-app my-app --template advanced
 ```
 
 **What you get:**
+
 
 - ✅ Complete TypeScript setup
 - ✅ Pre-configured build scripts
@@ -412,6 +438,13 @@ const agent = new MCPAgent({
       },
     },
   }),
+        args: [
+          '@modelcontextprotocol/server-filesystem',
+          '/Users/me/documents',
+        ],
+      },
+    },
+  }),
 })
 
 // Natural language file operations
@@ -430,11 +463,14 @@ const client = MCPClient.fromDict({
     search: { command: 'npx', args: ['@mcp/server-search'] },
     memory: { command: 'npx', args: ['@mcp/server-memory'] },
   },
+    memory: { command: 'npx', args: ['@mcp/server-memory'] },
+  },
 })
 
 const researcher = new MCPAgent({
   llm: new ChatAnthropic(),
   client,
+  useServerManager: true, // Auto-select appropriate server
   useServerManager: true, // Auto-select appropriate server
 })
 
@@ -451,6 +487,7 @@ const report = await researcher.run(`
 ```typescript
 const server = createMCPServer('db-admin', {
   version: '1.0.0',
+  version: '1.0.0',
 })
 
 server.tool('execute_query', {
@@ -458,17 +495,20 @@ server.tool('execute_query', {
   parameters: z.object({
     query: z.string(),
     database: z.string(),
+    database: z.string(),
   }),
   execute: async ({ query, database }) => {
     // Validate and execute query
     const results = await db.query(query, { database })
     return { rows: results, count: results.length }
   },
+  },
 })
 
 // Create an AI-powered DBA
 const dba = new MCPAgent({
   llm: new ChatOpenAI({ model: 'gpt-4' }),
+  client: new MCPClient({ url: 'http://localhost:3000/mcp' }),
   client: new MCPClient({ url: 'http://localhost:3000/mcp' }),
 })
 
@@ -621,3 +661,4 @@ MIT © [mcp-use](https://github.com/mcp-use)
 <p align="center">
   <strong>Built with ❤️ by the mcp-use team</strong>
 </p>
+

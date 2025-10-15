@@ -7,7 +7,7 @@
   </picture>
 </div>
 
-<h1 align="center">🚀 mcp-use for Python</h1>
+<h1 align="center">🚀 MCP-Use for Python</h1>
 <p align="center">
     <a href="https://github.com/pietrozullo/mcp-use/stargazers" alt="GitHub stars">
         <img src="https://img.shields.io/github/stars/pietrozullo/mcp-use?style=social" /></a>
@@ -24,15 +24,15 @@
 </p>
 </div>
 
-> **📦 Part of the [mcp-use Monorepo](../../README.md)** - This is the Python implementation. Also available in [TypeScript](../typescript/README.md).
+> **📦 Part of the [MCP-Use Monorepo](../../README.md)** - This is the Python implementation. Also available in [TypeScript](../typescript/README.md).
 
-🌐 **mcp-use for Python** is the complete way to connect **any LLM to any MCP server** and build custom MCP agents with tool access.
+🌐 **MCP-Use for Python** is the complete way to connect **any LLM to any MCP server** and build custom MCP agents with tool access.
 
 💡 Let your Python applications leverage the power of the Model Context Protocol with support for agents, clients, and advanced features.
 
 ## 🏗️ What's Included
 
-mcp-use for Python provides three main capabilities:
+MCP-Use for Python provides three main capabilities:
 
 - **🤖 MCP Agent** - Build AI agents that can use tools and reason across multiple steps
 - **🔌 MCP Client** - Connect directly to MCP servers for programmatic tool access
@@ -42,15 +42,15 @@ mcp-use for Python provides three main capabilities:
 
 ## 📖 Quick Links
 
-- **[Main Repository](../../README.md)** - Overview of the entire mcp-use ecosystem
+- **[Main Repository](../../README.md)** - Overview of the entire MCP-Use ecosystem
 - **[TypeScript Version](../typescript/README.md)** - TypeScript implementation with server framework
 - **[Documentation](https://docs.mcp-use.com)** - Complete online documentation
 - **[Examples](./examples/)** - Python code examples
 
 | Supports       |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | :------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Primitives** | [![Tools](https://img.shields.io/github/actions/workflow/status/pietrozullo/mcp-use/ci.yml?job=python-primitive/tools&label=Tools&style=flat)](https://github.com/pietrozullo/mcp-use/actions/workflows/ci.yml) [![Resources](https://img.shields.io/github/actions/workflow/status/pietrozullo/mcp-use/ci.yml?job=python-primitive/resources&label=Resources&style=flat)](https://github.com/pietrozullo/mcp-use/actions/workflows/ci.yml) [![Prompts](https://img.shields.io/github/actions/workflow/status/pietrozullo/mcp-use/ci.yml?job=python-primitive/prompts&label=Prompts&style=flat)](https://github.com/pietrozullo/mcp-use/actions/workflows/ci.yml) [![Sampling](https://img.shields.io/github/actions/workflow/status/pietrozullo/mcp-use/ci.yml?job=python-primitive/sampling&label=Sampling&style=flat)](https://github.com/pietrozullo/mcp-use/actions/workflows/ci.yml) [![Elicitation](https://img.shields.io/github/actions/workflow/status/pietrozullo/mcp-use/ci.yml?job=python-primitive/elicitation&label=Elicitation&style=flat)](https://github.com/pietrozullo/mcp-use/actions/workflows/ci.yml) [![Authentication](https://img.shields.io/github/actions/workflow/status/pietrozullo/mcp-use/ci.yml?job=python-primitive/authentication&label=Authentication&style=flat)](https://github.com/pietrozullo/mcp-use/actions/workflows/ci.yml) |
-| **Transports** | [![Stdio](https://img.shields.io/github/actions/workflow/status/pietrozullo/mcp-use/ci.yml?job=python-transport/stdio&label=Stdio&style=flat)](https://github.com/pietrozullo/mcp-use/actions/workflows/ci.yml) [![SSE](https://img.shields.io/github/actions/workflow/status/pietrozullo/mcp-use/ci.yml?job=python-transport/sse&label=SSE&style=flat)](https://github.com/pietrozullo/mcp-use/actions/workflows/ci.yml) [![Streamable HTTP](https://img.shields.io/github/actions/workflow/status/pietrozullo/mcp-use/ci.yml?job=python-transport/streamable_http&label=Streamable%20HTTP&style=flat)](https://github.com/pietrozullo/mcp-use/actions/workflows/ci.yml)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **Primitives** | [![Tools](https://img.shields.io/github/actions/workflow/status/pietrozullo/mcp-use/tests.yml?job=primitive-tools&label=Tools&style=flat)](https://github.com/pietrozullo/mcp-use/actions/workflows/tests.yml) [![Resources](https://img.shields.io/github/actions/workflow/status/pietrozullo/mcp-use/tests.yml?job=primitive-resources&label=Resources&style=flat)](https://github.com/pietrozullo/mcp-use/actions/workflows/tests.yml) [![Prompts](https://img.shields.io/github/actions/workflow/status/pietrozullo/mcp-use/tests.yml?job=primitive-prompts&label=Prompts&style=flat)](https://github.com/pietrozullo/mcp-use/actions/workflows/tests.yml) [![Sampling](https://img.shields.io/github/actions/workflow/status/pietrozullo/mcp-use/tests.yml?job=primitive-sampling&label=Sampling&style=flat)](https://github.com/pietrozullo/mcp-use/actions/workflows/tests.yml) [![Elicitation](https://img.shields.io/github/actions/workflow/status/pietrozullo/mcp-use/tests.yml?job=primitive-elicitation&label=Elicitation&style=flat)](https://github.com/pietrozullo/mcp-use/actions/workflows/tests.yml) [![Authentication](https://img.shields.io/github/actions/workflow/status/pietrozullo/mcp-use/tests.yml?job=primitive-authentication&label=Authentication&style=flat)](https://github.com/pietrozullo/mcp-use/actions/workflows/tests.yml) |
+| **Transports** | [![Stdio](https://img.shields.io/github/actions/workflow/status/pietrozullo/mcp-use/tests.yml?job=transport-stdio&label=Stdio&style=flat)](https://github.com/pietrozullo/mcp-use/actions/workflows/tests.yml) [![SSE](https://img.shields.io/github/actions/workflow/status/pietrozullo/mcp-use/tests.yml?job=transport-sse&label=SSE&style=flat)](https://github.com/pietrozullo/mcp-use/actions/workflows/tests.yml) [![Streamable HTTP](https://img.shields.io/github/actions/workflow/status/pietrozullo/mcp-use/tests.yml?job=transport-streamableHttp&label=Streamable%20HTTP&style=flat)](https://github.com/pietrozullo/mcp-use/actions/workflows/tests.yml)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 
 ## Features
 
@@ -97,6 +97,13 @@ mcp-use for Python provides three main capabilities:
   </tr>
 </table>
 
+---
+
+# 🤖 MCP Agent
+
+The **MCP Agent** is an AI-powered agent that can use tools from MCP servers to accomplish complex tasks. It reasons across multiple steps, selecting and executing tools as needed.
+
+## Quick Start
 ---
 
 # 🤖 MCP Agent
@@ -645,6 +652,13 @@ The `SandboxOptions` type provides configuration for the sandbox environment:
 The **MCP Client** allows you to connect directly to MCP servers and call tools programmatically without an AI agent. This is useful when you know exactly which tools to call and don't need AI reasoning.
 
 ## Direct Tool Calls (Without LLM)
+---
+
+# 🔌 MCP Client
+
+The **MCP Client** allows you to connect directly to MCP servers and call tools programmatically without an AI agent. This is useful when you know exactly which tools to call and don't need AI reasoning.
+
+## Direct Tool Calls (Without LLM)
 
 You can call MCP server tools directly without an LLM when you need programmatic control:
 
@@ -720,6 +734,23 @@ if __name__ == "__main__":
 
 
 ```
+
+---
+
+# 🛠️ MCP Server
+
+**Coming Soon!** Python support for creating MCP servers is under development.
+
+In the meantime, you can create MCP servers using our [TypeScript implementation](../typescript/README.md#%EF%B8%8F-mcp-server-framework), which offers:
+
+- Complete server framework with tools, resources, and prompts
+- Built-in inspector for debugging
+- React-based UI widgets for interactive experiences
+- Hot reload development workflow
+
+Python agents and clients can connect to TypeScript servers seamlessly - the MCP protocol is language-agnostic.
+
+---
 
 ---
 
