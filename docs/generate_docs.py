@@ -13,217 +13,6 @@ from pathlib import Path
 from typing import Any, Union
 
 
-def detect_deprecated_items(file_path: str) -> list[str]:
-    """Detect deprecated classes and functions in a Python file.
-
-    Args:
-        file_path: Path to the Python file to analyze
-
-    Returns:
-        List of deprecated class/function names
-    """
-    deprecated_items = []
-
-    try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            content = f.read()
-
-        tree = ast.parse(content)
-
-        # Check for @deprecated decorators
-        for node in ast.walk(tree):
-            if isinstance(node, ast.ClassDef):
-                for decorator in node.decorator_list:
-                    if isinstance(decorator, ast.Name) and decorator.id == "deprecated":
-                        deprecated_items.append(node.name)
-                    elif (
-                        isinstance(decorator, ast.Call)
-                        and isinstance(decorator.func, ast.Name)
-                        and decorator.func.id == "deprecated"
-                    ):
-                        deprecated_items.append(node.name)
-            elif isinstance(node, ast.FunctionDef):
-                for decorator in node.decorator_list:
-                    if isinstance(decorator, ast.Name) and decorator.id == "deprecated":
-                        deprecated_items.append(node.name)
-                    elif (
-                        isinstance(decorator, ast.Call)
-                        and isinstance(decorator.func, ast.Name)
-                        and decorator.func.id == "deprecated"
-                    ):
-                        deprecated_items.append(node.name)
-
-    except (FileNotFoundError, SyntaxError, UnicodeDecodeError) as e:
-        print(f"Warning: Could not analyze {file_path}: {e}")
-
-    return deprecated_items
-
-
-def detect_deprecated_imports(file_path: str) -> list[dict[str, str]]:
-    """Detect deprecated import paths in a Python file by analyzing @deprecated decorators.
-
-    Args:
-        file_path: Path to the Python file to analyze
-
-    Returns:
-        List of dictionaries containing deprecated import information
-    """
-    deprecated_imports = []
-
-    try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            content = f.read()
-
-        tree = ast.parse(content)
-
-        # Extract deprecated patterns from @deprecated decorators
-        deprecated_patterns = {}
-
-        for node in ast.walk(tree):
-            if isinstance(node, (ast.ClassDef, ast.FunctionDef)):
-                for decorator in node.decorator_list:
-                    if (
-                        isinstance(decorator, ast.Call)
-                        and isinstance(decorator.func, ast.Name)
-                        and decorator.func.id == "deprecated"
-                    ):
-                        # Extract the deprecation message
-                        if decorator.args and isinstance(
-                            decorator.args[0], ast.Constant
-                        ):
-                            deprecation_msg = decorator.args[0].value
-                            if isinstance(
-                                deprecation_msg, str
-                            ) and deprecation_msg.startswith("Use "):
-                                # Extract the new path from "Use mcp_use.new.path"
-                                new_path = deprecation_msg[4:]  # Remove "Use "
-
-                                # Determine the old path based on current file location
-                                old_path = _get_current_module_path(file_path)
-
-                                if old_path and new_path != old_path:
-                                    deprecated_patterns[old_path] = new_path
-
-        # Now check for imports that match these patterns
-        for node in ast.walk(tree):
-            if isinstance(node, ast.Import):
-                for alias in node.names:
-                    if alias.name in deprecated_patterns:
-                        deprecated_imports.append(
-                            {
-                                "type": "import",
-                                "line": node.lineno,
-                                "old_path": alias.name,
-                                "new_path": deprecated_patterns[alias.name],
-                                "alias": alias.asname,
-                            }
-                        )
-            elif isinstance(node, ast.ImportFrom):
-                if node.module and node.module in deprecated_patterns:
-                    deprecated_imports.append(
-                        {
-                            "type": "from_import",
-                            "line": node.lineno,
-                            "old_path": node.module,
-                            "new_path": deprecated_patterns[node.module],
-                            "names": [alias.name for alias in node.names],
-                        }
-                    )
-
-    except (FileNotFoundError, SyntaxError, UnicodeDecodeError) as e:
-        print(f"Warning: Could not analyze {file_path}: {e}")
-
-    return deprecated_imports
-
-
-def _get_current_module_path(file_path: str) -> str:
-    """Extract the module path from a file path."""
-    # Convert file path to module path
-    # e.g., "../libraries/python/mcp_use/session.py" -> "mcp_use.session"
-    path_parts = file_path.replace("\\", "/").split("/")
-
-    # Find the mcp_use directory
-    try:
-        mcp_use_index = path_parts.index("mcp_use")
-        module_parts = path_parts[mcp_use_index:]
-
-        # Remove .py extension and join with dots
-        if module_parts[-1].endswith(".py"):
-            module_parts[-1] = module_parts[-1][:-3]
-
-        return ".".join(module_parts)
-    except ValueError:
-        return None
-
-
-def generate_deprecation_warning(
-    deprecated_imports: list[dict[str, str]], file_path: str
-) -> str:
-    """Generate a deprecation warning callout for deprecated imports.
-
-    Args:
-        deprecated_imports: List of deprecated import information
-        file_path: Path to the file being analyzed
-
-    Returns:
-        MDX formatted deprecation warning
-    """
-    if not deprecated_imports:
-        return ""
-
-    warning_lines = [
-        "<Warning>",
-        f"**File:** `{file_path}`",
-        "",
-        "The following import paths are deprecated and should be updated:",
-        "",
-    ]
-
-    for dep_import in deprecated_imports:
-        if dep_import["type"] == "import":
-            old_line = f"import {dep_import['old_path']}"
-            if dep_import["alias"]:
-                old_line += f" as {dep_import['alias']}"
-            new_line = f"import {dep_import['new_path']}"
-            if dep_import["alias"]:
-                new_line += f" as {dep_import['alias']}"
-
-            warning_lines.extend(
-                [
-                    f"**Line {dep_import['line']}:**",
-                    "```python",
-                    "# Deprecated:",
-                    f"{old_line}",
-                    "# Use instead:",
-                    f"{new_line}",
-                    "```",
-                    "",
-                ]
-            )
-        elif dep_import["type"] == "from_import":
-            names_str = ", ".join(dep_import["names"])
-            old_line = f"from {dep_import['old_path']} import {names_str}"
-            new_line = f"from {dep_import['new_path']} import {names_str}"
-
-            warning_lines.extend(
-                [
-                    f"**Line {dep_import['line']}:**",
-                    "```python",
-                    "# Deprecated:",
-                    f"{old_line}",
-                    "# Use instead:",
-                    f"{new_line}",
-                    "```",
-                    "",
-                ]
-            )
-
-    warning_lines.append("</Warning>")
-    warning_lines.append("")
-
-    return "\n".join(warning_lines)
-
-
 def get_docstring(obj: Any) -> str:
     """Extract docstring from an object."""
     if hasattr(obj, "__doc__") and obj.__doc__:
@@ -1304,7 +1093,7 @@ def generate_module_docs(module_name: str, output_dir: str) -> None:
 
     # Generate GitHub URL for source code
     # Handle library-specific paths
-    module_path = module_name.replace('.', '/')
+    module_path = module_name.replace(".", "/")
     github_url = f"https://github.com/mcp-use/mcp-use/blob/main/libraries/python/{module_path}.py"
 
     frontmatter = {
@@ -1341,16 +1130,28 @@ def generate_module_docs(module_name: str, output_dir: str) -> None:
         content.append(process_docstring(module_docstring))
         content.append("")
 
-    # Filter out deprecated items from classes and functions
-    filtered_classes = [
-        (name, obj) for name, obj in classes if name not in deprecated_items
+    # Get all members of the module
+    members = inspect.getmembers(module)
+
+    # Classes - only include classes defined in this module
+    classes = [
+        (name, obj)
+        for name, obj in members
+        if inspect.isclass(obj)
+        and not name.startswith("_")
+        and is_defined_in_module(obj, module_name)
     ]
     for _, cls in filtered_classes:
         content.append(generate_class_docs(cls, module_name))
         content.append("")
 
-    filtered_functions = [
-        (name, obj) for name, obj in functions if name not in deprecated_items
+    # Functions - only include functions defined in this module
+    functions = [
+        (name, obj)
+        for name, obj in members
+        if inspect.isfunction(obj)
+        and not name.startswith("_")
+        and is_defined_in_module(obj, module_name)
     ]
     for _, func in filtered_functions:
         content.append(generate_function_docs(func, module_name))
@@ -1720,8 +1521,13 @@ def generate_api_reference_groups(
 
                 # Add root items directly to subpackages list (no Overview section)
                 if "root" in packages[package] and packages[package]["root"]:
-                    root_modules = sorted(packages[package]["root"], key=lambda x: x["display_name"])
-                    root_pages = [f"python/api-reference/{module['module']}" for module in root_modules]
+                    root_modules = sorted(
+                        packages[package]["root"], key=lambda x: x["display_name"]
+                    )
+                    root_pages = [
+                        f"python/api-reference/{module['module']}"
+                        for module in root_modules
+                    ]
                     subpackages.extend(root_pages)
 
                 # Add other subpackages - only create subsections if they have more than 1 item
@@ -1734,8 +1540,13 @@ def generate_api_reference_groups(
                     # Only create subsection if there's more than 1 module
                     if len(modules) > 1:
                         subpackage_info = get_subpackage_display_info(subpackage_name)
-                        sorted_modules = sorted(modules, key=lambda x: x["display_name"])
-                        pages = [f"python/api-reference/{module['module']}" for module in sorted_modules]
+                        sorted_modules = sorted(
+                            modules, key=lambda x: x["display_name"]
+                        )
+                        pages = [
+                            f"python/api-reference/{module['module']}"
+                            for module in sorted_modules
+                        ]
 
                         subpackages.append(
                             {
@@ -1767,8 +1578,12 @@ def generate_api_reference_groups(
                 }
             else:
                 # Simple structure without subpackages
-                modules = sorted(packages[package]["root"], key=lambda x: x["display_name"])
-                pages = [f"python/api-reference/{module['module']}" for module in modules]
+                modules = sorted(
+                    packages[package]["root"], key=lambda x: x["display_name"]
+                )
+                pages = [
+                    f"python/api-reference/{module['module']}" for module in modules
+                ]
 
                 group = {
                     "group": package_info["name"],
@@ -1856,13 +1671,10 @@ def main():
     """Main function."""
     if len(sys.argv) < 2:
         print(
-            "Usage: python generate_docs.py <package_dir> [output_dir] [docs_json_path] [--scan-only]"
+            "Usage: python generate_docs.py <package_dir> [output_dir] [docs_json_path]"
         )
         print(
             "Example: python generate_docs.py ../libraries/python/mcp_use python/api-reference docs.json"
-        )
-        print(
-            "Example: python generate_docs.py ../libraries/python/mcp_use --scan-only"
         )
         sys.exit(1)
 
