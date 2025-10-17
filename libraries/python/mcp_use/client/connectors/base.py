@@ -11,12 +11,7 @@ from datetime import timedelta
 from typing import Any
 
 from mcp import ClientSession, Implementation
-from mcp.client.session import (
-    ElicitationFnT,
-    LoggingFnT,
-    MessageHandlerFnT,
-    SamplingFnT,
-)
+from mcp.client.session import ElicitationFnT, LoggingFnT, MessageHandlerFnT, SamplingFnT
 from mcp.shared.exceptions import McpError
 from mcp.types import (
     CallToolResult,
@@ -81,7 +76,7 @@ class BaseConnector(ABC):
         return Implementation(
             name="mcp-use",
             version=mcp_use.__version__,
-            websiteUrl="https://github.com/mcp-use/mcp-use",
+            url="https://github.com/mcp-use/mcp-use",
         )
 
     async def _internal_message_handler(self, message: Any) -> None:
@@ -358,10 +353,7 @@ class BaseConnector(ABC):
 
     @telemetry("connector_call_tool")
     async def call_tool(
-        self,
-        name: str,
-        arguments: dict[str, Any],
-        read_timeout_seconds: timedelta | None = None,
+        self, name: str, arguments: dict[str, Any], read_timeout_seconds: timedelta | None = None
     ) -> CallToolResult:
         """Call an MCP tool with automatic reconnection handling.
 

@@ -39,12 +39,12 @@ from mcp_use.agents.managers.server_manager import ServerManager
 # Import observability manager
 from mcp_use.agents.observability import ObservabilityManager
 from mcp_use.agents.prompts.system_prompt_builder import create_system_message
-from mcp_use.agents.prompts.templates import (
-    DEFAULT_SYSTEM_PROMPT_TEMPLATE,
-    SERVER_MANAGER_SYSTEM_PROMPT_TEMPLATE,
-)
+from mcp_use.agents.prompts.templates import DEFAULT_SYSTEM_PROMPT_TEMPLATE, SERVER_MANAGER_SYSTEM_PROMPT_TEMPLATE
 from mcp_use.agents.remote import RemoteAgent
 from mcp_use.client import MCPClient
+from mcp_use.client.connectors.base import BaseConnector
+from mcp_use.logging import logger
+from mcp_use.telemetry.telemetry import Telemetry, telemetry
 from mcp_use.client.connectors.base import BaseConnector
 from mcp_use.logging import logger
 from mcp_use.telemetry.telemetry import Telemetry, telemetry
@@ -418,8 +418,8 @@ class MCPAgent:
         steps_taken = len(self.tools_used_names)
         return final_result, steps_taken
 
-    @telemetry("agent_run")
-    async def run(
+    @telemetry("agent_stream")
+    async def stream(
         self,
         query: str,
         max_steps: int | None = None,
@@ -908,6 +908,168 @@ class MCPAgent:
                 logger.info("🧹 Closing agent after stream completion")
                 await self.close()
 
+    @telemetry("agent_run")
+    async def run(
+        self,
+        query: str,
+        max_steps: int | None = None,
+        manage_connector: bool = True,
+        external_history: list[BaseMessage] | None = None,
+        output_schema: type[T] | None = None,
+    ) -> str | T:
+        """Run a query using the MCP tools and return the final result.
+
+        This method uses the streaming implementation internally and returns
+        the final result after consuming all intermediate steps. If output_schema
+        is provided, the agent will be schema-aware and return structured output.
+
+        Args:
+            query: The query to run.
+            max_steps: Optional maximum number of steps to take.
+            manage_connector: Whether to handle the connector lifecycle internally.
+                If True, this method will connect, initialize, and disconnect from
+                the connector automatically. If False, the caller is responsible
+                for managing the connector lifecycle.
+            external_history: Optional external history to use instead of the
+                internal conversation history.
+            output_schema: Optional Pydantic BaseModel class for structured output.
+                If provided, the agent will attempt to return an instance of this model.
+
+        Returns:
+            The result of running the query as a string, or if output_schema is provided,
+            an instance of the specified Pydantic model.
+
+        Example:
+            ```python
+            # Regular usage
+            result = await agent.run("What's the weather like?")
+
+            # Structured output usage
+            from pydantic import BaseModel, Field
+
+            class WeatherInfo(BaseModel):
+                temperature: float = Field(description="Temperature in Celsius")
+                condition: str = Field(description="Weather condition")
+
+            weather: WeatherInfo = await agent.run(
+                "What's the weather like?",
+                output_schema=WeatherInfo
+            )
+            ```
+        """
+        # Delegate to remote agent if in remote mode
+        if self._is_remote and self._remote_agent:
+            result = await self._remote_agent.run(query, max_steps, external_history, output_schema)
+            return result
+
+        success = True
+        start_time = time.time()
+
+        generator = self.stream(
+            query, max_steps, manage_connector, external_history, track_execution=False, output_schema=output_schema
+        )
+        error = None
+        steps_taken = 0
+        result = None
+        try:
+            result, steps_taken = await self._consume_and_return(generator)
+
+        except Exception as e:
+            success = False
+            error = str(e)
+            logger.error(f"❌ Error during agent execution: {e}")
+            raise
+        finally:
+            self.telemetry.track_agent_execution(
+                execution_method="run",
+                query=query,
+                success=success,
+                model_provider=self._model_provider,
+                model_name=self._model_name,
+                server_count=len(self.client.get_all_active_sessions()) if self.client else len(self.connectors),
+                server_identifiers=[connector.public_identifier for connector in self.connectors],
+                total_tools_available=len(self._tools) if self._tools else 0,
+                tools_available_names=[tool.name for tool in self._tools],
+                max_steps_configured=self.max_steps,
+                memory_enabled=self.memory_enabled,
+                use_server_manager=self.use_server_manager,
+                max_steps_used=max_steps,
+                manage_connector=manage_connector,
+                external_history_used=external_history is not None,
+                steps_taken=steps_taken,
+                tools_used_count=len(self.tools_used_names),
+                tools_used_names=self.tools_used_names,
+                response=str(self._normalize_output(result)),
+                execution_time_ms=int((time.time() - start_time) * 1000),
+                error_type=error,
+                conversation_history_length=len(self._conversation_history),
+            )
+        return result
+
+    async def _attempt_structured_output(
+        self, raw_result: str, structured_llm, output_schema: type[T], schema_description: str
+    ) -> T:
+        """Attempt to create structured output from raw result with validation."""
+        format_prompt = f"""
+        Please format the following information according to the specified schema.
+        Extract and structure the relevant information from the content below.
+
+        Required schema fields:
+        {schema_description}
+
+        Content to format:
+        {raw_result}
+
+        Please provide the information in the requested structured format.
+        If any required information is missing, you must indicate this clearly.
+        """
+
+        structured_result = await structured_llm.ainvoke(format_prompt)
+
+        try:
+            for field_name, field_info in output_schema.model_fields.items():
+                required = not hasattr(field_info, "default") or field_info.default is None
+                if required:
+                    value = getattr(structured_result, field_name, None)
+                    if value is None or (isinstance(value, str) and not value.strip()):
+                        raise ValueError(f"Required field '{field_name}' is missing or empty")
+                    if isinstance(value, list) and len(value) == 0:
+                        raise ValueError(f"Required field '{field_name}' is an empty list")
+        except Exception as e:
+            logger.debug(f"Validation details: {e}")
+            raise  # Re-raise to trigger retry logic
+
+        return structured_result
+
+    def _enhance_query_with_schema(self, query: str, output_schema: type[T]) -> str:
+        """Enhance the query with schema information to make the agent aware of required fields."""
+        schema_fields = []
+
+        try:
+            for field_name, field_info in output_schema.model_fields.items():
+                description = getattr(field_info, "description", "") or field_name
+                required = not hasattr(field_info, "default") or field_info.default is None
+                schema_fields.append(f"- {field_name}: {description} {'(required)' if required else '(optional)'}")
+
+            schema_description = "\n".join(schema_fields)
+        except Exception as e:
+            logger.warning(f"Could not extract schema details: {e}")
+            schema_description = f"Schema: {output_schema.__name__}"
+
+        # Enhance the query with schema awareness
+        enhanced_query = f"""
+        {query}
+
+        IMPORTANT: Your response must include sufficient information to populate the following structured output:
+
+        {schema_description}
+
+        Make sure you gather ALL the required information during your task execution.
+        If any required information is missing, continue working to find it.
+        """
+
+        return enhanced_query
+
     async def _generate_response_chunks_async(
         self,
         query: str,
@@ -966,6 +1128,7 @@ class MCPAgent:
             logger.info("🧹 Closing agent after generator completion")
             await self.close()
 
+    @telemetry("agent_stream_events")
     @telemetry("agent_stream_events")
     async def stream_events(
         self,
