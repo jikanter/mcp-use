@@ -40,6 +40,7 @@ from mcp_use.agents.managers.server_manager import ServerManager
 from mcp_use.agents.observability import ObservabilityManager
 from mcp_use.agents.prompts.system_prompt_builder import create_system_message
 from mcp_use.agents.prompts.templates import DEFAULT_SYSTEM_PROMPT_TEMPLATE, SERVER_MANAGER_SYSTEM_PROMPT_TEMPLATE
+from mcp_use.agents.prompts.templates import DEFAULT_SYSTEM_PROMPT_TEMPLATE, SERVER_MANAGER_SYSTEM_PROMPT_TEMPLATE
 from mcp_use.agents.remote import RemoteAgent
 from mcp_use.client import MCPClient
 from mcp_use.client.connectors.base import BaseConnector
@@ -420,6 +421,403 @@ class MCPAgent:
 
     @telemetry("agent_stream")
     async def stream(
+        self,
+        query: str,
+        max_steps: int | None = None,
+        manage_connector: bool = True,
+        external_history: list[BaseMessage] | None = None,
+        track_execution: bool = True,
+        output_schema: type[T] | None = None,
+    ) -> AsyncGenerator[tuple[AgentAction, str] | str | T, None]:
+        """Run the agent and yield intermediate steps as an async generator.
+
+        Args:
+            query: The query to run.
+            max_steps: Optional maximum number of steps to take.
+            manage_connector: Whether to handle the connector lifecycle internally.
+            external_history: Optional external history to use instead of the
+                internal conversation history.
+            track_execution: Whether to track execution for telemetry.
+            output_schema: Optional Pydantic BaseModel class for structured output.
+                If provided, the agent will attempt structured output at finish points
+                and continue execution if required information is missing.
+
+        Yields:
+            Intermediate steps as (AgentAction, str) tuples, followed by the final result.
+            If output_schema is provided, yields structured output as instance of the schema.
+        """
+        # Delegate to remote agent if in remote mode
+        if self._is_remote and self._remote_agent:
+            async for item in self._remote_agent.stream(
+                query, max_steps, manage_connector, external_history, track_execution, output_schema
+            ):
+                yield item
+            return
+
+        result = ""
+        initialized_here = False
+        start_time = time.time()
+        steps_taken = 0
+        success = False
+
+        # Schema-aware setup for structured output
+        structured_llm = None
+        schema_description = ""
+        if output_schema:
+            query = self._enhance_query_with_schema(query, output_schema)
+            structured_llm = self.llm.with_structured_output(output_schema)
+            # Get schema description for feedback
+            schema_fields = []
+            try:
+                for field_name, field_info in output_schema.model_fields.items():
+                    description = getattr(field_info, "description", "") or field_name
+                    required = not hasattr(field_info, "default") or field_info.default is None
+                    schema_fields.append(f"- {field_name}: {description} {'(required)' if required else '(optional)'}")
+
+                schema_description = "\n".join(schema_fields)
+            except Exception as e:
+                logger.warning(f"Could not extract schema details: {e}")
+                schema_description = f"Schema: {output_schema.__name__}"
+
+        try:
+            # Initialize if needed
+            if manage_connector and not self._initialized:
+                await self.initialize()
+                initialized_here = True
+            elif not self._initialized and self.auto_initialize:
+                await self.initialize()
+                initialized_here = True
+
+            # Check if initialization succeeded
+            if not self._agent_executor:
+                raise RuntimeError("MCP agent failed to initialize")
+
+            steps = max_steps or self.max_steps
+            if self._agent_executor:
+                self._agent_executor.max_iterations = steps
+
+            display_query = query[:50].replace("\n", " ") + "..." if len(query) > 50 else query.replace("\n", " ")
+            logger.info(f"💬 Received query: '{display_query}'")
+
+            # Use the provided history or the internal history
+            history_to_use = external_history if external_history is not None else self._conversation_history
+
+            # Convert messages to format expected by LangChain agent input
+            # Exclude the main system message as it's part of the agent's prompt
+            langchain_history = []
+            for msg in history_to_use:
+                if isinstance(msg, HumanMessage):
+                    langchain_history.append(msg)
+                elif isinstance(msg, AIMessage):
+                    langchain_history.append(msg)
+
+            intermediate_steps: list[tuple[AgentAction, str]] = []
+            inputs = {"input": query, "chat_history": langchain_history}
+
+            # Construct a mapping of tool name to tool for easy lookup
+            name_to_tool_map = {tool.name: tool for tool in self._tools}
+            color_mapping = get_color_mapping([tool.name for tool in self._tools], excluded_colors=["green", "red"])
+
+            logger.info(f"🏁 Starting agent execution with max_steps={steps}")
+
+            # Track whether agent finished successfully vs reached max iterations
+            agent_finished_successfully = False
+            result = None
+
+            # Create a run manager with our callbacks if we have any - ONCE for the entire execution
+            run_manager = None
+            if self.callbacks:
+                # Create an async callback manager with our callbacks
+                from langchain_core.callbacks.manager import AsyncCallbackManager
+
+                callback_manager = AsyncCallbackManager.configure(
+                    inheritable_callbacks=self.callbacks,
+                    local_callbacks=self.callbacks,
+                )
+                # Create a run manager for this chain execution
+                run_manager = await callback_manager.on_chain_start(
+                    {"name": "MCPAgent (mcp-use)"},
+                    inputs,
+                )
+
+            for step_num in range(steps):
+                steps_taken = step_num + 1
+                # --- Check for tool updates if using server manager ---
+                if self.use_server_manager and self.server_manager:
+                    current_tools = self.server_manager.tools
+                    current_tool_names = {tool.name for tool in current_tools}
+                    existing_tool_names = {tool.name for tool in self._tools}
+
+                    if current_tool_names != existing_tool_names:
+                        logger.info(
+                            f"🔄 Tools changed before step {step_num + 1}, updating agent."
+                            f"New tools: {', '.join(current_tool_names)}"
+                        )
+                        self._tools = current_tools
+                        # Regenerate system message with ALL current tools
+                        await self._create_system_message_from_tools(self._tools)
+                        # Recreate the agent executor with the new tools and system message
+                        self._agent_executor = self._create_agent()
+                        self._agent_executor.max_iterations = steps
+                        # Update maps for this iteration
+                        name_to_tool_map = {tool.name: tool for tool in self._tools}
+                        color_mapping = get_color_mapping(
+                            [tool.name for tool in self._tools], excluded_colors=["green", "red"]
+                        )
+
+                logger.info(f"👣 Step {step_num + 1}/{steps}")
+
+                # --- Plan and execute the next step ---
+                try:
+                    retry_count = 0
+                    next_step_output = None
+
+                    while retry_count <= self.max_retries_per_step:
+                        try:
+                            # Use the internal _atake_next_step which handles planning and execution
+                            # This requires providing the necessary context like maps and intermediate steps
+                            next_step_output = await self._agent_executor._atake_next_step(
+                                name_to_tool_map=name_to_tool_map,
+                                color_mapping=color_mapping,
+                                inputs=inputs,
+                                intermediate_steps=intermediate_steps,
+                                run_manager=run_manager,
+                            )
+
+                            # If we get here, the step succeeded, break out of retry loop
+                            break
+
+                        except Exception as e:
+                            if not self.retry_on_error or retry_count >= self.max_retries_per_step:
+                                logger.error(f"❌ Validation error during step {step_num + 1}: {e}")
+                                result = f"Agent stopped due to a validation error: {str(e)}"
+                                success = False
+                                yield result
+                                return
+
+                            retry_count += 1
+                            logger.warning(
+                                f"⚠️ Validation error, retrying ({retry_count}/{self.max_retries_per_step}): {e}"
+                            )
+
+                            # Create concise feedback for the LLM about the validation error
+                            error_message = f"Error: {str(e)}"
+                            inputs["input"] = error_message
+
+                            # Continue to next iteration of retry loop
+                            continue
+
+                    # Process the output
+                    if isinstance(next_step_output, AgentFinish):
+                        logger.info(f"✅ Agent finished at step {step_num + 1}")
+                        agent_finished_successfully = True
+                        output_value = next_step_output.return_values.get("output", "No output generated")
+                        result = self._normalize_output(output_value)
+                        # End the chain if we have a run manager
+                        if run_manager:
+                            await run_manager.on_chain_end({"output": result})
+
+                        # If structured output is requested, attempt to create it
+                        if output_schema and structured_llm:
+                            try:
+                                logger.info("🔧 Attempting structured output...")
+                                structured_result = await self._attempt_structured_output(
+                                    result, structured_llm, output_schema, schema_description
+                                )
+
+                                # Add the final response to conversation history if memory is enabled
+                                if self.memory_enabled:
+                                    self.add_to_history(AIMessage(content=f"Structured result: {structured_result}"))
+
+                                logger.info("✅ Structured output successful")
+                                success = True
+                                yield structured_result
+                                return
+
+                            except Exception as e:
+                                logger.warning(f"⚠️ Structured output failed: {e}")
+                                # Continue execution to gather missing information
+                                missing_info_prompt = f"""
+                                The current result cannot be formatted into the required structure.
+                                Error: {str(e)}
+
+                                Current information: {result}
+
+                                Please continue working to gather the missing information needed for:
+                                {schema_description}
+
+                                Focus on finding the specific missing details.
+                                """
+
+                                # Add this as feedback and continue the loop
+                                inputs["input"] = missing_info_prompt
+                                if self.memory_enabled:
+                                    self.add_to_history(HumanMessage(content=missing_info_prompt))
+
+                                logger.info("🔄 Continuing execution to gather missing information...")
+                                continue
+                        else:
+                            # Regular execution without structured output
+                            break
+
+                    # If it's actions/steps, add to intermediate steps and yield them
+                    intermediate_steps.extend(next_step_output)
+
+                    # Yield each step and track tool usage
+                    for agent_step in next_step_output:
+                        yield agent_step
+                        action, observation = agent_step
+                        reasoning = getattr(action, "log", "")
+                        if reasoning:
+                            reasoning_str = reasoning.replace("\n", " ")
+                            if len(reasoning_str) > 300:
+                                reasoning_str = reasoning_str[:297] + "..."
+                            logger.info(f"💭 Reasoning: {reasoning_str}")
+                        tool_name = action.tool
+                        self.tools_used_names.append(tool_name)
+                        tool_input_str = str(action.tool_input)
+                        # Truncate long inputs for readability
+                        if len(tool_input_str) > 100:
+                            tool_input_str = tool_input_str[:97] + "..."
+                        logger.info(f"🔧 Tool call: {tool_name} with input: {tool_input_str}")
+                        # Truncate long outputs for readability
+                        observation_str = str(observation)
+                        if len(observation_str) > 100:
+                            observation_str = observation_str[:97] + "..."
+                        observation_str = observation_str.replace("\n", " ")
+                        logger.info(f"📄 Tool result: {observation_str}")
+
+                    # Check for return_direct on the last action taken
+                    if len(next_step_output) > 0:
+                        last_step: tuple[AgentAction, str] = next_step_output[-1]
+                        tool_return = self._agent_executor._get_tool_return(last_step)
+                        if tool_return is not None:
+                            logger.info(f"🏆 Tool returned directly at step {step_num + 1}")
+                            agent_finished_successfully = True
+                            result = tool_return.return_values.get("output", "No output generated")
+                            result = self._normalize_output(result)
+                            break
+
+                except OutputParserException as e:
+                    logger.error(f"❌ Output parsing error during step {step_num + 1}: {e}")
+                    result = f"Agent stopped due to a parsing error: {str(e)}"
+                    if run_manager:
+                        await run_manager.on_chain_error(e)
+                    break
+                except Exception as e:
+                    logger.error(f"❌ Error during agent execution step {step_num + 1}: {e}")
+                    import traceback
+
+                    traceback.print_exc()
+                    # End the chain with error if we have a run manager
+                    if run_manager:
+                        await run_manager.on_chain_error(e)
+                    result = f"Agent stopped due to an error: {str(e)}"
+                    break
+
+            # --- Loop finished ---
+            if not result:
+                if agent_finished_successfully:
+                    # Agent finished successfully but returned empty output
+                    result = "Agent completed the task successfully."
+                    logger.info("✅ Agent finished successfully with empty output")
+                else:
+                    # Agent actually reached max iterations
+                    logger.warning(f"⚠️ Agent stopped after reaching max iterations ({steps})")
+                    result = f"Agent stopped after reaching the maximum number of steps ({steps})."
+                    if run_manager:
+                        await run_manager.on_chain_end({"output": result})
+
+            # If structured output was requested but not achieved, attempt one final time
+            if output_schema and structured_llm and not success:
+                try:
+                    logger.info("🔧 Final attempt at structured output...")
+                    structured_result = await self._attempt_structured_output(
+                        result, structured_llm, output_schema, schema_description
+                    )
+
+                    # Add the final response to conversation history if memory is enabled
+                    if self.memory_enabled:
+                        self.add_to_history(AIMessage(content=f"Structured result: {structured_result}"))
+
+                    logger.info("✅ Final structured output successful")
+                    success = True
+                    yield structured_result
+                    return
+
+                except Exception as e:
+                    logger.error(f"❌ Final structured output attempt failed: {e}")
+                    raise RuntimeError(f"Failed to generate structured output after {steps} steps: {str(e)}") from e
+
+            if self.memory_enabled:
+                self.add_to_history(HumanMessage(content=query))
+
+            if self.memory_enabled and not output_schema:
+                self.add_to_history(AIMessage(content=self._normalize_output(result)))
+
+            logger.info(f"🎉 Agent execution complete in {time.time() - start_time} seconds")
+            if not success:
+                success = True
+
+            # Yield the final result (only for non-structured output)
+            if not output_schema:
+                yield result
+
+        except Exception as e:
+            logger.error(f"❌ Error running query: {e}")
+            if initialized_here and manage_connector:
+                logger.info("🧹 Cleaning up resources after initialization error in stream")
+                await self.close()
+            raise
+
+        finally:
+            # Track comprehensive execution data
+            execution_time_ms = int((time.time() - start_time) * 1000)
+
+            server_count = 0
+            if self.client:
+                server_count = len(self.client.get_all_active_sessions())
+            elif self.connectors:
+                server_count = len(self.connectors)
+
+            conversation_history_length = len(self._conversation_history) if self.memory_enabled else 0
+
+            # Safely access _tools in case initialization failed
+            tools_available = getattr(self, "_tools", [])
+
+            if track_execution:
+                self.telemetry.track_agent_execution(
+                    execution_method="stream",
+                    query=query,
+                    success=success,
+                    model_provider=self._model_provider,
+                    model_name=self._model_name,
+                    server_count=server_count,
+                    server_identifiers=[connector.public_identifier for connector in self.connectors],
+                    total_tools_available=len(tools_available),
+                    tools_available_names=[tool.name for tool in tools_available],
+                    max_steps_configured=self.max_steps,
+                    memory_enabled=self.memory_enabled,
+                    use_server_manager=self.use_server_manager,
+                    max_steps_used=max_steps,
+                    manage_connector=manage_connector,
+                    external_history_used=external_history is not None,
+                    steps_taken=steps_taken,
+                    tools_used_count=len(self.tools_used_names),
+                    tools_used_names=self.tools_used_names,
+                    response=result,
+                    execution_time_ms=execution_time_ms,
+                    error_type=None if success else "execution_error",
+                    conversation_history_length=conversation_history_length,
+                )
+
+            # Clean up if necessary (e.g., if not using client-managed sessions)
+            if manage_connector and not self.client and initialized_here:
+                logger.info("🧹 Closing agent after stream completion")
+                await self.close()
+
+    @telemetry("agent_run")
+    async def run(
         self,
         query: str,
         max_steps: int | None = None,
