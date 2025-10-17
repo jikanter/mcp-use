@@ -13,217 +13,6 @@ from pathlib import Path
 from typing import Any, Union
 
 
-def detect_deprecated_items(file_path: str) -> list[str]:
-    """Detect deprecated classes and functions in a Python file.
-
-    Args:
-        file_path: Path to the Python file to analyze
-
-    Returns:
-        List of deprecated class/function names
-    """
-    deprecated_items = []
-
-    try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            content = f.read()
-
-        tree = ast.parse(content)
-
-        # Check for @deprecated decorators
-        for node in ast.walk(tree):
-            if isinstance(node, ast.ClassDef):
-                for decorator in node.decorator_list:
-                    if isinstance(decorator, ast.Name) and decorator.id == "deprecated":
-                        deprecated_items.append(node.name)
-                    elif (
-                        isinstance(decorator, ast.Call)
-                        and isinstance(decorator.func, ast.Name)
-                        and decorator.func.id == "deprecated"
-                    ):
-                        deprecated_items.append(node.name)
-            elif isinstance(node, ast.FunctionDef):
-                for decorator in node.decorator_list:
-                    if isinstance(decorator, ast.Name) and decorator.id == "deprecated":
-                        deprecated_items.append(node.name)
-                    elif (
-                        isinstance(decorator, ast.Call)
-                        and isinstance(decorator.func, ast.Name)
-                        and decorator.func.id == "deprecated"
-                    ):
-                        deprecated_items.append(node.name)
-
-    except (FileNotFoundError, SyntaxError, UnicodeDecodeError) as e:
-        print(f"Warning: Could not analyze {file_path}: {e}")
-
-    return deprecated_items
-
-
-def detect_deprecated_imports(file_path: str) -> list[dict[str, str]]:
-    """Detect deprecated import paths in a Python file by analyzing @deprecated decorators.
-
-    Args:
-        file_path: Path to the Python file to analyze
-
-    Returns:
-        List of dictionaries containing deprecated import information
-    """
-    deprecated_imports = []
-
-    try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            content = f.read()
-
-        tree = ast.parse(content)
-
-        # Extract deprecated patterns from @deprecated decorators
-        deprecated_patterns = {}
-
-        for node in ast.walk(tree):
-            if isinstance(node, (ast.ClassDef, ast.FunctionDef)):
-                for decorator in node.decorator_list:
-                    if (
-                        isinstance(decorator, ast.Call)
-                        and isinstance(decorator.func, ast.Name)
-                        and decorator.func.id == "deprecated"
-                    ):
-                        # Extract the deprecation message
-                        if decorator.args and isinstance(
-                            decorator.args[0], ast.Constant
-                        ):
-                            deprecation_msg = decorator.args[0].value
-                            if isinstance(
-                                deprecation_msg, str
-                            ) and deprecation_msg.startswith("Use "):
-                                # Extract the new path from "Use mcp_use.new.path"
-                                new_path = deprecation_msg[4:]  # Remove "Use "
-
-                                # Determine the old path based on current file location
-                                old_path = _get_current_module_path(file_path)
-
-                                if old_path and new_path != old_path:
-                                    deprecated_patterns[old_path] = new_path
-
-        # Now check for imports that match these patterns
-        for node in ast.walk(tree):
-            if isinstance(node, ast.Import):
-                for alias in node.names:
-                    if alias.name in deprecated_patterns:
-                        deprecated_imports.append(
-                            {
-                                "type": "import",
-                                "line": node.lineno,
-                                "old_path": alias.name,
-                                "new_path": deprecated_patterns[alias.name],
-                                "alias": alias.asname,
-                            }
-                        )
-            elif isinstance(node, ast.ImportFrom):
-                if node.module and node.module in deprecated_patterns:
-                    deprecated_imports.append(
-                        {
-                            "type": "from_import",
-                            "line": node.lineno,
-                            "old_path": node.module,
-                            "new_path": deprecated_patterns[node.module],
-                            "names": [alias.name for alias in node.names],
-                        }
-                    )
-
-    except (FileNotFoundError, SyntaxError, UnicodeDecodeError) as e:
-        print(f"Warning: Could not analyze {file_path}: {e}")
-
-    return deprecated_imports
-
-
-def _get_current_module_path(file_path: str) -> str:
-    """Extract the module path from a file path."""
-    # Convert file path to module path
-    # e.g., "../libraries/python/mcp_use/session.py" -> "mcp_use.session"
-    path_parts = file_path.replace("\\", "/").split("/")
-
-    # Find the mcp_use directory
-    try:
-        mcp_use_index = path_parts.index("mcp_use")
-        module_parts = path_parts[mcp_use_index:]
-
-        # Remove .py extension and join with dots
-        if module_parts[-1].endswith(".py"):
-            module_parts[-1] = module_parts[-1][:-3]
-
-        return ".".join(module_parts)
-    except ValueError:
-        return None
-
-
-def generate_deprecation_warning(
-    deprecated_imports: list[dict[str, str]], file_path: str
-) -> str:
-    """Generate a deprecation warning callout for deprecated imports.
-
-    Args:
-        deprecated_imports: List of deprecated import information
-        file_path: Path to the file being analyzed
-
-    Returns:
-        MDX formatted deprecation warning
-    """
-    if not deprecated_imports:
-        return ""
-
-    warning_lines = [
-        "<Warning>",
-        f"**File:** `{file_path}`",
-        "",
-        "The following import paths are deprecated and should be updated:",
-        "",
-    ]
-
-    for dep_import in deprecated_imports:
-        if dep_import["type"] == "import":
-            old_line = f"import {dep_import['old_path']}"
-            if dep_import["alias"]:
-                old_line += f" as {dep_import['alias']}"
-            new_line = f"import {dep_import['new_path']}"
-            if dep_import["alias"]:
-                new_line += f" as {dep_import['alias']}"
-
-            warning_lines.extend(
-                [
-                    f"**Line {dep_import['line']}:**",
-                    "```python",
-                    "# Deprecated:",
-                    f"{old_line}",
-                    "# Use instead:",
-                    f"{new_line}",
-                    "```",
-                    "",
-                ]
-            )
-        elif dep_import["type"] == "from_import":
-            names_str = ", ".join(dep_import["names"])
-            old_line = f"from {dep_import['old_path']} import {names_str}"
-            new_line = f"from {dep_import['new_path']} import {names_str}"
-
-            warning_lines.extend(
-                [
-                    f"**Line {dep_import['line']}:**",
-                    "```python",
-                    "# Deprecated:",
-                    f"{old_line}",
-                    "# Use instead:",
-                    f"{new_line}",
-                    "```",
-                    "",
-                ]
-            )
-
-    warning_lines.append("</Warning>")
-    warning_lines.append("")
-
-    return "\n".join(warning_lines)
-
-
 def get_docstring(obj: Any) -> str:
     """Extract docstring from an object."""
     if hasattr(obj, "__doc__") and obj.__doc__:
@@ -252,6 +41,10 @@ def format_type_annotation(annotation: Any) -> str:
                         " | ".join(format_type_annotation(arg) for arg in non_none_args)
                         + " | None"
                     )
+                    return (
+                        " | ".join(format_type_annotation(arg) for arg in non_none_args)
+                        + " | None"
+                    )
             else:
                 return " | ".join(format_type_annotation(arg) for arg in args)
         elif origin is list:
@@ -267,6 +60,9 @@ def format_type_annotation(annotation: Any) -> str:
                 return (
                     f"tuple[{', '.join(format_type_annotation(arg) for arg in args)}]"
                 )
+                return (
+                    f"tuple[{', '.join(format_type_annotation(arg) for arg in args)}]"
+                )
             return "tuple"
         elif origin is set:
             if args:
@@ -278,6 +74,9 @@ def format_type_annotation(annotation: Any) -> str:
         module = annotation.__module__
         name = annotation.__name__
         # Skip built-in types and common stdlib types
+        if module in ("builtins", "typing", "collections.abc") or module.startswith(
+            "typing"
+        ):
         if module in ("builtins", "typing", "collections.abc") or module.startswith(
             "typing"
         ):
@@ -322,6 +121,12 @@ def process_docstring(docstring: str) -> str:
             and not line.startswith(" ")
             and not line.startswith("\t")
         ):
+        elif (
+            in_code_block
+            and stripped
+            and not line.startswith(" ")
+            and not line.startswith("\t")
+        ):
             # End of code block
             in_code_block = False
             processed_lines.append("```")
@@ -346,6 +151,16 @@ def process_docstring(docstring: str) -> str:
                     "raises:",
                     "raise:",
                 )
+                (
+                    "args:",
+                    "parameters:",
+                    "returns:",
+                    "return:",
+                    "warns:",
+                    "warn:",
+                    "raises:",
+                    "raise:",
+                )
             ):
                 in_args_section = True
                 skip_line = True  # Skip the section header line itself
@@ -354,11 +169,20 @@ def process_docstring(docstring: str) -> str:
             elif in_args_section and stripped.lower().startswith(
                 ("yields:", "note:", "example:", "usage:")
             ):
+            elif in_args_section and stripped.lower().startswith(
+                ("yields:", "note:", "example:", "usage:")
+            ):
                 in_args_section = False
                 processed_lines.append(line)
             # Skip lines in args section
             elif in_args_section:
                 # Check if this line starts a new section (not indented)
+                if (
+                    stripped
+                    and not line.startswith(" ")
+                    and not line.startswith("\t")
+                    and ":" in stripped
+                ):
                 if (
                     stripped
                     and not line.startswith(" ")
@@ -452,9 +276,15 @@ def extract_param_docs(docstring: str) -> dict[str, str]:
         elif current_param and (
             stripped.startswith(" ") or stripped == "" or stripped.startswith("-")
         ):
+        elif current_param and (
+            stripped.startswith(" ") or stripped == "" or stripped.startswith("-")
+        ):
             if stripped:
                 current_desc.append(stripped)
         # End of args section
+        elif in_args_section and stripped.lower().startswith(
+            ("returns:", "raises:", "yields:", "note:", "example:")
+        ):
         elif in_args_section and stripped.lower().startswith(
             ("returns:", "raises:", "yields:", "note:", "example:")
         ):
@@ -597,6 +427,9 @@ def extract_return_docs(docstring: str) -> str:
         elif in_returns_section and (
             line.startswith(" ") or stripped == "" or stripped.startswith("-")
         ):
+        elif in_returns_section and (
+            line.startswith(" ") or stripped == "" or stripped.startswith("-")
+        ):
             # Check if this line starts a new section (like "Example:")
             if stripped and stripped.lower().endswith(":"):
                 break
@@ -604,6 +437,16 @@ def extract_return_docs(docstring: str) -> str:
                 return_desc.append(stripped)
         # End of returns section
         elif in_returns_section and stripped.lower().startswith(
+            (
+                "raises:",
+                "yields:",
+                "note:",
+                "example:",
+                "args:",
+                "parameters:",
+                "warns:",
+                "warn:",
+            )
             (
                 "raises:",
                 "yields:",
@@ -644,10 +487,23 @@ def extract_warns_docs(docstring: str) -> list[str]:
         elif in_warns_section and (
             stripped.startswith(" ") or stripped == "" or stripped.startswith("-")
         ):
+        elif in_warns_section and (
+            stripped.startswith(" ") or stripped == "" or stripped.startswith("-")
+        ):
             if stripped:
                 warn_desc.append(stripped)
         # End of warns section
         elif in_warns_section and stripped.lower().startswith(
+            (
+                "raises:",
+                "yields:",
+                "note:",
+                "example:",
+                "args:",
+                "parameters:",
+                "returns:",
+                "return:",
+            )
             (
                 "raises:",
                 "yields:",
@@ -688,10 +544,24 @@ def extract_raises_docs(docstring: str) -> list[str]:
         elif in_raises_section and (
             stripped.startswith(" ") or stripped == "" or stripped.startswith("-")
         ):
+        elif in_raises_section and (
+            stripped.startswith(" ") or stripped == "" or stripped.startswith("-")
+        ):
             if stripped:
                 raise_desc.append(stripped)
         # End of raises section
         elif in_raises_section and stripped.lower().startswith(
+            (
+                "warns:",
+                "warn:",
+                "yields:",
+                "note:",
+                "example:",
+                "args:",
+                "parameters:",
+                "returns:",
+                "return:",
+            )
             (
                 "warns:",
                 "warn:",
@@ -762,6 +632,9 @@ def generate_class_docs(cls: type, module_name: str) -> str:
     docs.append(
         '<RandomGradientBackground className="rounded-lg p-4 w-full h-full rounded-full">'
     )
+    docs.append(
+        '<RandomGradientBackground className="rounded-lg p-4 w-full h-full rounded-full">'
+    )
     docs.append('<div className="text-black">')
     docs.append(
         f'<div className="text-black font-bold text-xl mb-2 mt-8">'
@@ -793,6 +666,8 @@ def generate_class_docs(cls: type, module_name: str) -> str:
                 and not name.startswith("model_")
                 and name
                 not in ["computed_fields", "config", "extra", "fields", "fields_set"]
+                and name
+                not in ["computed_fields", "config", "extra", "fields", "fields_set"]
             ):
                 class_attributes.append((name, annotation))
 
@@ -804,6 +679,9 @@ def generate_class_docs(cls: type, module_name: str) -> str:
             # Create a mock parameter object for the annotation
             from inspect import Parameter
 
+            param = Parameter(
+                name, Parameter.POSITIONAL_OR_KEYWORD, annotation=annotation
+            )
             param = Parameter(
                 name, Parameter.POSITIONAL_OR_KEYWORD, annotation=annotation
             )
@@ -826,6 +704,11 @@ def generate_class_docs(cls: type, module_name: str) -> str:
                 init_docstring = get_docstring(init_method)
                 sig = inspect.signature(init_method)
                 param_docs = extract_param_docs(get_docstring(init_method))
+                params_to_show = [
+                    (name, param)
+                    for name, param in sig.parameters.items()
+                    if name != "self"
+                ]
                 params_to_show = [
                     (name, param)
                     for name, param in sig.parameters.items()
@@ -868,6 +751,10 @@ def generate_class_docs(cls: type, module_name: str) -> str:
         predicate=lambda x: inspect.isfunction(x)
         or inspect.iscoroutinefunction(x)
         or isinstance(x, property),
+        cls,
+        predicate=lambda x: inspect.isfunction(x)
+        or inspect.iscoroutinefunction(x)
+        or isinstance(x, property),
     ):
         # For properties, check if the getter function is defined in this module
         is_property_in_module = False
@@ -886,11 +773,17 @@ def generate_class_docs(cls: type, module_name: str) -> str:
                     if hasattr(base_cls, name) and isinstance(
                         getattr(base_cls, name), property
                     ):
+                    if hasattr(base_cls, name) and isinstance(
+                        getattr(base_cls, name), property
+                    ):
                         is_inherited = True
                         break
         else:
             # Check if this method is defined in a parent class
             for base_cls in cls.__bases__:
+                if hasattr(base_cls, name) and inspect.isfunction(
+                    getattr(base_cls, name)
+                ):
                 if hasattr(base_cls, name) and inspect.isfunction(
                     getattr(base_cls, name)
                 ):
@@ -923,6 +816,9 @@ def generate_class_docs(cls: type, module_name: str) -> str:
                 sig = inspect.signature(method)
                 param_docs = extract_param_docs(get_docstring(method))
                 params_to_show = [
+                    (name_param, param)
+                    for name_param, param in sig.parameters.items()
+                    if name_param != "self"
                     (name_param, param)
                     for name_param, param in sig.parameters.items()
                     if name_param != "self"
@@ -971,6 +867,10 @@ def generate_class_docs(cls: type, module_name: str) -> str:
                     not isinstance(method, property)
                     and sig.return_annotation != inspect.Signature.empty
                 ):
+                if (
+                    not isinstance(method, property)
+                    and sig.return_annotation != inspect.Signature.empty
+                ):
                     return_type = format_type_annotation(sig.return_annotation)
                     return_desc = extract_return_docs(get_docstring(method))
 
@@ -978,6 +878,9 @@ def generate_class_docs(cls: type, module_name: str) -> str:
                     if return_type not in ["None", "NoneType"]:
                         docs.append("**Returns**")
                         # Use ResponseField for better formatting
+                        response_field = generate_response_field(
+                            "returns", return_type, return_desc
+                        )
                         response_field = generate_response_field(
                             "returns", return_type, return_desc
                         )
@@ -1066,6 +969,9 @@ def generate_function_docs(func: Any, module_name: str) -> str:
         # Only show Returns section if there's a meaningful return type (not None)
         if return_type not in ["None", "NoneType"]:
             docs.append("**Returns**")
+            response_field = generate_response_field(
+                "returns", return_type, return_desc
+            )
             response_field = generate_response_field(
                 "returns", return_type, return_desc
             )
@@ -1187,9 +1093,15 @@ def generate_module_docs(module_name: str, output_dir: str) -> None:
 
     # Generate GitHub URL for source code
     # Handle library-specific paths
-    module_path = module_name.replace('.', '/')
+    module_path = module_name.replace(".", "/")
     github_url = f"https://github.com/mcp-use/mcp-use/blob/main/libraries/python/{module_path}.py"
 
+    frontmatter = {
+        "title": title,
+        "description": description,
+        "icon": icon,
+        "github": github_url,
+    }
     frontmatter = {
         "title": title,
         "description": description,
@@ -1218,16 +1130,28 @@ def generate_module_docs(module_name: str, output_dir: str) -> None:
         content.append(process_docstring(module_docstring))
         content.append("")
 
-    # Filter out deprecated items from classes and functions
-    filtered_classes = [
-        (name, obj) for name, obj in classes if name not in deprecated_items
+    # Get all members of the module
+    members = inspect.getmembers(module)
+
+    # Classes - only include classes defined in this module
+    classes = [
+        (name, obj)
+        for name, obj in members
+        if inspect.isclass(obj)
+        and not name.startswith("_")
+        and is_defined_in_module(obj, module_name)
     ]
     for _, cls in filtered_classes:
         content.append(generate_class_docs(cls, module_name))
         content.append("")
 
-    filtered_functions = [
-        (name, obj) for name, obj in functions if name not in deprecated_items
+    # Functions - only include functions defined in this module
+    functions = [
+        (name, obj)
+        for name, obj in members
+        if inspect.isfunction(obj)
+        and not name.startswith("_")
+        and is_defined_in_module(obj, module_name)
     ]
     for _, func in filtered_functions:
         content.append(generate_function_docs(func, module_name))
@@ -1240,6 +1164,9 @@ def generate_module_docs(module_name: str, output_dir: str) -> None:
     print(f"Generated documentation for {module_name} -> {output_path}")
 
 
+def find_python_modules(
+    package_dir: str, exclude_patterns: list[str] | None = None
+) -> list[str]:
 def find_python_modules(
     package_dir: str, exclude_patterns: list[str] | None = None
 ) -> list[str]:
@@ -1358,6 +1285,9 @@ def get_module_info_from_filename(filename: str) -> dict[str, str]:
     return {"module": name, "display_name": display_name, "icon": icon}
 
 
+def organize_modules_by_path(
+    files: list[str],
+) -> dict[str, dict[str, list[dict[str, str]]]]:
 def organize_modules_by_path(
     files: list[str],
 ) -> dict[str, dict[str, list[dict[str, str]]]]:
@@ -1571,6 +1501,9 @@ def get_subpackage_display_info(subpackage: str) -> dict[str, str]:
 def generate_api_reference_groups(
     packages: dict[str, dict[str, list[dict[str, str]]]],
 ) -> list[dict[str, Any]]:
+def generate_api_reference_groups(
+    packages: dict[str, dict[str, list[dict[str, str]]]],
+) -> list[dict[str, Any]]:
     """Generate API reference groups from organized packages with nested structure."""
     groups = []
 
@@ -1588,8 +1521,13 @@ def generate_api_reference_groups(
 
                 # Add root items directly to subpackages list (no Overview section)
                 if "root" in packages[package] and packages[package]["root"]:
-                    root_modules = sorted(packages[package]["root"], key=lambda x: x["display_name"])
-                    root_pages = [f"python/api-reference/{module['module']}" for module in root_modules]
+                    root_modules = sorted(
+                        packages[package]["root"], key=lambda x: x["display_name"]
+                    )
+                    root_pages = [
+                        f"python/api-reference/{module['module']}"
+                        for module in root_modules
+                    ]
                     subpackages.extend(root_pages)
 
                 # Add other subpackages - only create subsections if they have more than 1 item
@@ -1602,10 +1540,20 @@ def generate_api_reference_groups(
                     # Only create subsection if there's more than 1 module
                     if len(modules) > 1:
                         subpackage_info = get_subpackage_display_info(subpackage_name)
-                        sorted_modules = sorted(modules, key=lambda x: x["display_name"])
-                        pages = [f"python/api-reference/{module['module']}" for module in sorted_modules]
+                        sorted_modules = sorted(
+                            modules, key=lambda x: x["display_name"]
+                        )
+                        pages = [
+                            f"python/api-reference/{module['module']}"
+                            for module in sorted_modules
+                        ]
 
                         subpackages.append(
+                            {
+                                "group": subpackage_info["name"],
+                                "icon": subpackage_info["icon"],
+                                "pages": pages,
+                            }
                             {
                                 "group": subpackage_info["name"],
                                 "icon": subpackage_info["icon"],
@@ -1623,11 +1571,25 @@ def generate_api_reference_groups(
                     "icon": package_info["icon"],
                     "pages": subpackages,
                 }
+                group = {
+                    "group": package_info["name"],
+                    "icon": package_info["icon"],
+                    "pages": subpackages,
+                }
             else:
                 # Simple structure without subpackages
-                modules = sorted(packages[package]["root"], key=lambda x: x["display_name"])
-                pages = [f"python/api-reference/{module['module']}" for module in modules]
+                modules = sorted(
+                    packages[package]["root"], key=lambda x: x["display_name"]
+                )
+                pages = [
+                    f"python/api-reference/{module['module']}" for module in modules
+                ]
 
+                group = {
+                    "group": package_info["name"],
+                    "icon": package_info["icon"],
+                    "pages": pages,
+                }
                 group = {
                     "group": package_info["name"],
                     "icon": package_info["icon"],
@@ -1709,13 +1671,10 @@ def main():
     """Main function."""
     if len(sys.argv) < 2:
         print(
-            "Usage: python generate_docs.py <package_dir> [output_dir] [docs_json_path] [--scan-only]"
+            "Usage: python generate_docs.py <package_dir> [output_dir] [docs_json_path]"
         )
         print(
             "Example: python generate_docs.py ../libraries/python/mcp_use python/api-reference docs.json"
-        )
-        print(
-            "Example: python generate_docs.py ../libraries/python/mcp_use --scan-only"
         )
         sys.exit(1)
 
