@@ -49,7 +49,7 @@
             ]
           },
           {
-            "group": "Client Configuration",
+            "group": "MCP Client",
             "pages": [
               {
                 "group": "Overview",
@@ -85,7 +85,7 @@
             ]
           },
           {
-            "group": "Agent Configuration",
+            "group": "MCP Agent",
             "pages": [
               "agent/agent-configuration",
               "agent/llm-integration",
