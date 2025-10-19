@@ -51,6 +51,7 @@ jobs:
         working-directory: libraries/typescript
         run: pnpm build
 
+<<<<<<< HEAD
       - name: Check if this is a release commit
         id: check
         run: |
@@ -79,9 +80,27 @@ jobs:
           git push --follow-tags
 
           echo "✅ Published packages to npm and pushed tags"
+=======
+      - name: Exit Prerelease Mode
+        working-directory: libraries/typescript
+        run: |
+          if [ -f .changeset/pre.json ]; then
+            echo "Exiting prerelease mode..."
+            pnpm changeset pre exit
+          else
+            echo "Not in prerelease mode"
+          fi
+
+      - name: Create Release Pull Request or Publish
+        uses: changesets/action@v1
+        with:
+          version: pnpm changeset version
+          publish: pnpm changeset publish
+          cwd: libraries/typescript
+>>>>>>> 1e8af4c (chore: update TypeScript release workflows and documentation (#328))
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN_ORG }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+<<<<<<< HEAD
 
       - name: Create GitHub Release
         if: steps.check.outputs.should_publish == 'true'
@@ -180,3 +199,6 @@ jobs:
           git push --force origin canary
 
           echo "✅ Reset canary to main (canary workflow will auto-enter prerelease mode)"
+=======
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN_ORG }}
+>>>>>>> 1e8af4c (chore: update TypeScript release workflows and documentation (#328))

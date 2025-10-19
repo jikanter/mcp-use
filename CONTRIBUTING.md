@@ -20,6 +20,27 @@ Thank you for your interest in contributing to MCP-Use! This document provides g
   - [Pull Requests](#pull-requests)
     - [Creating a Pull Request](#creating-a-pull-request)
   - [Documentation](#documentation)
+    - [Building Documentation](#building-documentation)
+  - [Pull Request Process](#pull-request-process)
+    - [1. Create a Branch](#1-create-a-branch)
+    - [2. Make Your Changes](#2-make-your-changes)
+    - [3. Commit Your Changes](#3-commit-your-changes)
+    - [4. Push and Create PR](#4-push-and-create-pr)
+    - [5. PR Review Process](#5-pr-review-process)
+  - [Release Process](#release-process)
+    - [Version Numbering](#version-numbering)
+    - [Python Releases](#python-releases)
+    - [TypeScript Releases](#typescript-releases)
+      - [For Main Branch (Stable Releases)](#for-main-branch-stable-releases)
+      - [For Canary Branch (Prereleases)](#for-canary-branch-prereleases)
+      - [Installing Canary Versions](#installing-canary-versions)
+  - [Release Process](#release-process-1)
+    - [Version Numbering](#version-numbering-1)
+    - [Python Releases](#python-releases-1)
+    - [TypeScript Releases](#typescript-releases-1)
+      - [For Main Branch (Stable Releases)](#for-main-branch-stable-releases-1)
+      - [For Canary Branch (Prereleases)](#for-canary-branch-prereleases-1)
+      - [Installing Canary Versions](#installing-canary-versions-1)
   - [Getting Help](#getting-help)
 
 ## Getting Started
@@ -134,6 +155,225 @@ pytest tests/
       """
   ```
 - Update README.md for user-facing changes
+
+### Building Documentation
+
+```bash
+# Python documentation (if using Sphinx)
+cd libraries/python/docs
+make html
+
+# TypeScript documentation (if using TypeDoc)
+cd libraries/typescript
+pnpm docs
+```
+
+## Pull Request Process
+
+### 1. Create a Branch
+
+The `main` branch contains the latest stable code. Create feature or fix branches from `main`:
+
+```bash
+# Create a feature branch
+git checkout -b feature/your-feature-name
+
+# Or a fix branch
+git checkout -b fix/bug-description
+```
+
+### 2. Make Your Changes
+
+- Write clean, well-documented code
+- Follow the coding standards
+- Add or update tests
+- Update documentation if needed
+
+### 3. Commit Your Changes
+
+Follow conventional commit format (recommended but not strictly enforced):
+
+```bash
+# Format: <type>(<scope>): <subject>
+git commit -m "feat(python): add new MCP server connection"
+git commit -m "fix(typescript): resolve memory leak in agent"
+git commit -m "docs: update installation instructions"
+```
+
+Types:
+
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation changes
+- `style`: Code style changes (formatting, etc.)
+- `refactor`: Code refactoring
+- `test`: Test changes
+- `chore`: Build process or auxiliary tool changes
+
+**Note:** Try to keep your commit messages informational and descriptive of the changes made.
+
+### 4. Push and Create PR
+
+Before pushing, ensure:
+
+- Your code passes all tests
+- Pre-commit hooks pass (for Python)
+- No linting errors remain
+
+```bash
+git push origin your-branch-name
+```
+
+Then create a Pull Request on GitHub with:
+
+- Clear title and description
+- Link to related issues
+- Screenshots/recordings for UI changes
+- Test results
+
+### 5. PR Review Process
+
+- PRs require at least one approval
+- Address all review comments
+- Keep PRs focused and atomic
+- Update your branch with main if needed
+
+## Release Process
+
+### Version Numbering
+
+We follow [Semantic Versioning](https://semver.org/):
+
+- MAJOR.MINOR.PATCH (e.g., 2.1.3)
+- MAJOR: Breaking changes
+- MINOR: New features (backward compatible)
+- PATCH: Bug fixes (backward compatible)
+
+### Python Releases
+
+```bash
+# Update version in pyproject.toml
+# Update CHANGELOG.md
+# Create tag
+git tag python-v1.2.3
+git push origin python-v1.2.3
+```
+
+### TypeScript Releases
+
+TypeScript releases use [Changesets](https://github.com/changesets/changesets) for version management:
+
+#### For Main Branch (Stable Releases)
+
+```bash
+# 1. Create a changeset describing your changes
+cd libraries/typescript
+pnpm changeset
+
+# 2. Commit and push your changes with the changeset
+git add .
+git commit -m "feat: add new feature"
+git push
+
+# 3. When merged to main:
+#    - CI automatically creates/updates a "Version Packages" PR
+#    - Review and merge the Version PR to publish stable versions
+```
+
+#### For Canary Branch (Prereleases)
+
+```bash
+# 1. Create a changeset for your changes
+cd libraries/typescript
+pnpm changeset
+
+# 2. Push to canary branch
+git add .
+git commit -m "feat: experimental feature"
+git push origin canary
+
+# 3. CI automatically publishes as canary prerelease
+#    - Versions: x.y.z-canary.0, x.y.z-canary.1, etc.
+#    - Published with "canary" dist tag on npm
+```
+
+#### Installing Canary Versions
+
+Users can test canary releases by installing with the canary tag:
+
+```bash
+npm install mcp-use@canary
+npm install @mcp-use/cli@canary
+```
+>>>>>>> 1e8af4c (chore: update TypeScript release workflows and documentation (#328))
+
+## Release Process
+
+### Version Numbering
+
+We follow [Semantic Versioning](https://semver.org/):
+
+- MAJOR.MINOR.PATCH (e.g., 2.1.3)
+- MAJOR: Breaking changes
+- MINOR: New features (backward compatible)
+- PATCH: Bug fixes (backward compatible)
+
+### Python Releases
+
+```bash
+# Update version in pyproject.toml
+# Update CHANGELOG.md
+# Create tag
+git tag python-v1.2.3
+git push origin python-v1.2.3
+```
+
+### TypeScript Releases
+
+TypeScript releases use [Changesets](https://github.com/changesets/changesets) for version management:
+
+#### For Main Branch (Stable Releases)
+
+```bash
+# 1. Create a changeset describing your changes
+cd libraries/typescript
+pnpm changeset
+
+# 2. Commit and push your changes with the changeset
+git add .
+git commit -m "feat: add new feature"
+git push
+
+# 3. When merged to main:
+#    - CI automatically creates/updates a "Version Packages" PR
+#    - Review and merge the Version PR to publish stable versions
+```
+
+#### For Canary Branch (Prereleases)
+
+```bash
+# 1. Create a changeset for your changes
+cd libraries/typescript
+pnpm changeset
+
+# 2. Push to canary branch
+git add .
+git commit -m "feat: experimental feature"
+git push origin canary
+
+# 3. CI automatically publishes as canary prerelease
+#    - Versions: x.y.z-canary.0, x.y.z-canary.1, etc.
+#    - Published with "canary" dist tag on npm
+```
+
+#### Installing Canary Versions
+
+Users can test canary releases by installing with the canary tag:
+
+```bash
+npm install mcp-use@canary
+npm install @mcp-use/cli@canary
+```
 
 ## Getting Help
 
