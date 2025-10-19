@@ -2,14 +2,13 @@
   "mode": "pre",
   "tag": "canary",
   "initialVersions": {
-    "@mcp-use/cli": "2.1.19",
-    "create-mcp-use-app": "0.4.6",
-    "@mcp-use/inspector": "0.4.7",
-    "mcp-use": "1.1.7"
+    "@mcp-use/cli": "2.1.12",
+    "create-mcp-use-app": "0.4.0",
+    "@mcp-use/inspector": "0.4.0",
+    "mcp-use": "1.1.0"
   },
   "changesets": [
-    "clear-turtles-scream",
-    "fuzzy-ideas-tie",
-    "whole-states-repeat"
+    "large-jokes-write",
+    "wicked-jobs-win"
   ]
 }

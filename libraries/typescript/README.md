@@ -50,7 +50,7 @@ mcp-use for TypeScript provides the complete MCP stack:
 
 ## 🏗️ What's Included
 
-MCP-Use for TypeScript provides the complete MCP stack:
+mcp-use for TypeScript provides the complete MCP stack:
 
 - **🤖 MCP Agent** - Build AI agents that can use tools and reason across multiple steps
 - **🔌 MCP Client** - Connect directly to MCP servers for programmatic tool access
@@ -62,7 +62,7 @@ MCP-Use for TypeScript provides the complete MCP stack:
 
 ## 📖 Quick Links
 
-- **[Main Repository](../../README.md)** - Overview of the entire MCP-Use ecosystem
+- **[Main Repository](../../README.md)** - Overview of the entire mcp-use ecosystem
 - **[Python Version](../python/README.md)** - Python implementation for agents and clients
 - **[Inspector Documentation](./packages/inspector/README.md)** - Debug your MCP servers
 - **[CLI Documentation](./packages/cli/README.md)** - Build tool for MCP apps
