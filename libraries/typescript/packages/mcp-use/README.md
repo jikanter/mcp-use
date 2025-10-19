@@ -28,17 +28,19 @@
 </p>
 
 🌐 **mcp-use** is a complete TypeScript framework for building and using MCP (Model Context Protocol) applications. It provides both a powerful **client library** for connecting LLMs to MCP servers and a **server framework** for building your own MCP servers with UI capabilities.
+🌐 **mcp-use** is a complete TypeScript framework for building and using MCP (Model Context Protocol) applications. It provides both a powerful **client library** for connecting LLMs to MCP servers and a **server framework** for building your own MCP servers with UI capabilities.
 
 💡 Build custom AI agents, create MCP servers with React UI widgets, and debug everything with the built-in inspector - all in TypeScript.
 
+## 📦 mcp-use Ecosystem
 ## 📦 mcp-use Ecosystem
 
 | Package                                                                                           | Description                                 | Version                                                                                                         |
 | ------------------------------------------------------------------------------------------------- | ------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
 | **mcp-use**                                                                                       | Core framework for MCP clients and servers  | [![npm](https://img.shields.io/npm/v/mcp-use.svg)](https://www.npmjs.com/package/mcp-use)                       |
-| [@mcp-use/cli](https://github.com/mcp-use/mcp-use/tree/main/packages/cli)                      | Build tool for MCP apps with UI widgets     | [![npm](https://img.shields.io/npm/v/@mcp-use/cli.svg)](https://www.npmjs.com/package/@mcp-use/cli)             |
-| [@mcp-use/inspector](https://github.com/mcp-use/mcp-use/tree/main/packages/inspector)          | Web-based MCP server inspector and debugger | [![npm](https://img.shields.io/npm/v/@mcp-use/inspector.svg)](https://www.npmjs.com/package/@mcp-use/inspector) |
-| [create-mcp-use-app](https://github.com/mcp-use/mcp-use/tree/main/packages/create-mcp-use-app) | Create MCP apps with one command            | [![npm](https://img.shields.io/npm/v/create-mcp-use-app.svg)](https://www.npmjs.com/package/create-mcp-use-app) |
+| [@mcp-use/cli](https://github.com/mcp-use/mcp-use-ts/tree/main/packages/cli)                      | Build tool for MCP apps with UI widgets     | [![npm](https://img.shields.io/npm/v/@mcp-use/cli.svg)](https://www.npmjs.com/package/@mcp-use/cli)             |
+| [@mcp-use/inspector](https://github.com/mcp-use/mcp-use-ts/tree/main/packages/inspector)          | Web-based MCP server inspector and debugger | [![npm](https://img.shields.io/npm/v/@mcp-use/inspector.svg)](https://www.npmjs.com/package/@mcp-use/inspector) |
+| [create-mcp-use-app](https://github.com/mcp-use/mcp-use-ts/tree/main/packages/create-mcp-use-app) | Create MCP apps with one command            | [![npm](https://img.shields.io/npm/v/create-mcp-use-app.svg)](https://www.npmjs.com/package/create-mcp-use-app) |
 
 ---
 
@@ -95,6 +97,8 @@ async function main() {
     mcpServers: {
       playwright: { command: 'npx', args: ['@playwright/mcp@latest'] },
     },
+      playwright: { command: 'npx', args: ['@playwright/mcp@latest'] },
+    },
   }
   const client = MCPClient.fromDict(config)
 
@@ -105,6 +109,9 @@ async function main() {
   const agent = new MCPAgent({ llm, client, maxSteps: 20 })
 
   // 4. Run query
+  const result = await agent.run(
+    'Find the best restaurant in Tokyo using Google Search'
+  )
   const result = await agent.run(
     'Find the best restaurant in Tokyo using Google Search'
   )
@@ -195,10 +202,21 @@ import {
   MCPClient,
   streamEventsToAISDK,
 } from 'mcp-use'
+import {
+  createReadableStreamFromGenerator,
+  MCPAgent,
+  MCPClient,
+  streamEventsToAISDK,
+} from 'mcp-use'
 
 async function createApiHandler() {
   const config = {
     mcpServers: {
+      everything: {
+        command: 'npx',
+        args: ['-y', '@modelcontextprotocol/server-everything'],
+      },
+    },
       everything: {
         command: 'npx',
         args: ['-y', '@modelcontextprotocol/server-everything'],
@@ -233,6 +251,11 @@ async function createEnhancedApiHandler() {
         args: ['-y', '@modelcontextprotocol/server-everything'],
       },
     },
+      everything: {
+        command: 'npx',
+        args: ['-y', '@modelcontextprotocol/server-everything'],
+      },
+    },
   }
 
   const client = new MCPClient(config)
@@ -262,12 +285,23 @@ import {
   MCPClient,
   streamEventsToAISDK,
 } from 'mcp-use'
+import {
+  createReadableStreamFromGenerator,
+  MCPAgent,
+  MCPClient,
+  streamEventsToAISDK,
+} from 'mcp-use'
 
 export async function POST(req: Request) {
   const { prompt } = await req.json()
 
   const config = {
     mcpServers: {
+      everything: {
+        command: 'npx',
+        args: ['-y', '@modelcontextprotocol/server-everything'],
+      },
+    },
       everything: {
         command: 'npx',
         args: ['-y', '@modelcontextprotocol/server-everything'],
@@ -285,6 +319,7 @@ export async function POST(req: Request) {
     const readableStream = createReadableStreamFromGenerator(aiSDKStream)
 
     return LangChainAdapter.toDataStreamResponse(readableStream)
+  } finally {
   } finally {
     await client.closeAllSessions()
   }
@@ -348,6 +383,7 @@ agent.setMetadata({
   userId: 'user123',
   sessionId: 'session456',
   environment: 'production',
+  environment: 'production',
 })
 
 // Set tags for better organization
@@ -390,6 +426,7 @@ To disable observability, either remove langfuse env variables or
 const agent = new MCPAgent({
   llm,
   client,
+  observe: false,
   observe: false,
 })
 ```
@@ -466,6 +503,8 @@ const config = {
     airbnb: { command: 'npx', args: ['@openbnb/mcp-server-airbnb'] },
     playwright: { command: 'npx', args: ['@playwright/mcp@latest'] },
   },
+    playwright: { command: 'npx', args: ['@playwright/mcp@latest'] },
+  },
 }
 const client = MCPClient.fromDict(config)
 const agent = new MCPAgent({ llm, client, useServerManager: true })
@@ -480,6 +519,7 @@ await agent.run('Search Airbnb in Barcelona, then Google restaurants nearby')
 const agent = new MCPAgent({
   llm,
   client,
+  disallowedTools: ['file_system', 'network'],
   disallowedTools: ['file_system', 'network'],
 })
 ```
@@ -499,6 +539,7 @@ import { createMCPServer } from 'mcp-use/server'
 const server = createMCPServer('my-awesome-server', {
   version: '1.0.0',
   description: 'My MCP server with tools, resources, and prompts',
+  description: 'My MCP server with tools, resources, and prompts',
 })
 
 // Define tools
@@ -506,10 +547,12 @@ server.tool('search_web', {
   description: 'Search the web for information',
   parameters: z.object({
     query: z.string().describe('Search query'),
+    query: z.string().describe('Search query'),
   }),
   execute: async (args) => {
     // Your tool implementation
     return { results: await performSearch(args.query) }
+  },
   },
 })
 
@@ -521,14 +564,17 @@ server.resource('config', {
   fetch: async () => {
     return JSON.stringify(await getConfig(), null, 2)
   },
+  },
 })
 
 // Define prompts
 server.prompt('code_review', {
   description: 'Review code for best practices',
   arguments: [{ name: 'code', description: 'Code to review', required: true }],
+  arguments: [{ name: 'code', description: 'Code to review', required: true }],
   render: async (args) => {
     return `Please review this code:\n\n${args.code}`
+  },
   },
 })
 
@@ -549,9 +595,19 @@ server.listen(3000)
 | **🛠️ TypeScript First**    | Full TypeScript support with type inference                      |
 | **♻️ Hot Reload**          | Development mode with automatic reloading                        |
 | **📊 Observability**       | Built-in logging and monitoring capabilities                     |
+| Feature                    | Description                                                      |
+| -------------------------- | ---------------------------------------------------------------- |
+| **🔍 Auto Inspector**      | Inspector UI automatically mounts at `/inspector` for debugging  |
+| **🎨 UI Widgets**          | Build custom React UI components served alongside your MCP tools |
+| **🔐 OAuth Support**       | Built-in OAuth flow handling for secure authentication           |
+| **📡 Multiple Transports** | HTTP/SSE and WebSocket support out of the box                    |
+| **🛠️ TypeScript First**    | Full TypeScript support with type inference                      |
+| **♻️ Hot Reload**          | Development mode with automatic reloading                        |
+| **📊 Observability**       | Built-in logging and monitoring capabilities                     |
 
 ### MCP-UI Resources
 
+mcp-use provides a unified `uiResource()` method for registering interactive UI widgets that are compatible with MCP-UI clients. This automatically creates both a tool (for dynamic parameters) and a resource (for static access).
 mcp-use provides a unified `uiResource()` method for registering interactive UI widgets that are compatible with MCP-UI clients. This automatically creates both a tool (for dynamic parameters) and a resource (for static access).
 
 #### Quick Start
@@ -571,14 +627,22 @@ server.uiResource({
   props: {
     initialTasks: {
       type: 'array',
+    initialTasks: {
+      type: 'array',
       description: 'Initial tasks',
+      required: false,
       required: false,
     },
     theme: {
       type: 'string',
       default: 'light',
     },
+    theme: {
+      type: 'string',
+      default: 'light',
+    },
   },
+  size: ['900px', '600px'],
   size: ['900px', '600px'],
 })
 
@@ -587,7 +651,7 @@ server.listen(3000)
 
 This automatically creates:
 
-- **Tool**: `kanban-board` - Accepts parameters and returns UIResource
+- **Tool**: `ui_kanban-board` - Accepts parameters and returns UIResource
 - **Resource**: `ui://widget/kanban-board` - Static access with defaults
 
 #### Three Resource Types
@@ -600,6 +664,7 @@ server.uiResource({
   type: 'externalUrl',
   name: 'dashboard',
   widget: 'dashboard',
+  props: { userId: { type: 'string', required: true } },
   props: { userId: { type: 'string', required: true } },
 })
 ```
@@ -617,6 +682,7 @@ server.uiResource({
       <body><h1>Welcome!</h1></body>
     </html>
   `,
+  `,
 })
 ```
 
@@ -632,6 +698,7 @@ server.uiResource({
     button.setAttribute('label', 'Vote');
     root.appendChild(button);
   `,
+  framework: 'react',
   framework: 'react',
 })
 ```
@@ -650,6 +717,7 @@ npm run dev
 
 ### Building Custom UI Widgets
 
+mcp-use supports building custom UI widgets for your MCP tools using React:
 mcp-use supports building custom UI widgets for your MCP tools using React:
 
 ```tsx
@@ -675,6 +743,7 @@ export default function TaskManager() {
 }
 ```
 
+Build and serve widgets using the mcp-use CLI:
 Build and serve widgets using the mcp-use CLI:
 
 ```bash
@@ -702,6 +771,7 @@ const server = createMCPServer('advanced-server', {
   cors: {
     origin: ['http://localhost:3000', 'https://myapp.com'],
     credentials: true,
+    credentials: true,
   },
   // OAuth configuration
   oauth: {
@@ -710,8 +780,10 @@ const server = createMCPServer('advanced-server', {
     authorizationUrl: 'https://api.example.com/oauth/authorize',
     tokenUrl: 'https://api.example.com/oauth/token',
     scopes: ['read', 'write'],
+    scopes: ['read', 'write'],
   },
   // Custom middleware
+  middleware: [authenticationMiddleware, rateLimitingMiddleware],
   middleware: [authenticationMiddleware, rateLimitingMiddleware],
 })
 ```
@@ -749,7 +821,11 @@ app.get('/api/health', (req, res) => res.send('OK'))
 const mcpServer = createMCPServer('integrated-server', {
   /* ... */
 })
+const mcpServer = createMCPServer('integrated-server', {
+  /* ... */
+})
 mountMCPServer(app, mcpServer, {
+  basePath: '/mcp-service', // Optional custom base path
   basePath: '/mcp-service', // Optional custom base path
 })
 

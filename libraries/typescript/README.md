@@ -21,17 +21,17 @@
   <strong>Build powerful AI agents, create MCP servers with UI widgets, and debug with built-in inspector - all in TypeScript</strong>
 </p>
 
-> **📦 Part of the [MCP-Use Monorepo](../../README.md)** - This is the TypeScript implementation. Also available in [Python](../python/README.md).
+> **📦 Part of the [mcp-use Monorepo](../../README.md)** - This is the TypeScript implementation. Also available in [Python](../python/README.md).
 
 ---
 
 ## 🎯 What is mcp-use?
 
-MCP-Use is a comprehensive TypeScript framework for building and using [Model Context Protocol (MCP)](https://modelcontextprotocol.io) applications. It provides everything you need to create AI agents that can use tools, build MCP servers with rich UI interfaces, and debug your applications with powerful developer tools.
+mcp-use is a comprehensive TypeScript framework for building and using [Model Context Protocol (MCP)](https://modelcontextprotocol.io) applications. It provides everything you need to create AI agents that can use tools, build MCP servers with rich UI interfaces, and debug your applications with powerful developer tools.
 
 ## 🏗️ What's Included
 
-MCP-Use for TypeScript provides the complete MCP stack:
+mcp-use for TypeScript provides the complete MCP stack:
 
 - **🤖 MCP Agent** - Build AI agents that can use tools and reason across multiple steps
 - **🔌 MCP Client** - Connect directly to MCP servers for programmatic tool access
@@ -43,7 +43,7 @@ MCP-Use for TypeScript provides the complete MCP stack:
 
 ## 📖 Quick Links
 
-- **[Main Repository](../../README.md)** - Overview of the entire MCP-Use ecosystem
+- **[Main Repository](../../README.md)** - Overview of the entire mcp-use ecosystem
 - **[Python Version](../python/README.md)** - Python implementation for agents and clients
 - **[Inspector Documentation](./packages/inspector/README.md)** - Debug your MCP servers
 - **[CLI Documentation](./packages/cli/README.md)** - Build tool for MCP apps
@@ -86,7 +86,7 @@ Your MCP server is now running at `http://localhost:3000` with the inspector aut
 
 ## 🎨 Build ChatGPT-Style Apps with MCP-UI Resources
 
-One of the most powerful features of MCP-Use is the ability to build **interactive UI widgets** that work alongside your MCP tools. Create ChatGPT-like experiences with custom React components that can call MCP tools and display rich, interactive content.
+One of the most powerful features of mcp-use is the ability to build **interactive UI widgets** that work alongside your MCP tools. Create ChatGPT-like experiences with custom React components that can call MCP tools and display rich, interactive content.
 
 ### Why MCP-UI Resources?
 
@@ -136,7 +136,7 @@ server.uiResource({
 **Learn More:**
 
 - [MCP-UI Resources Guide](#mcp-ui-resources) (detailed section below)
-- [Create MCP-Use App](./packages/create-mcp-use-app/README.md) - Scaffolding with UI examples
+- [Create mcp-use App](./packages/create-mcp-use-app/README.md) - Scaffolding with UI examples
 - [AI SDK Integration](#-ai-sdk-integration) - Build with Vercel AI SDK
 
 ---

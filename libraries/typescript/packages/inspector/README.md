@@ -54,7 +54,7 @@ For detailed usage instructions and guides, visit [docs.mcp-use.com/inspector](h
 
 | Feature                    | Description                                                     |
 | -------------------------- | --------------------------------------------------------------- |
-| **🚀 Auto-Mount**          | Automatically available at `/inspector` for all MCP-Use servers |
+| **🚀 Auto-Mount**          | Automatically available at `/inspector` for all mcp-use servers |
 | **🔌 Multi-Connection**    | Connect to and manage multiple MCP servers simultaneously       |
 | **🎯 Interactive Testing** | Test tools with live execution and real-time results            |
 | **📊 Real-time Status**    | Monitor connection states, errors, and server health            |
@@ -70,23 +70,7 @@ For detailed usage instructions and guides, visit [docs.mcp-use.com/inspector](h
 
 ## 🚀 Quick Start
 
-### Access the Inspector
-
-There are three ways to use the MCP Inspector:
-
-#### 1. Online Version (Recommended for Testing)
-
-Visit [inspector.mcp-use.com](https://inspector.mcp-use.com/inspector) - no installation required!
-
-#### 2. Run Locally
-
-```bash
-npx @mcp-use/inspector
-```
-
-Opens the inspector in your browser at `http://localhost:8080`
-
-#### 3. Auto-mounted with mcp-use Servers
+### Method 1: Automatic with mcp-use Server (Recommended)
 
 When you create an MCP server with `mcp-use`, the inspector is automatically available at `/inspector`:
 
@@ -94,7 +78,6 @@ When you create an MCP server with `mcp-use`, the inspector is automatically ava
 import { createMCPServer } from 'mcp-use/server'
 
 const server = createMCPServer('my-server', {
-  version: '1.0.0',
   version: '1.0.0',
 })
 
@@ -337,16 +320,19 @@ import { createMCPServer } from 'mcp-use/server'
 const server = createMCPServer('dev-server', {
   version: '1.0.0',
   description: 'Development MCP Server',
+  description: 'Development MCP Server',
 })
 
 server.tool('debug_tool', {
   description: 'Debug tool for testing',
   parameters: z.object({
     message: z.string(),
+    message: z.string(),
   }),
   execute: async ({ message }) => {
     console.log('Debug:', message)
     return { received: message, timestamp: Date.now() }
+  },
   },
 })
 
@@ -363,6 +349,8 @@ const server = createMCPServer('production-server', {
     clientId: process.env.OAUTH_CLIENT_ID,
     clientSecret: process.env.OAUTH_CLIENT_SECRET,
     authorizationUrl: 'https://api.example.com/oauth/authorize',
+    tokenUrl: 'https://api.example.com/oauth/token',
+  },
     tokenUrl: 'https://api.example.com/oauth/token',
   },
 })
@@ -492,6 +480,7 @@ docker run -d \
 server.configurePagination({
   toolsPerPage: 50,
   enableSearch: true,
+  enableSearch: true,
 })
 ```
 
@@ -503,6 +492,7 @@ const inspector = {
   maxConnections: 5,
   connectionTimeout: 30000,
   keepAlive: true,
+  keepAlive: true,
 }
 ```
 
@@ -512,6 +502,7 @@ const inspector = {
 // Cache tool results
 server.enableCache({
   ttl: 300, // 5 minutes
+  maxSize: 100, // MB
   maxSize: 100, // MB
 })
 ```
@@ -526,6 +517,7 @@ server.enableCache({
 // Configure CORS for inspector access
 server.configureCORS({
   origin: ['http://localhost:3000'],
+  credentials: true,
   credentials: true,
 })
 ```
@@ -543,6 +535,7 @@ server.use(authMiddleware)
 // Prevent abuse
 server.configureRateLimit({
   windowMs: 60000, // 1 minute
+  max: 100, // requests
   max: 100, // requests
 })
 ```
@@ -588,14 +581,14 @@ See our [contributing guide](https://github.com/mcp-use/mcp-use/blob/main/CONTRI
 
 ## 📚 Learn More
 
-- [Inspector Documentation](https://docs.mcp-use.com/inspector) - Complete usage guide and tutorials
-- [Self-Hosting Guide](https://docs.mcp-use.com/inspector/self-hosting) - Deploy your own instance
-- [mcp-use Documentation](https://docs.mcp-use.com) - Full framework documentation
-- [Model Context Protocol](https://modelcontextprotocol.io) - Official MCP specification
-- [GitHub Repository](https://github.com/mcp-use/mcp-use) - Source code and examples
+- [mcp-use Documentation](https://github.com/mcp-use/mcp-use-ts)
+- [Model Context Protocol](https://modelcontextprotocol.io)
+- [Creating MCP Servers](https://github.com/mcp-use/mcp-use-ts/tree/main/packages/mcp-use#-mcp-server-framework)
+- [Building with React](https://react.dev)
+- [Tailwind CSS](https://tailwindcss.com)
 
 ---
 
 ## 📜 License
 
-MIT © [MCP-Use](https://github.com/mcp-use)
+MIT © [mcp-use](https://github.com/mcp-use)

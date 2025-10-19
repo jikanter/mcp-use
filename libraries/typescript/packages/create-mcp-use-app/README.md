@@ -7,6 +7,7 @@
 </div>
 
 <h1 align="center">Create mcp-use App</h1>
+<h1 align="center">Create mcp-use App</h1>
 
 <p align="center">
     <a href="https://www.npmjs.com/package/create-mcp-use-app" alt="NPM Downloads">
@@ -22,14 +23,15 @@
 </p>
 
 🚀 **Create mcp-use App** is the fastest way to scaffold a new MCP (Model Context Protocol) application. With just one command, you get a fully configured TypeScript project with hot reload, automatic inspector, and UI widget support - everything you need to build powerful MCP servers.
+🚀 **Create mcp-use App** is the fastest way to scaffold a new MCP (Model Context Protocol) application. With just one command, you get a fully configured TypeScript project with hot reload, automatic inspector, and UI widget support - everything you need to build powerful MCP servers.
 
 ## 📦 Related Packages
 
 | Package                                                                                  | Description             | Version                                                                                                         |
 | ---------------------------------------------------------------------------------------- | ----------------------- | --------------------------------------------------------------------------------------------------------------- |
-| [mcp-use](https://github.com/mcp-use/mcp-use/tree/main/packages/mcp-use)              | Core MCP framework      | [![npm](https://img.shields.io/npm/v/mcp-use.svg)](https://www.npmjs.com/package/mcp-use)                       |
-| [@mcp-use/cli](https://github.com/mcp-use/mcp-use/tree/main/packages/cli)             | Build tool for MCP apps | [![npm](https://img.shields.io/npm/v/@mcp-use/cli.svg)](https://www.npmjs.com/package/@mcp-use/cli)             |
-| [@mcp-use/inspector](https://github.com/mcp-use/mcp-use/tree/main/packages/inspector) | Web-based MCP inspector | [![npm](https://img.shields.io/npm/v/@mcp-use/inspector.svg)](https://www.npmjs.com/package/@mcp-use/inspector) |
+| [mcp-use](https://github.com/mcp-use/mcp-use-ts/tree/main/packages/mcp-use)              | Core MCP framework      | [![npm](https://img.shields.io/npm/v/mcp-use.svg)](https://www.npmjs.com/package/mcp-use)                       |
+| [@mcp-use/cli](https://github.com/mcp-use/mcp-use-ts/tree/main/packages/cli)             | Build tool for MCP apps | [![npm](https://img.shields.io/npm/v/@mcp-use/cli.svg)](https://www.npmjs.com/package/@mcp-use/cli)             |
+| [@mcp-use/inspector](https://github.com/mcp-use/mcp-use-ts/tree/main/packages/inspector) | Web-based MCP inspector | [![npm](https://img.shields.io/npm/v/@mcp-use/inspector.svg)](https://www.npmjs.com/package/@mcp-use/inspector) |
 
 ---
 
@@ -78,6 +80,15 @@ my-mcp-server/
 | **🛠️ Example Tools**    | Sample MCP tools, resources, and prompts          |
 | **📦 Build Scripts**    | Ready-to-use development and production scripts   |
 | **🚀 Production Ready** | Optimized build configuration                     |
+| Feature                 | Description                                       |
+| ----------------------- | ------------------------------------------------- |
+| **📝 TypeScript**       | Full TypeScript setup with proper types           |
+| **🔥 Hot Reload**       | Auto-restart on code changes during development   |
+| **🔍 Auto Inspector**   | Inspector UI opens automatically in dev mode      |
+| **🎨 UI Widgets**       | React components that compile to standalone pages |
+| **🛠️ Example Tools**    | Sample MCP tools, resources, and prompts          |
+| **📦 Build Scripts**    | Ready-to-use development and production scripts   |
+| **🚀 Production Ready** | Optimized build configuration                     |
 
 ---
 
@@ -92,6 +103,7 @@ npx create-mcp-use-app
 ```
 
 You'll be prompted for:
+
 
 - Project name
 - Project template
@@ -128,6 +140,7 @@ npx create-mcp-use-app my-project --skip-install
 
 The basic template includes:
 
+
 - Simple MCP server setup
 - Example tool, resource, and prompt
 - Basic UI widget example
@@ -138,6 +151,7 @@ Perfect for getting started quickly or building simple MCP servers.
 ### Advanced Template
 
 The advanced template includes everything from basic plus:
+
 
 - Multiple tools with complex schemas
 - OAuth authentication example
@@ -153,6 +167,7 @@ Ideal for production applications or complex integrations.
 
 The minimal template includes:
 
+
 - Bare-bones MCP server
 - No example tools or widgets
 - Essential configuration only
@@ -167,17 +182,20 @@ The scaffolded project includes these dependencies:
 
 ### Core Dependencies
 
+
 - `mcp-use` - The MCP framework
 - `@mcp-use/cli` - Build and development tool
 - `@mcp-use/inspector` - Web-based debugger
 
 ### Development Dependencies
 
+
 - `typescript` - TypeScript compiler
 - `tsx` - TypeScript executor for development
 - `@types/node` - Node.js type definitions
 
 ### Optional Dependencies (Advanced Template)
+
 
 - Database drivers (PostgreSQL, SQLite)
 - Authentication libraries
@@ -200,6 +218,7 @@ pnpm dev
 ```
 
 This will:
+
 
 1. Start the MCP server on port 3000
 2. Open the inspector in your browser
@@ -231,6 +250,7 @@ After creating your app, here's what to do next:
 
 Open `src/index.ts` to see how to:
 
+
 - Define MCP tools with Zod schemas
 - Create resources for data access
 - Set up prompts for AI interactions
@@ -238,6 +258,7 @@ Open `src/index.ts` to see how to:
 ### 2. Try the Inspector
 
 The inspector automatically opens at `http://localhost:3000/inspector` where you can:
+
 
 - Test your tools interactively
 - View available resources
@@ -258,12 +279,14 @@ export default function MyWidget() {
   const handleClick = async () => {
     const result = await callTool('my_tool', {
       param: 'value',
+      param: 'value',
     })
     console.log(result)
   }
 
   return (
     <div>
+      <button onClick={handleClick}>Call MCP Tool</button>
       <button onClick={handleClick}>Call MCP Tool</button>
     </div>
   )
@@ -280,10 +303,12 @@ import { ChatOpenAI } from '@langchain/openai'
 
 const client = new MCPClient({
   url: 'http://localhost:3000/mcp',
+  url: 'http://localhost:3000/mcp',
 })
 
 const agent = new MCPAgent({
   llm: new ChatOpenAI(),
+  client,
   client,
 })
 
@@ -351,11 +376,13 @@ server.tool('search_database', {
   parameters: z.object({
     query: z.string().describe('Search query'),
     limit: z.number().optional().default(10),
+    limit: z.number().optional().default(10),
   }),
   execute: async ({ query, limit }) => {
     // Your tool logic here
     const results = await db.search(query, limit)
     return { results }
+  },
   },
 })
 ```
@@ -371,6 +398,7 @@ server.resource('user_profile', {
     const profile = await getUserProfile()
     return JSON.stringify(profile)
   },
+  },
 })
 ```
 
@@ -382,8 +410,13 @@ server.prompt('code_review', {
   arguments: [
     { name: 'code', description: 'Code to review', required: true },
     { name: 'language', description: 'Programming language', required: false },
+    { name: 'language', description: 'Programming language', required: false },
   ],
   render: async ({ code, language }) => {
+    return `Please review this ${
+      language || ''
+    } code for best practices:\n\n${code}`
+  },
     return `Please review this ${
       language || ''
     } code for best practices:\n\n${code}`
@@ -399,6 +432,7 @@ server.prompt('code_review', {
 
 **Command not found:**
 
+
 ```bash
 # Make sure you have Node.js 18+ installed
 node --version
@@ -409,6 +443,7 @@ npx create-mcp-use-app@latest
 
 **Permission denied:**
 
+
 ```bash
 # On macOS/Linux, you might need sudo
 sudo npx create-mcp-use-app my-app
@@ -416,12 +451,14 @@ sudo npx create-mcp-use-app my-app
 
 **Network issues:**
 
+
 ```bash
 # Use a different registry
 npm config set registry https://registry.npmjs.org/
 ```
 
 **Port already in use:**
+
 
 ```bash
 # Change the port in your .env file
@@ -445,7 +482,7 @@ See our [contributing guide](https://github.com/mcp-use/mcp-use/blob/main/CONTRI
 
 ## 📚 Learn More
 
-- [mcp-use Documentation](https://github.com/mcp-use/mcp-use)
+- [mcp-use Documentation](https://github.com/mcp-use/mcp-use-ts)
 - [Model Context Protocol Spec](https://modelcontextprotocol.io)
 - [Creating MCP Tools](https://github.com/mcp-use/mcp-use/tree/main/packages/mcp-use#-mcp-server-framework)
 - [Building UI Widgets](https://github.com/mcp-use/mcp-use/tree/main/packages/cli#-creating-ui-widgets)
@@ -454,5 +491,7 @@ See our [contributing guide](https://github.com/mcp-use/mcp-use/blob/main/CONTRI
 ---
 
 ## 📜 License
+
+MIT © [mcp-use](https://github.com/mcp-use)
 
 MIT © [mcp-use](https://github.com/mcp-use)
