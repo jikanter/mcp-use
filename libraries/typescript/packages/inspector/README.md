@@ -59,7 +59,7 @@ For detailed usage instructions and guides, visit [docs.mcp-use.com/inspector](h
 
 | Feature                    | Description                                                     |
 | -------------------------- | --------------------------------------------------------------- |
-| **🚀 Auto-Mount**          | Automatically available at `/inspector` for all MCP-Use servers |
+| **🚀 Auto-Mount**          | Automatically available at `/inspector` for all mcp-use servers |
 | **🔌 Multi-Connection**    | Connect to and manage multiple MCP servers simultaneously       |
 | **🎯 Interactive Testing** | Test tools with live execution and real-time results            |
 | **📊 Real-time Status**    | Monitor connection states, errors, and server health            |
@@ -76,6 +76,22 @@ For detailed usage instructions and guides, visit [docs.mcp-use.com/inspector](h
 ## 🚀 Quick Start
 
 ### Method 1: Automatic with mcp-use Server (Recommended)
+
+There are three ways to use the MCP Inspector:
+
+#### 1. Online Version (Recommended for Testing)
+
+Visit [inspector.mcp-use.com](https://inspector.mcp-use.com/inspector) - no installation required!
+
+#### 2. Run Locally
+
+```bash
+npx @mcp-use/inspector
+```
+
+Opens the inspector in your browser at `http://localhost:8080`
+
+#### 3. Auto-mounted with mcp-use Servers
 
 When you create an MCP server with `mcp-use`, the inspector is automatically available at `/inspector`:
 
@@ -666,9 +682,14 @@ See our [contributing guide](https://github.com/mcp-use/mcp-use/blob/main/CONTRI
 - [Creating MCP Servers](https://github.com/mcp-use/mcp-use-ts/tree/main/packages/mcp-use#-mcp-server-framework)
 - [Building with React](https://react.dev)
 - [Tailwind CSS](https://tailwindcss.com)
+- [mcp-use Documentation](https://github.com/mcp-use/mcp-use-ts)
+- [Model Context Protocol](https://modelcontextprotocol.io)
+- [Creating MCP Servers](https://github.com/mcp-use/mcp-use-ts/tree/main/packages/mcp-use#-mcp-server-framework)
+- [Building with React](https://react.dev)
+- [Tailwind CSS](https://tailwindcss.com)
 
 ---
 
 ## 📜 License
 
-MIT © [MCP-Use](https://github.com/mcp-use)
+MIT © [mcp-use](https://github.com/mcp-use)

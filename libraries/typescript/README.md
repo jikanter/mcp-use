@@ -21,7 +21,7 @@
   <strong>Build powerful AI agents, create MCP servers with UI widgets, and debug with built-in inspector - all in TypeScript</strong>
 </p>
 
-> **📦 Part of the [MCP-Use Monorepo](../../README.md)** - This is the TypeScript implementation. Also available in [Python](../python/README.md).
+> **📦 Part of the [mcp-use Monorepo](../../README.md)** - This is the TypeScript implementation. Also available in [Python](../python/README.md).
 
 ---
 
@@ -105,7 +105,7 @@ Your MCP server is now running at `http://localhost:3000` with the inspector aut
 
 ## 🎨 Build ChatGPT-Style Apps with MCP-UI Resources
 
-One of the most powerful features of MCP-Use is the ability to build **interactive UI widgets** that work alongside your MCP tools. Create ChatGPT-like experiences with custom React components that can call MCP tools and display rich, interactive content.
+One of the most powerful features of mcp-use is the ability to build **interactive UI widgets** that work alongside your MCP tools. Create ChatGPT-like experiences with custom React components that can call MCP tools and display rich, interactive content.
 
 ### Why MCP-UI Resources?
 
@@ -155,7 +155,7 @@ server.uiResource({
 **Learn More:**
 
 - [MCP-UI Resources Guide](#mcp-ui-resources) (detailed section below)
-- [Create MCP-Use App](./packages/create-mcp-use-app/README.md) - Scaffolding with UI examples
+- [Create mcp-use App](./packages/create-mcp-use-app/README.md) - Scaffolding with UI examples
 - [AI SDK Integration](#-ai-sdk-integration) - Build with Vercel AI SDK
 
 ---
@@ -678,6 +678,6 @@ MIT © [mcp-use](https://github.com/mcp-use)
 ---
 
 <p align="center">
-  <strong>Built with ❤️ by the MCP-Use team</strong>
+  <strong>Built with ❤️ by the mcp-use team</strong>
 </p>
 
