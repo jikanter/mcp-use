@@ -1,5 +1,5 @@
 ---
-title: "MCP-UI Primitives"
+title: "MCP-UI Resources"
 description: "Build interactive UI widgets with MCP-UI framework"
 icon: "wallpaper"
 ---
@@ -21,10 +21,6 @@ MCP-UI is a framework for creating interactive widgets that:
 ### 1. External URL Resources
 
 Iframe-based widgets served from your MCP server:
-
-:::warning Deprecated
-External URL resources are now built automatically by `mcp-use/server` `setupWidgetRoutes`. Consider using the newer widget approach instead.
-:::
 
 ```typescript
 server.uiResource({
@@ -60,10 +56,6 @@ server.uiResource({
 - Isolated in iframes for security
 - Can include external resources
 - Full JavaScript capabilities
-
-:::note
-External URLs are automatically built and configured by the `setupWidgetRoutes` function in `mcp-use/server`. Routes are generated based on your widget definitions without manual setup.
-:::
 
 ### 2. Raw HTML Resources
 
