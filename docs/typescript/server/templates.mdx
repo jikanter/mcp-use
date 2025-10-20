@@ -68,7 +68,7 @@ npm run dev
 const weather = await client.callTool('fetch-weather', { city: 'London' })
 
 // Display it in a beautiful widget
-const widget = await client.callTool('display-weather', { 
+const widget = await client.callTool('display-weather', {
   city: 'London',
   temperature: '15',
   condition: 'Partly Cloudy'
@@ -102,7 +102,7 @@ npm run dev
 // All React components in resources/ folder are automatically registered!
 // Just export widgetMetadata and mcp-use handles the rest
 
-const widget = await client.callTool('display-weather', { 
+const widget = await client.callTool('display-weather', {
   city: 'San Francisco',
   temperature: '22',
   condition: 'Sunny'
@@ -116,7 +116,7 @@ const widget = await client.callTool('display-weather', {
 The **mcp-ui** template demonstrates all three MCP-UI UIResource types with examples of each approach.
 
 **What's Included:**
-- **External URL (Iframe Widgets)**: 
+- **External URL (Iframe Widgets)**:
   - `kanban-board` - Complex interactive board served from filesystem
   - Automatic static file serving
   - Full asset support

@@ -6,7 +6,7 @@ icon: "palette"
 
 # UI Widgets
 
-UI widgets allow you to create rich, interactive user interfaces that MCP clients can display. 
+UI widgets allow you to create rich, interactive user interfaces that MCP clients can display.
 The framework supports multiple widget formats including **MCP-UI** and **OpenAI Apps SDK** components.
 
 
@@ -79,14 +79,14 @@ type UserCardProps = z.infer<typeof propSchema>;
 const UserCard: React.FC = () => {
   // useWidget hook provides props from Apps SDK or MCP-UI
   const { props, theme } = useWidget<UserCardProps>();
-  
+
   const { name, email, avatar, role } = props;
-  
+
   return (
     <div className={`p-6 rounded-lg shadow-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
       {avatar && (
-        <img 
-          src={avatar} 
+        <img
+          src={avatar}
           alt={name}
           className="w-24 h-24 rounded-full mx-auto mb-4"
         />
@@ -183,7 +183,7 @@ When an LLM invokes the tool:
 6. **React Component** renders with the props
 
 
-## Widget Metadata 
+## Widget Metadata
 
 ### widgetMetadata Object
 Contains the information that the MCP resource (and the tool that exposes it) will use when are automatically built by mcp-use.
@@ -191,7 +191,7 @@ Contains the information that the MCP resource (and the tool that exposes it) wi
 export const widgetMetadata = {
   // Required: Human-readable description
   description: string,
-  
+
   // Required: Zod schema defining component props
   inputs: z.ZodObject<...>,
 }
@@ -210,16 +210,16 @@ const propSchema = z.object({
   name: z.string().describe('User name'),
   age: z.number().min(0).max(150).describe('User age'),
   active: z.boolean().describe('Is user active'),
-  
+
   // Enums for specific choices
   status: z.enum(['pending', 'approved', 'rejected']).describe('Request status'),
-  
+
   // Optional fields
   email: z.string().email().optional().describe('Optional email address'),
-  
+
   // Arrays
   tags: z.array(z.string()).describe('List of tags'),
-  
+
   // Nested objects
   address: z.object({
     street: z.string(),
@@ -244,7 +244,7 @@ const MyWidget: React.FC = () => {
     metadata,           // Response metadata
     state,              // Persistent widget state
     setState,           // Update widget state
-    
+
     // Layout & theme
     theme,              // 'light' | 'dark'
     displayMode,        // 'inline' | 'fullscreen' | 'popup'
@@ -252,17 +252,17 @@ const MyWidget: React.FC = () => {
     maxHeight,          // Max widget height
     userAgent,          // Device capabilities
     locale,             // User locale
-    
+
     // Actions
     callTool,           // Call other MCP tools
     sendFollowUpMessage,// Send message to chat
     openExternal,       // Open external URLs
     requestDisplayMode, // Request display mode change
-    
+
     // Availability
     isAvailable,        // Is Apps SDK available
   } = useWidget<MyPropsType>();
-  
+
   return <div>...</div>;
 };
 ```
@@ -367,7 +367,7 @@ const WeatherWidget: React.FC = () => {
       <div className={`h-32 bg-gradient-to-br ${getWeatherColor(weather)} flex items-center justify-center`}>
         <div className="text-6xl">{getWeatherIcon(weather)}</div>
       </div>
-      
+
       <div className="p-6">
         <div className="text-center">
           <h2 className={`text-2xl font-bold ${textColor} mb-2`}>{city}</h2>
@@ -434,8 +434,8 @@ Widgets can call other MCP tools:
 const { callTool } = useWidget();
 
 const handleSearch = async () => {
-  const result = await callTool('search_cities', { 
-    query: 'tokyo' 
+  const result = await callTool('search_cities', {
+    query: 'tokyo'
   });
   console.log(result);
 };
@@ -630,7 +630,7 @@ Help the LLM understand your inputs:
 const propSchema = z.object({
   // Good: Clear description
   city: z.string().describe('The city name (e.g., "New York", "Tokyo")'),
-  
+
   // ❌ Bad: No description
   city: z.string(),
 });
