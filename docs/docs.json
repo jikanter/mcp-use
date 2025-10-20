@@ -29,7 +29,7 @@
     "products": [
       {
         "product": "Home",
-        "description": "Home description",
+        "description": "Home",
         "icon": "/images/mcp_use.svg",
         "groups": [
           {
@@ -109,6 +109,13 @@
               "python/troubleshooting/common-issues",
               "python/troubleshooting/performance",
               "python/troubleshooting/connection-errors"
+            ]
+          }, 
+          {
+            "group": "Guides",
+            "icon": "",
+            "pages": [
+              "home/mcp101"
             ]
           }
         ]
