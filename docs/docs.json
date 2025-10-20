@@ -195,6 +195,16 @@
       {
         "label": "Examples",
         "href": "https://github.com/mcp-use/mcp-use/tree/main/examples"
+      },
+      {
+        "label": "Discord",
+        "icon": "discord",
+        "href": "https://discord.gg/XkNkSkMz3V"
+      },
+      {
+        "label": "",
+        "icon": "/images/xlogo.svg",
+        "href": "https://x.com/mcpuse"
       }
     ],
     "primary": {
