@@ -20,36 +20,27 @@
     "library": "lucide"
   },
   "navigation": {
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Website",
-          "href": "https://mcp-use.com",
-          "icon": "globe"
-        },
-        {
-          "anchor": "Forum",
-          "href": "https://discord.gg/XkNkSkMz3V",
-          "icon": "discord"
-        }
-      ]
-    },
-    "tabs": [
+    "anchors": [
       {
-        "tab": "Python",
-        "icon": "python",
+        "anchor": "python/getting-started/quickstart",
+        "icon": "rocket"
+      }
+    ],
+    "products": [
+      {
+        "product": "Home",
+        "description": "Home description",
+        "icon": "/images/mcp_use.svg",
         "groups": [
           {
-            "group": "Getting Started",
+            "group": "Welcome",
             "pages": [
-              "python/getting-started/index",
-              "python/getting-started/quickstart",
-              "python/getting-started/installation",
-              "python/getting-started/configuration"
+              "home/index"
             ]
           },
           {
-            "group": "Client Configuration",
+            "group": "Libraries",
+            "icon": "library",
             "pages": [
               {
                 "group": "Overview",
@@ -85,7 +76,7 @@
             ]
           },
           {
-            "group": "Agent Configuration",
+            "group": "MCP Agent",
             "pages": [
               "agent/agent-configuration",
               "agent/llm-integration",
@@ -123,9 +114,10 @@
         ]
       },
       {
-        "tab": "Python API Reference",
-        "icon": "terminal",
-        "groups": [
+        "product": "Python SDK",
+        "description": "Python SDK description",
+        "icon": "/images/pythonlogo.svg",
+        "tabs": [
           {
             "group": "API Reference",
             "pages": [
@@ -169,13 +161,180 @@
         ]
       },
       {
-        "tab": "Blog",
-        "icon": "book",
-        "groups": [
+        "product": "TypeScript SDK",
+        "description": "TypeScript SDK description",
+        "icon": "/images/typescriptlogo.svg",
+        "tabs": [
           {
-            "group": "Blog",
-            "pages": [
-              "python/blog/middleware"
+            "tab": "Docs",
+            "icon": "book",
+            "groups": [
+              {
+                "group": "Getting Started",
+                "icon": "list-start",
+                "pages": [
+                  "typescript/getting-started/quickstart",
+                  "typescript/getting-started/installation",
+                  "typescript/getting-started/configuration"
+                ]
+              },
+              {
+                "group": "MCP Server",
+                "icon": "server",
+                "tag": "Beta",
+                "pages": [
+                  "typescript/server/index",
+                  {
+                    "group": "Overview",
+                    "icon": "globe",
+                    "pages": [
+                      "typescript/server/getting-started",
+                      "typescript/server/templates"
+                    ]
+                  },
+                  {
+                    "group": "Core Features",
+                    "icon": "list-plus",
+                    "pages": [
+                      "typescript/server/tools",
+                      "typescript/server/resources",
+                      "typescript/server/prompts",
+                      "typescript/server/api-reference"
+                    ]
+                  },
+                  {
+                    "group": "UI Widgets",
+                    "icon": "palette",
+                    "pages": [
+                      "typescript/server/ui-widgets",
+                      "typescript/server/mcp-ui-resources",
+                      "typescript/server/apps-sdk-resources"
+                    ]
+                  },
+                  {
+                    "group": "Advanced Features",
+                    "icon": "sparkle",
+                    "pages": [
+                      "typescript/server/configuration",
+                      "typescript/server/examples"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "MCP Client",
+                "icon": "router",
+                "pages": [
+                  {
+                    "group": "Overview",
+                    "icon": "globe",
+                    "pages": [
+                      "typescript/client/client-configuration",
+                      "typescript/client/connection-types",
+                      "typescript/client/sandbox",
+                      "typescript/client/direct-tool-calls"
+                    ]
+                  },
+                  {
+                    "group": "Core Features",
+                    "icon": "list-plus",
+                    "pages": [
+                      "typescript/client/multi-server-setup",
+                      "typescript/client/tools",
+                      "typescript/client/resources",
+                      "typescript/client/prompts"
+                    ]
+                  },
+                  {
+                    "group": "Advanced Features",
+                    "icon": "sparkle",
+                    "pages": [
+                      "typescript/client/sampling",
+                      "typescript/client/elicitation",
+                      "typescript/client/notifications",
+                      "typescript/client/logging"
+                    ]
+                  },
+                  "typescript/client/authentication"
+                ]
+              },
+              {
+                "group": "MCP Agents",
+                "icon": "brain",
+                "pages": [
+                  {
+                    "group": "Overview",
+                    "icon": "globe",
+                    "pages": [
+                      "typescript/agent/agent-configuration",
+                      "typescript/agent/llm-integration"
+                    ]
+                  },
+                  {
+                    "group": "Core Features",
+                    "icon": "list-plus",
+                    "pages": [
+                      "typescript/agent/structured-output",
+                      "typescript/agent/streaming",
+                      "typescript/agent/interactive-chat-patterns"
+                    ]
+                  },
+                  "typescript/agent/server-manager",
+                  "typescript/agent/building-custom-agents",
+                  "typescript/agent/observability"
+                ]
+              },
+              {
+                "group": "Development",
+                "icon": "sparkle",
+                "pages": [
+                  "typescript/development/logging",
+                  "typescript/development/security"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "API Reference",
+            "icon": "terminal",
+            "groups": []
+          },
+          {
+            "tab": "Changelog",
+            "icon": "history",
+            "groups": [
+              {
+                "group": "Changelog",
+                "pages": []
+              },
+              {
+                "group": "Versions",
+                "pages": []
+              }
+            ]
+          },
+          {
+            "tab": "Community",
+            "icon": "users",
+            "groups": [
+              {
+                "group": "Community",
+                "pages": [
+                  "python/community/showcase"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Blog",
+            "icon": "book",
+            "groups": [
+              {
+                "group": "Blog",
+                "pages": [
+                  "python/blog/middleware"
+                ]
+              }
             ]
           }
         ]
