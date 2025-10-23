@@ -1,6 +1,6 @@
 ---
-title: "UI Widgets"
-description: "Creating interactive UI components for MCP clients"
+title: "Overview"
+description: "Auto-register widgets from the resources folder with zero boilerplate"
 icon: "palette"
 ---
 
@@ -224,9 +224,12 @@ export const widgetMetadata = {
 }
 ```
 
-### Raw HTML Widgets
+### Props Schema with Zod
 
-Inline HTML content:
+The `inputs` field uses Zod for:
+- **Type Safety**: TypeScript inference for props
+- **Runtime Validation**: Ensure correct data types
+- **LLM Context**: `.describe()` helps LLM understand what to fill
 
 ```typescript
 const propSchema = z.object({
@@ -289,9 +292,11 @@ const MyWidget: React.FC = () => {
 };
 ```
 
-### OpenAI Apps SDK Widgets
+### Key Features
 
-ChatGPT-compatible widgets with Skybridge format:
+**1. Props Without Props**
+
+Components don't accept props via React props. Instead, props come from the hook:
 
 ```typescript
 // ❌ Don't do this
@@ -425,58 +430,29 @@ Once your server is running, you can test in ChatGPT:
 Widgets can access the output of their own tool execution:
 
 ```typescript
-server.uiResource({
-  type: 'externalUrl',
-  name: 'data_table',
-  widget: 'data-table',
-  title: 'Data Table',
-  props: {
-    // String property
-    title: {
-      type: 'string',
-      description: 'Table title',
-      required: false,
-      default: 'Data Table'
-    },
+const { props, output } = useWidget<MyProps, MyOutput>();
 
-    // Number property
-    pageSize: {
-      type: 'number',
-      description: 'Rows per page',
-      required: false,
-      default: 10
-    },
-
-    // Boolean property
-    sortable: {
-      type: 'boolean',
-      description: 'Enable sorting',
-      required: false,
-      default: true
-    },
-
-    // Object property
-    columns: {
-      type: 'object',
-      description: 'Column configuration',
-      required: true
-    },
-
-    // Array property
-    data: {
-      type: 'array',
-      description: 'Table data',
-      required: true
-    }
-  }
-})
+// props = tool input parameters
+// output = what the tool returned (if any additional data)
 ```
 
-## Accessing Widget Parameters
+### Persistent Widget State
 
-### In External URL Widgets
+Widgets can maintain state across interactions:
 
-Parameters are passed as URL query parameters:
+```typescript
+const { state, setState } = useWidget<MyProps, any, any, MyState>();
+
+// Save state
+await setState({ favoriteCity: 'Tokyo' });
+
+// State persists across widget re-renders
+console.log(state?.favoriteCity);
+```
+
+### Calling Other Tools
+
+Widgets can call other MCP tools:
 
 ```typescript
 const { callTool } = useWidget();
@@ -489,64 +465,56 @@ const handleSearch = async () => {
 };
 ```
 
-### In Apps SDK Widgets
+### Display Mode Control
 
-Parameters are available via `window.openai.toolOutput`:
+Request fullscreen or popup display:
 
-```javascript
-// In your Apps SDK widget
-const params = window.openai?.toolOutput || {};
+```typescript
+const { requestDisplayMode } = useWidget();
 
-// Access parameters directly
-const { city, temperature, condition } = params;
-
-// Use with fallbacks
-const humidity = params.humidity || 50;
-const windSpeed = params.windSpeed || 0;
+const handleExpand = async () => {
+  await requestDisplayMode('fullscreen');
+};
 ```
 
-## Advanced Widget Patterns
+## Development Workflow
 
-### Widget Communication
+### 1. Start Dev Server
 
-Enable parent-child communication:
+```bash
+npm run dev
+```
 
-```javascript
-// In widget (child)
-window.parent.postMessage({
-  type: 'widget-event',
-  event: 'data-updated',
-  data: { /* ... */ }
-}, '*');
+This starts:
+- MCP server with auto-widget registration
+- Vite dev server with HMR for each widget
+- Inspector UI for testing
 
-// In parent (if supported by client)
-window.addEventListener('message', (event) => {
-  if (event.data.type === 'widget-event') {
-    handleWidgetEvent(event.data);
-  }
+### 2. Create Widget
+
+Add a new file in `resources/`:
+
+```tsx
+// resources/my-new-widget.tsx
+import React from 'react';
+import { z } from 'zod';
+import { useWidget } from 'mcp-use/react';
+
+const propSchema = z.object({
+  title: z.string(),
 });
-```
 
-### Responsive Widgets
+export const widgetMetadata = {
+  description: 'My new widget',
+  inputs: propSchema,
+};
 
-Create responsive layouts:
+const MyNewWidget: React.FC = () => {
+  const { props } = useWidget<{ title: string }>();
+  return <h1>{props.title}</h1>;
+};
 
-```html
-<style>
-  .container {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  @media (max-width: 768px) {
-    .grid { grid-template-columns: 1fr; }
-  }
-
-  @media (min-width: 769px) {
-    .grid { grid-template-columns: repeat(3, 1fr); }
-  }
-</style>
+export default MyNewWidget;
 ```
 
 ### 3. Test in Inspector
@@ -625,88 +593,56 @@ async mountWidgets(options?: {
 The framework automatically configures Content Security Policy for Apps SDK:
 
 ```typescript
-appsSdkMetadata: {
-  'openai/widgetCSP': {
-    // Domains for API calls
-    connect_domains: [
-      'https://api.example.com',
-      'wss://websocket.example.com'
-    ],
-    // Domains for resources (images, scripts, styles)
-    resource_domains: [
-      'https://cdn.example.com',
-      'https://fonts.googleapis.com'
-    ]
+// Automatic CSP when baseUrl is set
+if (baseUrl) {
+  appsSdkMetadata['openai/widgetCSP'] = {
+    connect_domains: [],
+    resource_domains: [baseUrl]  // Your server is whitelisted
   }
 }
 ```
 
-### Input Sanitization
+## Configuration
 
-Always sanitize user inputs in widgets:
-
-```javascript
-function sanitizeHTML(str) {
-  const temp = document.createElement('div');
-  temp.textContent = str;
-  return temp.innerHTML;
-}
-
-// Use when displaying user content
-element.innerHTML = sanitizeHTML(userInput);
-```
-
-### Secure Communication
-
-Use secure methods for sensitive data:
-
-```javascript
-// Don't pass sensitive data in URL parameters
-// Instead, use server-side sessions or tokens
-
-const sessionId = params.get('session');
-const data = await fetch(`/api/secure-data/${sessionId}`, {
-  credentials: 'include'
-});
-```
-
-## Testing Widgets
-
-### Local Testing
-
-Test widgets during development:
+### Custom Resources Directory
 
 ```typescript
-// Add test route for widgets
-server.get('/test/widget/:name', (req, res) => {
-  const { name } = req.params;
-  const testParams = {
-    timeRange: '7d',
-    metric: 'revenue'
-  };
+await server.listen(3000);
+// Automatically uses 'resources/' directory
 
-  const url = `http://localhost:3000/mcp-use/widgets/${name}?` +
-    new URLSearchParams(testParams).toString();
-
-  res.send(`
-    <html>
-      <body style="margin: 0;">
-        <iframe src="${url}" width="100%" height="100%"></iframe>
-      </body>
-    </html>
-  `);
+// Or customize:
+await server.mountWidgets({
+  resourcesDir: 'widgets',  // Use 'widgets/' instead
+  baseRoute: '/ui'          // Serve at '/ui/{name}'
 });
 ```
 
-### Inspector Testing
+### Base URL for Production
 
-Use the MCP Inspector:
+Set the `MCP_URL` environment variable or pass `baseUrl`:
 
-1. Navigate to `http://localhost:3000/inspector`
-2. Go to the Tools section
-3. Find your UI widget tool (e.g., `ui_dashboard`)
-4. Enter parameter values
-5. Execute to see the widget
+```typescript
+const server = createMCPServer('my-server', {
+  baseUrl: process.env.MCP_URL || 'https://myserver.com'
+});
+```
+
+This ensures:
+- Widget URLs use the correct domain
+- Apps SDK CSP automatically includes your server
+- Works behind proxies and custom domains
+
+### Environment Variables
+
+```env
+# Server Configuration
+PORT=3000
+HOST=localhost
+MCP_URL=https://myserver.com
+
+# For Production
+NODE_ENV=production
+```
 
 ## Best Practices
 
@@ -728,58 +664,147 @@ const propSchema = z.object({
 Make optional fields with sensible defaults:
 
 ```typescript
-server.uiResource({
-  type: 'externalUrl',
-  name: 'chart',
-  widget: 'chart-widget',
-  title: 'Data Chart',
-  description: 'Interactive data visualization',
-  props: {
-    chartType: {
-      type: 'string',
-      description: 'Type of chart (line, bar, pie)',
-      required: false,
-      default: 'line'
-    },
-    data: {
-      type: 'array',
-      description: 'Chart data points',
-      required: true
-    },
-    options: {
-      type: 'object',
-      description: 'Chart configuration options',
-      required: false
-    }
-  },
-  size: ['600px', '400px']
-})
+const { props } = useWidget<MyProps>();
+
+if (!props.city) {
+  return <div>No city provided</div>;
+}
+
+return <WeatherDisplay city={props.city} />;
 ```
 
-### Form Widget
+### 6. Performance
+
+Keep widgets lightweight:
+- Minimize dependencies
+- Lazy load heavy components
+- Use React.memo for expensive renders
+
+```typescript
+import { lazy, Suspense } from 'react';
+
+const HeavyChart = lazy(() => import('./HeavyChart'));
+
+const MyWidget: React.FC = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <HeavyChart />
+    </Suspense>
+  );
+};
+```
+
+## Troubleshooting
+
+### Widget Not Registered
+
+**Problem**: Widget file exists but tool doesn't appear
+
+**Solutions**:
+- Ensure file has `.tsx` or `.ts` extension
+- Export `widgetMetadata` object
+- Export default React component
+- Check server logs for errors during widget loading
+
+### Props Not Passed
+
+**Problem**: Component receives empty props
+
+**Solutions**:
+- Use `useWidget()` hook instead of React props
+- Ensure `widgetMetadata.inputs` is a valid Zod schema
+- Check Apps SDK is injecting `window.openai.toolInput`
+- Verify tool parameters match schema
+
+### HMR Not Working
+
+**Problem**: Changes don't reflect without restart
+
+**Solutions**:
+- Check Vite dev server is running
+- Ensure you're editing the source file in `resources/`
+- Clear browser cache
+- Check console for Vite errors
+
+### CSP Errors
+
+**Problem**: Widget loads but assets fail with CSP errors
+
+**Solutions**:
+- Set `baseUrl` in server config
+- Add external domains to `appsSdkMetadata['openai/widgetCSP']`
+- Check browser console for blocked domains
 
 ```typescript
 server.uiResource({
-  type: 'rawHtml',
-  name: 'user_form',
-  title: 'User Form',
-  htmlString: `
-    <!-- Complete form HTML with validation -->
-  `,
-  props: {
-    fields: {
-      type: 'array',
-      description: 'Form field definitions',
-      required: true
-    },
-    submitUrl: {
-      type: 'string',
-      description: 'Form submission endpoint',
-      required: false
+  // ... other config ...
+  appsSdkMetadata: {
+    'openai/widgetCSP': {
+      connect_domains: ['https://api.example.com'],
+      resource_domains: ['https://cdn.example.com'],
     }
   }
-})
+});
 ```
+
+## Comparison: Auto vs Manual
+
+### Auto Registration (Recommended)
+
+```tsx
+// resources/weather.tsx
+const propSchema = z.object({
+  city: z.string(),
+});
+
+export const widgetMetadata = {
+  description: 'Show weather',
+  inputs: propSchema,
+};
+
+export default WeatherWidget;
+```
+
+**Pros**:
+- Zero boilerplate
+- Type-safe props
+- Automatic tool/resource registration
+- Hot module replacement
+- Standardized structure
+
+**Cons**:
+- ⚠️ Less control over registration details
+- ⚠️ Must follow naming conventions
+
+### Manual Registration
+
+```typescript
+// index.ts
+server.uiResource({
+  type: 'appsSdk',
+  name: 'weather',
+  htmlTemplate: htmlString,
+  props: { city: { type: 'string', required: true } },
+  appsSdkMetadata: { /* ... */ }
+});
+
+server.tool({
+  name: 'weather',
+  inputs: [{ name: 'city', type: 'string' }],
+  cb: async (params) => { /* ... */ }
+});
+```
+
+**Pros**:
+- Full control over configuration
+- Custom tool behavior
+- Can use raw HTML strings
+
+**Cons**:
+- ❌ More boilerplate
+- ❌ Manual schema duplication
+- ❌ Prop mapping is manual
+- ❌ No HMR out of the box
 
 ## Next Steps
 

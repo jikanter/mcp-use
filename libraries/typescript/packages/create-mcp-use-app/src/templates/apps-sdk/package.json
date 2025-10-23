@@ -1,8 +1,8 @@
 {
-  "name": "mcp-use server",
+  "name": "Weather App",
   "type": "module",
   "version": "1.0.0",
-  "description": "MCP server with OpenAI Apps SDK integration",
+  "description": "MCP server with apps sdk integration",
   "author": "",
   "license": "MIT",
   "keywords": [
