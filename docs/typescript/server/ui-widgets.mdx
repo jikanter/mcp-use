@@ -96,6 +96,20 @@ const UserCard: React.FC = () => {
 
   const { name, email, avatar, role } = props;
 
+// Export metadata for automatic registration
+export const widgetMetadata = {
+  description: 'Display a user profile card',
+  inputs: propSchema,
+};
+
+type UserCardProps = z.infer<typeof propSchema>;
+
+const UserCard: React.FC = () => {
+  // useWidget hook provides props from Apps SDK or MCP-UI
+  const { props, theme } = useWidget<UserCardProps>();
+
+  const { name, email, avatar, role } = props;
+
   return (
     <div className={`p-6 rounded-lg shadow-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
       {avatar && (

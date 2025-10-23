@@ -13,22 +13,24 @@ your `MCPAgent`, maintaining context and memory across multiple queries.
 Here's a basic chat-loop with conversation memory enabled:
 
 <CodeGroup>
-```typescript TypeScript
-import readline from 'node:readline'
-import { config } from 'dotenv'
-import { ChatOpenAI } from '@langchain/openai'
-import { MCPAgent, MCPClient } from 'mcp-use'
+```python Python
+import asyncio
+from dotenv import load_dotenv
+from langchain_openai import ChatOpenAI
+from mcp_use import MCPAgent, MCPClient
 
-config() // Load environment variables
+async def basic_chat_loop():
+    """Simple console chat loop with MCPAgent"""
+    # Load environment variables
+    load_dotenv()
 
-async function basicChatLoop() {
-    // MCP server configuration
-    const configuration = {
-        mcpServers: {
-            playwright: {
-                command: 'npx',
-                args: ['@playwright/mcp@latest'],
-                env: { DISPLAY: ':1' }
+    # MCP server configuration
+    config = {
+        "mcpServers": {
+            "playwright": {
+                "command": "npx",
+                "args": ["@playwright/mcp@latest"],
+                "env": {"DISPLAY": ":1"}
             },
             filesystem: {
                 command: 'npx',
@@ -85,6 +87,26 @@ async function basicChatLoop() {
                 continue
             }
 
+            try:
+                print("\n🤖 Assistant: ", end="", flush=True)
+                response = await agent.run(user_input)
+                print(response)
+            except KeyboardInterrupt: # Handle keyboard interrupt
+                print("\n\n⏸️ Interrupted by user")
+                break
+            }
+
+            if (userInput.toLowerCase() === 'clear') {
+                agent.clearConversationHistory()
+                console.log('🧹 Conversation history cleared.')
+                continue
+            }
+
+            // Skip empty messages
+            if (!userInput) {
+                continue
+            }
+
             try {
                 process.stdout.write('\n🤖 Assistant: ')
                 const response = await agent.run(userInput)
@@ -102,6 +124,8 @@ async function basicChatLoop() {
 
 basicChatLoop().catch(console.error)
 ```
+<<<<<<< HEAD
+=======
 
 ```typescript TypeScript
 import readline from 'node:readline'
@@ -200,22 +224,24 @@ basicChatLoop().catch(console.error)
 Here's a chat loop with streaming responses enabled:
 
 <CodeGroup>
-```typescript TypeScript
-import readline from 'node:readline'
-import { config } from 'dotenv'
-import { ChatOpenAI } from '@langchain/openai'
-import { MCPAgent, MCPClient } from 'mcp-use'
+```python Python
+import asyncio
+from dotenv import load_dotenv
+from langchain_openai import ChatOpenAI
+from mcp_use import MCPAgent, MCPClient
 
-config() // Load environment variables
+async def streaming_chat_loop():
+    """Chat loop with streaming responses with MCPAgent"""
+    # Load environment variables
+    load_dotenv()
 
-async function streamingChatLoop() {
-    // MCP server configuration
-    const configuration = {
-        mcpServers: {
-            playwright: {
-                command: 'npx',
-                args: ['@playwright/mcp@latest'],
-                env: { DISPLAY: ':1' }
+    # MCP server configuration
+    config = {
+        "mcpServers": {
+            "playwright": {
+                "command": "npx",
+                "args": ["@playwright/mcp@latest"],
+                "env": {"DISPLAY": ":1"}
             }
         }
     }
@@ -264,6 +290,27 @@ async function streamingChatLoop() {
 
             if (!userInput) { // Skip empty messages
                 continue
+
+            try:
+                print("\n🤖 Assistant: ", end="", flush=True)
+
+                # Stream the response
+                async for chunk in agent.stream(user_input):
+                    print(chunk, end="", flush=True)
+                print()
+            except KeyboardInterrupt: # Handle keyboard interrupt
+                print("\n\n⏸️ Interrupted by user")
+                break
+            }
+
+            if (userInput.toLowerCase() === 'clear') {
+                agent.clearConversationHistory()
+                console.log('🧹 Conversation history cleared.')
+                continue
+            }
+
+            if (!userInput) { // Skip empty messages
+                continue
             }
 
             try {
@@ -289,6 +336,8 @@ async function streamingChatLoop() {
 
 streamingChatLoop().catch(console.error)
 ```
+<<<<<<< HEAD
+=======
 
 ```typescript TypeScript
 import readline from 'node:readline'
@@ -387,32 +436,31 @@ streamingChatLoop().catch(console.error)
 It's possible to create a chat loop that can handle both natural language and structured inputs, allowing users to request specific tasks or analyses in a structured format. Here's an example of how to implement this:
 
 <CodeGroup>
-```typescript TypeScript
-import readline from 'node:readline'
-import { z } from 'zod'
-import { config } from 'dotenv'
-import { ChatOpenAI } from '@langchain/openai'
-import { MCPAgent, MCPClient } from 'mcp-use'
+```python Python
+import asyncio
+from dotenv import load_dotenv
+from pydantic import BaseModel, Field
+from langchain_openai import ChatOpenAI
+from mcp_use import MCPAgent, MCPClient
+from typing import Optional
 
-config() // Load environment variables
+class TaskRequest(BaseModel):
+    task_type: Optional[str] = Field(description="The type of task to perform")
+    description: Optional[str] = Field(description="Detailed description of the task")
+    priority: Optional[str] = Field(description="Priority level: low, medium, high")
 
-// Define the schema using Zod
-const TaskRequest = z.object({
-    taskType: z.string().optional().describe('The type of task to perform'),
-    description: z.string().optional().describe('Detailed description of the task'),
-    priority: z.string().optional().describe('Priority level: low, medium, high')
-})
+async def structured_chat_loop():
+    """Chat loop that can handle both natural language and structured inputs."""
+    # Load environment variables
+    load_dotenv()
 
-type TaskRequest = z.infer<typeof TaskRequest>
-
-async function structuredChatLoop() {
-    // MCP server configuration
-    const configuration = {
-        mcpServers: {
-            playwright: {
-                command: 'npx',
-                args: ['@playwright/mcp@latest'],
-                env: { DISPLAY: ':1' }
+    # MCP server configuration
+    config = {
+        "mcpServers": {
+            "playwright": {
+                "command": "npx",
+                "args": ["@playwright/mcp@latest"],
+                "env": {"DISPLAY": ":1"}
             }
         }
     }
@@ -476,6 +524,40 @@ async function structuredChatLoop() {
                         const response = await agent.run(
                             `Execute the following task: ${task.description}`
                         )
+                        print(f"\n🤖 Assistant: {response}")
+                else:
+                    # Regular conversation
+                    response = await agent.run(user_input)
+                    print(f"\n🤖 Assistant: {response}")
+            except KeyboardInterrupt:
+                print("\n👋 Goodbye!")
+                break
+            }
+
+            try {
+                if (userInput.toLowerCase() === 'task') {
+                    console.log('\n📋 Creating structured task...')
+                    const taskDescription = await question('Describe your task: ')
+
+                    const task = await agent.run(
+                        `Analyze a task with the following description: ${taskDescription}`,
+                        undefined, // maxSteps
+                        undefined, // manageConnector
+                        undefined, // externalHistory
+                        TaskRequest // output schema
+                    )
+
+                    // Print task analysis
+                    console.log('\n✅ Task Analysis:')
+                    console.log(`• Type: ${task.taskType}`)
+                    console.log(`• Description: ${task.description}`)
+                    console.log(`• Priority: ${task.priority || 'low'}`)
+
+                    const proceed = await question('\nDo you want to proceed with this task? (y/n)')
+                    if (proceed.toLowerCase() === 'y') {
+                        const response = await agent.run(
+                            `Execute the following task: ${task.description}`
+                        )
                         console.log(`\n🤖 Assistant: ${response}`)
                     }
                 } else {
@@ -496,6 +578,8 @@ async function structuredChatLoop() {
 
 structuredChatLoop().catch(console.error)
 ```
+<<<<<<< HEAD
+=======
 
 ```typescript TypeScript
 import readline from 'node:readline'
