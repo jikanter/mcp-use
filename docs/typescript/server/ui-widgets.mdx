@@ -82,6 +82,20 @@ const UserCard: React.FC = () => {
 
   const { name, email, avatar, role } = props;
 
+// Export metadata for automatic registration
+export const widgetMetadata = {
+  description: 'Display a user profile card',
+  inputs: propSchema,
+};
+
+type UserCardProps = z.infer<typeof propSchema>;
+
+const UserCard: React.FC = () => {
+  // useWidget hook provides props from Apps SDK or MCP-UI
+  const { props, theme } = useWidget<UserCardProps>();
+
+  const { name, email, avatar, role } = props;
+
   return (
     <div className={`p-6 rounded-lg shadow-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
       {avatar && (
@@ -191,7 +205,6 @@ Contains the information that the MCP resource (and the tool that exposes it) wi
 export const widgetMetadata = {
   // Required: Human-readable description
   description: string,
-
   // Required: Zod schema defining component props
   inputs: z.ZodObject<...>,
 }
@@ -244,7 +257,6 @@ const MyWidget: React.FC = () => {
     metadata,           // Response metadata
     state,              // Persistent widget state
     setState,           // Update widget state
-
     // Layout & theme
     theme,              // 'light' | 'dark'
     displayMode,        // 'inline' | 'fullscreen' | 'popup'
@@ -252,7 +264,6 @@ const MyWidget: React.FC = () => {
     maxHeight,          // Max widget height
     userAgent,          // Device capabilities
     locale,             // User locale
-
     // Actions
     callTool,           // Call other MCP tools
     sendFollowUpMessage,// Send message to chat
@@ -367,7 +378,6 @@ const WeatherWidget: React.FC = () => {
       <div className={`h-32 bg-gradient-to-br ${getWeatherColor(weather)} flex items-center justify-center`}>
         <div className="text-6xl">{getWeatherIcon(weather)}</div>
       </div>
-
       <div className="p-6">
         <div className="text-center">
           <h2 className={`text-2xl font-bold ${textColor} mb-2`}>{city}</h2>
@@ -630,7 +640,6 @@ Help the LLM understand your inputs:
 const propSchema = z.object({
   // Good: Clear description
   city: z.string().describe('The city name (e.g., "New York", "Tokyo")'),
-
   // ❌ Bad: No description
   city: z.string(),
 });
