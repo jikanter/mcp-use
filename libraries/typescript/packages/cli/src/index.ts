@@ -519,9 +519,7 @@ if (container && Component) {
     const outDir = path.join(projectPath, 'dist', 'resources', 'widgets', widgetName);
     
     // Set base URL: use MCP_URL if set, otherwise relative path
-    const baseUrl = mcpUrl 
-      ? `${mcpUrl}/mcp-use/widgets/${widgetName}/`
-      : `/mcp-use/widgets/${widgetName}/`;
+    const baseUrl = `/mcp-use/widgets/${widgetName}/`;
     
     // Extract metadata from widget before building
     let widgetMetadata: any = {};
@@ -587,6 +585,15 @@ if (container && Component) {
         root: tempDir,
         base: baseUrl,
         plugins: [tailwindcss(), react()],
+        experimental: {
+          renderBuiltUrl: (filename: string, { hostType }) => {
+            if (['js', 'css'].includes(hostType)) {
+              return { runtime: `window.__getFile(${JSON.stringify(filename)})` }
+            } else {
+              return { relative: true }
+            }
+          }
+        },
         resolve: {
           alias: {
             '@': resourcesDir,
