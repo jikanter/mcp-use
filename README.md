@@ -634,7 +634,9 @@ You can call MCP server tools directly without an LLM when you need programmatic
 
 ```python
 import asyncio
-from mcp_use import MCPClient
+from langchain_openai import ChatOpenAI
+from pymcp import MCPAgent
+from pymcp.connectors.stdio import StdioConnector
 
 async def call_tool_example():
     config = {
