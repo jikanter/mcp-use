@@ -1,5 +1,98 @@
 # @mcp-use/cli
 
+## 2.1.21-canary.7
+
+### Patch Changes
+
+- a8e5b65: fix: apps sdk metadata setup from widget build
+- Updated dependencies [a8e5b65]
+  - @mcp-use/inspector@0.4.9-canary.7
+  - mcp-use@1.2.0-canary.6
+
+## 2.1.21-canary.6
+
+### Patch Changes
+
+- Updated dependencies [940d727]
+  - mcp-use@1.2.0-canary.5
+  - @mcp-use/inspector@0.4.9-canary.6
+
+## 2.1.21-canary.5
+
+### Patch Changes
+
+- Updated dependencies [b9b739b]
+  - @mcp-use/inspector@0.4.9-canary.5
+  - mcp-use@1.2.0-canary.4
+
+## 2.1.21-canary.4
+
+### Patch Changes
+
+- Updated dependencies [da6e7ed]
+  - mcp-use@1.2.0-canary.3
+  - @mcp-use/inspector@0.4.9-canary.4
+
+## 2.1.21-canary.3
+
+### Patch Changes
+
+- Updated dependencies [3f2d2e9]
+  - mcp-use@1.2.0-canary.2
+  - @mcp-use/inspector@0.4.9-canary.3
+
+## 2.1.21-canary.2
+
+### Patch Changes
+
+- Updated dependencies [5dd503f]
+  - mcp-use@1.2.0-canary.1
+  - @mcp-use/inspector@0.4.9-canary.2
+
+## 2.1.21-canary.1
+
+### Patch Changes
+
+- Updated dependencies [3b72cde]
+  - @mcp-use/inspector@0.4.9-canary.1
+
+## 2.1.21-canary.0
+
+### Patch Changes
+
+- Updated dependencies [b24a213]
+  - mcp-use@1.2.0-canary.0
+  - @mcp-use/inspector@0.4.9-canary.0
+
+## 2.1.20
+
+### Patch Changes
+
+- 80213e6: ## Widget Integration & Server Enhancements
+  - Enhanced widget integration capabilities in MCP server with improved handling
+  - Streamlined widget HTML generation with comprehensive logging
+  - Better server reliability and error handling for widget operations
+
+  ## CLI Tunnel Support & Development Workflow
+  - Added comprehensive tunnel support to CLI for seamless server exposure
+  - Enhanced development workflow with tunnel integration capabilities
+  - Disabled tunnel in dev mode for optimal Vite compatibility
+
+  ## Inspector UI & User Experience Improvements
+  - Enhanced inspector UI components with better tunnel URL handling
+  - Improved user experience with updated dependencies and compatibility
+  - Better visual feedback and error handling in inspector interface
+
+  ## Technical Improvements
+  - Enhanced logging capabilities throughout the system
+  - Improved error handling and user feedback mechanisms
+  - Updated dependencies for better stability and performance
+
+- Updated dependencies [80213e6]
+- Updated dependencies [80213e6]
+  - @mcp-use/inspector@0.4.8
+  - mcp-use@1.1.8
+
 ## 2.1.20-canary.1
 
 ### Patch Changes
