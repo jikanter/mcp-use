@@ -116,6 +116,14 @@ export function OpenAIComponentRenderer({
 
         console.log("[OpenAIComponentRenderer] Widget CSP:", widgetCSP);
 
+        // Extract CSP metadata from tool result
+        let widgetCSP = null
+        if (toolResult?._meta?.['openai/widgetCSP']) {
+          widgetCSP = toolResult._meta['openai/widgetCSP']
+        }
+
+        console.log('[OpenAIComponentRenderer] Widget CSP:', widgetCSP)
+
         // Store widget data on server (including the fetched HTML)
         const storeResponse = await fetch(
           "/inspector/api/resources/widget/store",
