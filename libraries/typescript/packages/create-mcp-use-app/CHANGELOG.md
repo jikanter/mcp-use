@@ -1,5 +1,37 @@
 # create-mcp-use-app
 
+## 0.4.11
+
+### Patch Changes
+
+- fff5e58: ## Apps SDK widgets & Automatic Widget Registration
+
+  ### Key Features Added
+
+  #### Automatic UI Widget Registration
+  - **Major Enhancement**: React components in `resources/` folder now auto-register as MCP tools and resources
+  - No boilerplate needed, just export `widgetMetadata` with Zod schema
+  - Automatically creates both MCP tool and `ui://widget/{name}` resource endpoints
+  - Integration with existing manual registration patterns
+
+  #### Template System Restructuring
+  - Renamed `ui-resource` → `mcp-ui` for clarity
+  - Consolidated `apps-sdk-demo` into streamlined `apps-sdk` template
+  - Enhanced `starter` template as default with both MCP-UI and Apps SDK examples
+  - Added comprehensive weather examples to all templates
+
+  #### 📚 Documentation Enhancements
+  - Complete rewrite of template documentation with feature comparison matrices
+  - New "Automatic Widget Registration" section in ui-widgets.mdx
+  - Updated quick start guides for all package managers (npm, pnpm, yarn)
+  - Added practical weather widget implementation examples
+
+- fff5e58: update package.json files to include @mcp-use/cli and @mcp-use/inspector as devDependencies in apps-sdk, mcp-ui, and starter templates
+- cc27046: minor fixes
+- fff5e58: fix dev deps
+- 1af67aa: Readmes for templates
+- 7c95a0b: minor
+
 ## 0.4.10
 
 ### Patch Changes

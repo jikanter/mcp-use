@@ -1,5 +1,62 @@
 # @mcp-use/cli
 
+## 2.1.26
+
+### Patch Changes
+
+- 1af67aa: ## Widget Integration & Server Enhancements
+  - Enhanced widget integration capabilities in MCP server with improved handling
+  - Streamlined widget HTML generation with comprehensive logging
+  - Better server reliability and error handling for widget operations
+
+  ## CLI Tunnel Support & Development Workflow
+  - Added comprehensive tunnel support to CLI for seamless server exposure
+  - Enhanced development workflow with tunnel integration capabilities
+  - Disabled tunnel in dev mode for optimal Vite compatibility
+
+  ## Inspector UI & User Experience Improvements
+  - Enhanced inspector UI components with better tunnel URL handling
+  - Improved user experience with updated dependencies and compatibility
+  - Better visual feedback and error handling in inspector interface
+
+  ## Technical Improvements
+  - Enhanced logging capabilities throughout the system
+  - Improved error handling and user feedback mechanisms
+  - Updated dependencies for better stability and performance
+
+- fff5e58: ## Apps SDK widgets & Automatic Widget Registration
+
+  ### Key Features Added
+
+  #### Automatic UI Widget Registration
+  - **Major Enhancement**: React components in `resources/` folder now auto-register as MCP tools and resources
+  - No boilerplate needed, just export `widgetMetadata` with Zod schema
+  - Automatically creates both MCP tool and `ui://widget/{name}` resource endpoints
+  - Integration with existing manual registration patterns
+
+  #### Template System Restructuring
+  - Renamed `ui-resource` → `mcp-ui` for clarity
+  - Consolidated `apps-sdk-demo` into streamlined `apps-sdk` template
+  - Enhanced `starter` template as default with both MCP-UI and Apps SDK examples
+  - Added comprehensive weather examples to all templates
+
+  #### 📚 Documentation Enhancements
+  - Complete rewrite of template documentation with feature comparison matrices
+  - New "Automatic Widget Registration" section in ui-widgets.mdx
+  - Updated quick start guides for all package managers (npm, pnpm, yarn)
+  - Added practical weather widget implementation examples
+
+- cc27046: minor fixes
+- 7c95a0b: minor
+- Updated dependencies [1af67aa]
+- Updated dependencies [fff5e58]
+- Updated dependencies [e92639f]
+- Updated dependencies [1af67aa]
+- Updated dependencies [cc27046]
+- Updated dependencies [7c95a0b]
+  - @mcp-use/inspector@0.4.14
+  - mcp-use@1.2.5
+
 ## 2.1.25
 
 ### Patch Changes
